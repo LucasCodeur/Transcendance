@@ -7,6 +7,8 @@
 # AI Usage
 
 # Resources
+## Project Structure
+https://svelte.dev/docs/kit/project-structure
 ## AI usage
 
 # Team Information
