@@ -1,22 +1,30 @@
 # sv
 
-## install dependencies:
-
-```
-npm install
-```
-
 ## this svelte project was created using the following command :
 
 ```sh
 npx sv@1.1.1 create --template minimal --types ts --add tailwindcss="plugins:typography,forms" --install npm ./
+npx prisma orm init
+```
+
+## install dependencies:
+
+```
+make install
 ```
 
 ## Developping
+
 start a development server:
 
 ```sh
-npm run dev
+make dev
+```
+
+stop development server:
+
+```sh
+make down
 ```
 
 ## Building

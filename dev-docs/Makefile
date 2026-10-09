@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 all:
 	@echo 'chose between one of the following rules:'
 	@echo '	make install: will install dependancies for the project'
@@ -8,6 +10,7 @@ install:
 	npm install
 
 dev:
+	if ! [[ -f .env ]] ; then cp .env.example .env ; fi
 	$(MAKE) install
 	docker compose up -d
 	npm run dev -- --port 4343 2> dev_server_errors.log > dev_server.log &
