@@ -8,6 +8,7 @@ install:
 	npm install
 
 dev:
+	$(MAKE) install
 	docker compose up -d
 	npm run dev -- --port 4343 2> dev_server_errors.log > dev_server.log &
 
