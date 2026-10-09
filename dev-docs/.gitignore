@@ -23,6 +23,12 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# prisma
+prisma-8.md
+.gitattributes
+
 # others
 *.swp
 *.log
+node_modules/
+dist/
