@@ -1,21 +1,22 @@
 // use prisma-8
-
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?
-  name      String?
-  posts     Post[]
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+  id            String            @id @default(uuid())
+  email         String            @unique
+  displayName   String
+  passwordHash  String?
+  emailVerified Boolean           @default(false)
+  totpSecret    String?
+  sessions      Session[]
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+model Session {
+  id          String            @id
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt   TimestamptzString
+  totpPending Boolean           @default(false)
+  createdAt   TimestamptzString @default(now())
+  @@index([userId])
 }
