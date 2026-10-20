@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { db } from '#lib/server/db/client.js';
 import * as user from '#lib/server/db/users.js';
 import * as session from '#lib/server/db/sessions.js';
+import {registerSchema } from '#lib/schemas/auth.js';
 
 export async function GET() {
 
@@ -21,6 +22,7 @@ export async function GET() {
 	const search = await session.findSessionWithUser(ssion.id);
 	await db.orm.public.User.where({ email: 'test@test.fr' }).delete();
 	await session.deleteUserSessions(usr.id);
+	const parsedValue = registerSchema.safeParse({ email: 'Jean@Gmail.COM', displayName: 'Jean', password: 'a', passwordConfirm: 'b' });
 	return ( json({
 		usr,
 		ssion,
@@ -28,5 +30,6 @@ export async function GET() {
 		sessionWithSearch: search ? search.session: null,
 		isAnError: false,
 		isUniqueViolationError: false,
+		ZodError: parsedValue.error?.issues.map((i) => i.path.join('.') + ': ' + i.message)
 	}));
 }
