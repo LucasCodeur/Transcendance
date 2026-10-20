@@ -3,6 +3,7 @@ import { db } from '#lib/server/db/client.js';
 import * as user from '#lib/server/db/users.js';
 import * as session from '#lib/server/db/sessions.js';
 import {registerSchema } from '#lib/schemas/auth.js';
+import { hashPassword, verifyPassword } from '#lib/server/auth/password.js';
 
 export async function GET() {
 
@@ -23,6 +24,10 @@ export async function GET() {
 	await db.orm.public.User.where({ email: 'test@test.fr' }).delete();
 	await session.deleteUserSessions(usr.id);
 	const parsedValue = registerSchema.safeParse({ email: 'Jean@Gmail.COM', displayName: 'Jean', password: 'a', passwordConfirm: 'b' });
+	const hashedPassword = await hashPassword('correcthorsebattery');
+	const saledPassword = await hashPassword('correcthorsebattery');
+	const trueVerified = await verifyPassword(hashedPassword, 'correcthorsebattery');
+	const falseVerified = await verifyPassword(hashedPassword, 'correthorsebattery');
 	return ( json({
 		usr,
 		ssion,
@@ -30,6 +35,10 @@ export async function GET() {
 		sessionWithSearch: search ? search.session: null,
 		isAnError: false,
 		isUniqueViolationError: false,
-		ZodError: parsedValue.error?.issues.map((i) => i.path.join('.') + ': ' + i.message)
+		ZodError: parsedValue.error?.issues.map((i) => i.path.join('.') + ': ' + i.message),
+		hashedPassword,
+		saledPassword,
+		trueVerified,
+		falseVerified
 	}));
 }
