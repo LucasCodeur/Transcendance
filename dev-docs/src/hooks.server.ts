@@ -12,15 +12,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const result = await validateSession(token);
 	if (!result) return resolve(event);
 
-	event.locals.user.id = result.user.id;
-	event.locals.user.email = result.user.email;
-	event.locals.user.displayName = result.user.displayName;
-	event.locals.user.emailVerified = result.user.emailVerified;
-	
-	event.locals.session.id = result.session.id;
-	event.locals.session.userId = result.session.userId;
-	event.locals.session.expiresAt = result.session.expiresAt;
-	event.locals.session.totpPending = result.session.totpPending;
-	
+	event.locals.user = {
+		id: result.user.id,
+		email: result.user.email,
+		displayName: result.user.displayName,
+		emailVerified: result.user.emailVerified
+	};
+	event.locals.session = {
+		id: result.session.id,
+		userId: result.session.userId,
+		expiresAt: result.session.expiresAt,
+		totpPending: result.session.totpPending
+	};
+
 	return resolve(event);
 }

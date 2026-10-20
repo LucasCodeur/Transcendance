@@ -8,7 +8,7 @@ type AuthSuccess = { ok: true; token: string; expiresAt: Date};
 export type RegisterResult = AuthSuccess | { ok: false; code: 'EMAIL_TAKEN' };
 export type LoginResult = AuthSuccess | { ok: false; code: 'INVALID_CREDENTIALS' };
 
-export async function registerUSer(input: RegisterInput): Promise<RegisterResult> {
+export async function registerUser(input: RegisterInput): Promise<RegisterResult> {
 	if (await findUserByEmail(input.email)) return { ok: false, code: 'EMAIL_TAKEN' }; //change for confirmation email
 	
 	let user;
