@@ -10,7 +10,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (!token) return resolve(event);
 
 	const result = await validateSession(token);
-	if (!result) return resolve(event);
+	if (!result) {
+		deleteSessionCookie(event.cookies);
+		return resolve(event);
+	}
+
+	if (result.renewed) setSessionCookie(event.cookies, token, result.session.expiresAt);
 
 	event.locals.user = {
 		id: result.user.id,

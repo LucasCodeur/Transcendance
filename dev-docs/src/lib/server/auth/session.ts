@@ -42,21 +42,23 @@ export async function validateSession(token: string): Promise<{ session: Session
 	const { session, user } = found;
 
 	if (session.expiresAt.getTime() <= Date.now()) {
-		deleteSession(session.id);
+		await deleteSession(session.id);
 		return null;
 	}
 	
 	if (session.expiresAt.getTime() - Date.now() < RENEW_WHEN_LEFT_MS) {
-		updateSessionExpiry(session.id, new Date(Date.now() + SESSION_TTL_MS));
+		const newExpiry = new Date(Date.now() + SESSION_TTL_MS);
+		await updateSessionExpiry(session.id, newExpiry);
 		renewed = true;
+		session.expiresAt = newExpiry;
 	}
 	return { session, user, renewed };
 }
 
 export async function invalidateSession(token: string): Promise<void> {
-	deleteSession(hashSessionToken(token));
+	await deleteSession(hashSessionToken(token));
 }
 
 export async function invalidateUserSession(userId: string): Promise<void> {
-	deleteUserSessions(userId);
+	await deleteUserSessions(userId);
 }
