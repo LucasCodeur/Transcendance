@@ -4,24 +4,24 @@ export const emailSchema = z
 	.string()
 	.trim()
 	.toLowerCase()
-	.min(1, 'Email adress required')
-	.max(254, 'Email adress required')
-	.pipe(z.email('Invalid email adress'));
+	.min(1, 'Email address required')
+	.max(254, 'Email address is too long')
+	.pipe(z.email('Invalid email address'));
 
 export const passwordSchema = z
 	.string()
-	.min(12, 'Password must contain at least 12 character')
-	.max(128, 'Password cannot exceed 128 character')
+	.min(12, 'Password must contain at least 12 characters')
+	.max(128, 'Password cannot exceed 128 characters');
 
 export const registerSchema = z
 	.object({
 		email: emailSchema,
-		displayName: z.string().trim().min(2, 'Username must be at least 2 character').max(50, 'Username cannot exceed 50 character'),
+		displayName: z.string().trim().min(2, 'Username must be at least 2 characters').max(50, 'Username cannot exceed 50 characters'),
 		password: passwordSchema,
 		passwordConfirm: z.string()
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
-		message: 'The passwords are not identic',
+		message: 'Passwords do not match',
 		path: ['passwordConfirm']
 	});
 
