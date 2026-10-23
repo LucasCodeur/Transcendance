@@ -1,21 +1,78 @@
 // use prisma-8
 
+// Platform user account
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?
-  name      String?
-  posts     Post[]
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+  id String @id @default(cuid(2))
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+// Active session with a hashed token
+model Session {
+  id String @id @default(cuid(2))
 }
+
+// External identity linked to a user
+model OAuthAccount {
+  id String @id @default(cuid(2))
+}
+
+// Family organization
+model Organization {
+  id String @id @default(cuid(2))
+}
+
+// User membership in an organization with a role
+model Membership {
+  id String @id @default(cuid(2))
+}
+
+namespace genealogy {
+  // Family tree belonging to an organization
+  model Tree {
+    id String @id @default(cuid(2))
+  }
+
+  // Individual in a family tree
+  model Person {
+    id            String @id @default(cuid(2))
+    firstName     String
+    lastName      String
+    Gender        String
+    birthDate     TimestamptzString?
+    birthDateEnd  TimestamptzString?
+  }
+
+  // Partnership between individuals, including type and start/end dates
+  model Partnership {
+    id String @id @default(cuid(2))
+  }
+
+  // Links a person to a partnership
+  model PartnerLink {
+    id String @id @default(cuid(2))
+  }
+
+  // Links a child to a partnership with a parentage type
+  model ChildLink {
+    id String @id @default(cuid(2))
+  }
+
+  // Media file attached to a person
+  model Media {
+    id String @id @default(cuid(2))
+  }
+}
+
+// Family group chat or direct conversation
+  model Conversation {
+    id String @id @default(cuid(2))
+  }
+
+  // Message within a conversation
+  model Message {
+    id String @id @default(cuid(2))
+  }
+
+  // Notification intended for a user
+  model Notification {
+    id String @id @default(cuid(2))
+  }
