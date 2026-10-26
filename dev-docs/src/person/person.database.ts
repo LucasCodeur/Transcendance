@@ -9,7 +9,8 @@ export async function createPerson(inputPerson: InputPerson) {
     lastName: inputPerson.lastName,
     gender: inputPerson.gender,
     birthDate: new Date(inputPerson.birthDate),
-    birthDateEnd: new Date(inputPerson.birthDateEnd),
+    deceased: inputPerson.deceased,
+    birthPlace: inputPerson.birthPlace,
   });
   return newPerson;
 }

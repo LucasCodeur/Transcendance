@@ -34,11 +34,17 @@ namespace genealogy {
   // Individual in a family tree
   model Person {
     id            String @id @default(cuid(2))
+    gender        String
     firstName     String
+    middleName    String?
     lastName      String
-    Gender        String
+    maidenName    String?
+    marriedName   String?
     birthDate     TimestamptzString?
-    birthDateEnd  TimestamptzString?
+    birthPlace    String
+    deceased      Boolean 
+    deathDate     TimestamptzString?
+    deathPlace    String?
   }
 
   // Partnership between individuals, including type and start/end dates
