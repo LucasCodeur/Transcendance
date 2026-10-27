@@ -1,15 +1,9 @@
 import { createPerson, genea } from "../../person/person.database";
 
-import {
-  createInputPerson,
-  inputPerson,
-  sInputPerson,
-} from "../../person/person.inputValidation";
+import { sInputPerson } from "../../person/person.inputValidation";
 
-import { db } from "../../prisma/db";
-
-export async function testCreateInputPerson(): inputPerson {
-  const inputPerson = await sInputPerson.parse({
+export async function testCreateInputPerson() {
+  const inputPerson = sInputPerson.parse({
     firstName: "Jules",
     lastName: "Weber",
     gender: "Male",
@@ -22,11 +16,11 @@ export async function testCreateInputPerson(): inputPerson {
 
 export async function testCreatePerson() {
   console.log("TEST CREATE PERSON:");
-  await genea.Person.deleteAll();
+  await genea.Person.where({}).deleteAll();
   const weberFamily = await genea.Tree.create({
     name: "The Weber family",
   });
-  const inputPerson: InputPerson = await testCreateInputPerson();
+  const inputPerson = await testCreateInputPerson();
   const person = await createPerson(inputPerson, weberFamily.id);
   console.log(person);
 }
