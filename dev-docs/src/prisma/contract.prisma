@@ -29,6 +29,7 @@ namespace genealogy {
   // Family tree belonging to an organization
   model Tree {
     id      String @id @default(cuid(2))
+    name    String
     persons Person[]
   }
 

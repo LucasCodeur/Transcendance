@@ -23,8 +23,11 @@ export async function testCreateInputPerson(): inputPerson {
 export async function testCreatePerson() {
   console.log("TEST CREATE PERSON:");
   await genea.Person.deleteAll();
+  const weberFamily = await genea.Tree.create({
+    name: "The Weber family",
+  });
   const inputPerson: InputPerson = await testCreateInputPerson();
-  const person = await createPerson(inputPerson);
+  const person = await createPerson(inputPerson, weberFamily.id);
   console.log(person);
 }
 

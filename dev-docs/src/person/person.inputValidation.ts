@@ -1,29 +1,44 @@
 import * as z from "zod";
+
 export const sInputPerson = z.object({
+  gender: z.literal(["Male", "Female"]), // WARN: Only Male, Female ?
   firstName: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
-    .regex(/[a-zA-Z]/),
+    .regex(/[a-zA-Z']/gm),
   lastName: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
-    .regex(/[a-zA-Z]/),
-  gender: z.literal(["Male", "Female"]), // WARN: Only Male, Female ?
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  middleName: z // WARN: What's the character limit?
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  marriedName: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
   birthDate: z.date(),
-  birthDateEnd: z.date(),
+  birthPlace: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z]/gm),
+  deceased: z.boolean(),
+  deathDate: z.date().optional(),
+  deathPlace: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z]/gm)
+    .optional(),
 });
 
 export type inputPerson = z.infer<typeof sInputPerson>;
-
-export async function createInputPerson(): inputPerson {
-  const inputPerson = await sInputPerson.parse({
-    firstName: "Jules",
-    lastName: "Weber",
-    gender: "Male",
-    birthDate: new Date("2000-01-01"), //WARN: Weird behavior: if I put 2000-1-1 it works, but the date isn't the same. According to the documentation, it normally shouldn't work
-    birthDateEnd: new Date("3000-01-01"), // WARN: What is the limit should I put ?
-  });
-  return inputPerson;
-}
