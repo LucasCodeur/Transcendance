@@ -1,4 +1,3 @@
-import { InputPerson } from "../test/person/person.database.test";
 import { db } from "../prisma/db";
 
 export let genea = db.orm.genealogy;
