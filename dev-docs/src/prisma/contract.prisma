@@ -7,6 +7,7 @@ model User {
   emailVerified Boolean           @default(false)
   totpSecret    String?
   sessions      Session[]
+  oauthAccounts OAuthAccount[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }
@@ -19,4 +20,15 @@ model Session {
   totpPending Boolean           @default(false)
   createdAt   TimestamptzString @default(now())
   @@index([userId])
+}
+
+model OAuthAccount {
+  id                String            @id @default(uuid())
+  provider          String
+  providerUserId    String
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         TimestamptzString @default(now())
+  @@unique([provider, providerUserId])
+  @@unique([userId, provider])
 }
