@@ -18,9 +18,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'a51b4833fdaffe730572670ccc27dd89af7e0726ab3de7f428d21702d687cc15'>;
+  StorageHashBase<'1303562d1b783f9019fd270352a088d2743a83b374cc2f61621a6329584fd9e8'>;
 export type ExecutionHash =
-  ExecutionHashBase<'4e88564095b5e0ba7904ffdba3c563ef916d87688c8c483c67055f71a9194f0f'>;
+  ExecutionHashBase<'5a584d40ee9638966a4ddd5c568c2c3a3c2a926332455cf02e213aa2d6e00b70'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -233,113 +233,273 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
   : Encoded;
 
 export type FieldOutputTypes = {
+  readonly genealogy: {
+    readonly ChildLink: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly partnershipId: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Media: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly PartnerLink: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly partnershipId: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Partnership: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly type: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Person: {
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly birthPlace: CodecTypes['pg/text@1']['output'];
+      readonly deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly deathPlace: CodecTypes['pg/text@1']['output'] | null;
+      readonly deceased: CodecTypes['pg/bool@1']['output'];
+      readonly firstName: CodecTypes['pg/text@1']['output'];
+      readonly gender: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly lastName: CodecTypes['pg/text@1']['output'] | null;
+      readonly maidenName: CodecTypes['pg/text@1']['output'] | null;
+      readonly marriedName: CodecTypes['pg/text@1']['output'] | null;
+      readonly middleName: CodecTypes['pg/text@1']['output'] | null;
+      readonly treeId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Tree: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+    };
+  };
   readonly public: {
-    readonly Post: {
-      readonly authorId: CodecTypes['pg/int4@1']['output'];
-      readonly content: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly title: CodecTypes['pg/text@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly User: {
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly email: CodecTypes['pg/text@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly name: CodecTypes['pg/text@1']['output'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly username: CodecTypes['pg/text@1']['output'] | null;
-    };
+    readonly Conversation: { readonly id: CodecTypes['pg/text@1']['output'] };
+    readonly Message: { readonly id: CodecTypes['pg/text@1']['output'] };
+    readonly Notification: { readonly id: CodecTypes['pg/text@1']['output'] };
   };
 };
 export type FieldInputTypes = {
+  readonly genealogy: {
+    readonly ChildLink: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly partnershipId: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Media: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly PartnerLink: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly partnershipId: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Partnership: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly type: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Person: {
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly birthPlace: CodecTypes['pg/text@1']['input'];
+      readonly deathDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly deathPlace: CodecTypes['pg/text@1']['input'] | null;
+      readonly deceased: CodecTypes['pg/bool@1']['input'];
+      readonly firstName: CodecTypes['pg/text@1']['input'];
+      readonly gender: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly lastName: CodecTypes['pg/text@1']['input'] | null;
+      readonly maidenName: CodecTypes['pg/text@1']['input'] | null;
+      readonly marriedName: CodecTypes['pg/text@1']['input'] | null;
+      readonly middleName: CodecTypes['pg/text@1']['input'] | null;
+      readonly treeId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Tree: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+    };
+  };
   readonly public: {
-    readonly Post: {
-      readonly authorId: CodecTypes['pg/int4@1']['input'];
-      readonly content: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly title: CodecTypes['pg/text@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly User: {
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly email: CodecTypes['pg/text@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly name: CodecTypes['pg/text@1']['input'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly username: CodecTypes['pg/text@1']['input'] | null;
-    };
+    readonly Conversation: { readonly id: CodecTypes['pg/text@1']['input'] };
+    readonly Message: { readonly id: CodecTypes['pg/text@1']['input'] };
+    readonly Notification: { readonly id: CodecTypes['pg/text@1']['input'] };
   };
 };
 export type StorageColumnTypes = {
+  readonly genealogy: {
+    readonly ChildLink: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly partnershipId: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Media: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly PartnerLink: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly partnershipId: CodecTypes['pg/text@1']['output'];
+      readonly personId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Partnership: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly type: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Person: {
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly birthPlace: CodecTypes['pg/text@1']['output'];
+      readonly deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly deathPlace: CodecTypes['pg/text@1']['output'] | null;
+      readonly deceased: CodecTypes['pg/bool@1']['output'];
+      readonly firstName: CodecTypes['pg/text@1']['output'];
+      readonly gender: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly lastName: CodecTypes['pg/text@1']['output'] | null;
+      readonly maidenName: CodecTypes['pg/text@1']['output'] | null;
+      readonly marriedName: CodecTypes['pg/text@1']['output'] | null;
+      readonly middleName: CodecTypes['pg/text@1']['output'] | null;
+      readonly treeId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Tree: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+    };
+  };
   readonly public: {
-    readonly Post: {
-      readonly authorId: CodecTypes['pg/int4@1']['output'];
-      readonly content: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly title: CodecTypes['pg/text@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
-    readonly User: {
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly email: CodecTypes['pg/text@1']['output'];
-      readonly id: CodecTypes['pg/int4@1']['output'];
-      readonly name: CodecTypes['pg/text@1']['output'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly username: CodecTypes['pg/text@1']['output'] | null;
-    };
+    readonly Conversation: { readonly id: CodecTypes['pg/text@1']['output'] };
+    readonly Message: { readonly id: CodecTypes['pg/text@1']['output'] };
+    readonly Notification: { readonly id: CodecTypes['pg/text@1']['output'] };
   };
 };
 export type StorageColumnInputTypes = {
+  readonly genealogy: {
+    readonly ChildLink: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly partnershipId: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Media: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly PartnerLink: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly partnershipId: CodecTypes['pg/text@1']['input'];
+      readonly personId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Partnership: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly type: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Person: {
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly birthPlace: CodecTypes['pg/text@1']['input'];
+      readonly deathDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly deathPlace: CodecTypes['pg/text@1']['input'] | null;
+      readonly deceased: CodecTypes['pg/bool@1']['input'];
+      readonly firstName: CodecTypes['pg/text@1']['input'];
+      readonly gender: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly lastName: CodecTypes['pg/text@1']['input'] | null;
+      readonly maidenName: CodecTypes['pg/text@1']['input'] | null;
+      readonly marriedName: CodecTypes['pg/text@1']['input'] | null;
+      readonly middleName: CodecTypes['pg/text@1']['input'] | null;
+      readonly treeId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Tree: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+    };
+  };
   readonly public: {
-    readonly Post: {
-      readonly authorId: CodecTypes['pg/int4@1']['input'];
-      readonly content: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly title: CodecTypes['pg/text@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly User: {
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly email: CodecTypes['pg/text@1']['input'];
-      readonly id: CodecTypes['pg/int4@1']['input'];
-      readonly name: CodecTypes['pg/text@1']['input'] | null;
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly username: CodecTypes['pg/text@1']['input'] | null;
-    };
+    readonly Conversation: { readonly id: CodecTypes['pg/text@1']['input'] };
+    readonly Message: { readonly id: CodecTypes['pg/text@1']['input'] };
+    readonly Notification: { readonly id: CodecTypes['pg/text@1']['input'] };
   };
 };
 
 export namespace Models {
-  export type public_Post = {
-    authorId: CodecTypes['pg/int4@1']['output'];
-    content: CodecTypes['pg/text@1']['output'] | null;
-    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    id: CodecTypes['pg/int4@1']['output'];
-    title: CodecTypes['pg/text@1']['output'];
-    updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    author: public_User;
-    readonly [RelationKeys]?: 'author';
+  export type genealogy_ChildLink = {
+    id: CodecTypes['pg/text@1']['output'];
+    partnershipId: CodecTypes['pg/text@1']['output'];
+    personId: CodecTypes['pg/text@1']['output'];
+    partnerShip: genealogy_Partnership;
+    person: genealogy_Person;
+    readonly [RelationKeys]?: 'partnerShip' | 'person';
   };
-  export type public_User = {
-    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    email: CodecTypes['pg/text@1']['output'];
-    id: CodecTypes['pg/int4@1']['output'];
-    name: CodecTypes['pg/text@1']['output'] | null;
-    updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    username: CodecTypes['pg/text@1']['output'] | null;
-    posts: public_Post[];
-    readonly [RelationKeys]?: 'posts';
+  export type genealogy_Media = {
+    id: CodecTypes['pg/text@1']['output'];
+    personId: CodecTypes['pg/text@1']['output'];
+    person: genealogy_Person;
+    readonly [RelationKeys]?: 'person';
+  };
+  export type genealogy_PartnerLink = {
+    id: CodecTypes['pg/text@1']['output'];
+    partnershipId: CodecTypes['pg/text@1']['output'];
+    personId: CodecTypes['pg/text@1']['output'];
+    partnerShip: genealogy_Partnership;
+    person: genealogy_Person;
+    readonly [RelationKeys]?: 'partnerShip' | 'person';
+  };
+  export type genealogy_Partnership = {
+    id: CodecTypes['pg/text@1']['output'];
+    type: CodecTypes['pg/text@1']['output'];
+    childLink: genealogy_ChildLink[];
+    partnerLink: genealogy_PartnerLink[];
+    readonly [RelationKeys]?: 'childLink' | 'partnerLink';
+  };
+  export type genealogy_Person = {
+    birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
+    birthPlace: CodecTypes['pg/text@1']['output'];
+    deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+    deathPlace: CodecTypes['pg/text@1']['output'] | null;
+    deceased: CodecTypes['pg/bool@1']['output'];
+    firstName: CodecTypes['pg/text@1']['output'];
+    gender: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    lastName: CodecTypes['pg/text@1']['output'] | null;
+    maidenName: CodecTypes['pg/text@1']['output'] | null;
+    marriedName: CodecTypes['pg/text@1']['output'] | null;
+    middleName: CodecTypes['pg/text@1']['output'] | null;
+    treeId: CodecTypes['pg/text@1']['output'];
+    childLink: genealogy_ChildLink[];
+    medias: genealogy_Media[];
+    partnerLink: genealogy_PartnerLink[];
+    tree: genealogy_Tree;
+    readonly [RelationKeys]?: 'childLink' | 'medias' | 'partnerLink' | 'tree';
+  };
+  export type genealogy_Tree = {
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    persons: genealogy_Person[];
+    readonly [RelationKeys]?: 'persons';
+  };
+  export type public_Conversation = {
+    id: CodecTypes['pg/text@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
+  export type public_Message = {
+    id: CodecTypes['pg/text@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
+  export type public_Notification = {
+    id: CodecTypes['pg/text@1']['output'];
+    readonly [RelationKeys]?: never;
   };
 }
 
 export declare const models: {
+  genealogy: {
+    ChildLink: Models.genealogy_ChildLink;
+    Media: Models.genealogy_Media;
+    PartnerLink: Models.genealogy_PartnerLink;
+    Partnership: Models.genealogy_Partnership;
+    Person: Models.genealogy_Person;
+    Tree: Models.genealogy_Tree;
+  };
   public: {
-    Post: Models.public_Post;
-    User: Models.public_User;
+    Conversation: Models.public_Conversation;
+    Message: Models.public_Message;
+    Notification: Models.public_Notification;
   };
 };
 
@@ -356,51 +516,28 @@ export type TypeMaps = TypeMapsType<
 type ContractBase = Omit<
   ContractType<{
     readonly namespaces: {
-      readonly public: {
-        readonly id: 'public';
+      readonly genealogy: {
+        readonly id: 'genealogy';
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
-            readonly Post: {
+            readonly ChildLink: {
               columns: {
-                readonly authorId: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly content: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                  readonly many: false;
-                };
-                readonly createdAt: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                  readonly many: false;
-                };
                 readonly id: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
-                  };
-                  readonly many: false;
-                };
-                readonly title: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
-                readonly updatedAt: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                readonly partnershipId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly personId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
@@ -409,73 +546,342 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
-                  readonly name: 'Post_authorId_idx_e47547ed';
-                  readonly prefix: 'Post_authorId_idx';
-                  readonly columns: readonly ['authorId'];
+                  readonly name: 'ChildLink_partnershipId_idx_23b13417';
+                  readonly prefix: 'ChildLink_partnershipId_idx';
+                  readonly columns: readonly ['partnershipId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ChildLink_personId_idx_e5e06b80';
+                  readonly prefix: 'ChildLink_personId_idx';
+                  readonly columns: readonly ['personId'];
                   readonly unique: false;
                 },
               ];
               foreignKeys: readonly [
                 {
                   readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'Post';
-                    readonly columns: readonly ['authorId'];
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'ChildLink';
+                    readonly columns: readonly ['personId'];
                   };
                   readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'User';
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Person';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'ChildLink';
+                    readonly columns: readonly ['partnershipId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Partnership';
                     readonly columns: readonly ['id'];
                   };
                 },
               ];
             };
-            readonly User: {
+            readonly Media: {
               columns: {
-                readonly createdAt: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly personId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Media_personId_idx_e5e06b80';
+                  readonly prefix: 'Media_personId_idx';
+                  readonly columns: readonly ['personId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Media';
+                    readonly columns: readonly ['personId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Person';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly PartnerLink: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly partnershipId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly personId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'PartnerLink_partnershipId_idx_23b13417';
+                  readonly prefix: 'PartnerLink_partnershipId_idx';
+                  readonly columns: readonly ['partnershipId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PartnerLink_personId_idx_e5e06b80';
+                  readonly prefix: 'PartnerLink_personId_idx';
+                  readonly columns: readonly ['personId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'PartnerLink';
+                    readonly columns: readonly ['personId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Person';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'PartnerLink';
+                    readonly columns: readonly ['partnershipId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Partnership';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly Partnership: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly type: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly Person: {
+              columns: {
+                readonly birthDate: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-string@1';
                   readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                   readonly many: false;
                 };
-                readonly email: {
+                readonly birthPlace: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly deathDate: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly deathPlace: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly deceased: {
+                  readonly dataType: 'pg/bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly firstName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly gender: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
                 readonly id: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'function';
-                    readonly expression: 'autoincrement()';
+                  readonly many: false;
+                };
+                readonly lastName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly maidenName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly marriedName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly middleName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly treeId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Person_treeId_idx_b6ba669b';
+                  readonly prefix: 'Person_treeId_idx';
+                  readonly columns: readonly ['treeId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Person';
+                    readonly columns: readonly ['treeId'];
                   };
+                  readonly target: {
+                    readonly namespaceId: 'genealogy' & NamespaceId;
+                    readonly tableName: 'Tree';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly Tree: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
                   readonly many: false;
                 };
                 readonly name: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                  readonly many: false;
-                };
-                readonly updatedAt: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
                   readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly username: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
                   readonly many: false;
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['email'] }];
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+          };
+        };
+      };
+      readonly public: {
+        readonly id: 'public';
+        readonly kind: 'postgres-schema';
+        readonly entries: {
+          readonly table: {
+            readonly Conversation: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly Message: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly Notification: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
               indexes: readonly [];
               foreignKeys: readonly [];
             };
@@ -490,124 +896,420 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly Post: { readonly namespace: 'public' & NamespaceId; readonly model: 'Post' };
-    readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly ChildLink: {
+      readonly namespace: 'genealogy' & NamespaceId;
+      readonly model: 'ChildLink';
+    };
+    readonly Conversation: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Conversation';
+    };
+    readonly Media: { readonly namespace: 'genealogy' & NamespaceId; readonly model: 'Media' };
+    readonly Message: { readonly namespace: 'public' & NamespaceId; readonly model: 'Message' };
+    readonly Notification: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Notification';
+    };
+    readonly PartnerLink: {
+      readonly namespace: 'genealogy' & NamespaceId;
+      readonly model: 'PartnerLink';
+    };
+    readonly Partnership: {
+      readonly namespace: 'genealogy' & NamespaceId;
+      readonly model: 'Partnership';
+    };
+    readonly Person: { readonly namespace: 'genealogy' & NamespaceId; readonly model: 'Person' };
+    readonly Tree: { readonly namespace: 'genealogy' & NamespaceId; readonly model: 'Tree' };
   };
   readonly domain: {
     readonly namespaces: {
-      readonly public: {
+      readonly genealogy: {
         readonly models: {
-          readonly Post: {
+          readonly ChildLink: {
             readonly fields: {
-              readonly authorId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
-              };
-              readonly content: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
               readonly id: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly title: {
+              readonly partnershipId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly updatedAt: {
+              readonly personId: {
                 readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
             readonly relations: {
-              readonly author: {
-                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+              readonly partnerShip: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Partnership';
+                };
                 readonly cardinality: 'N:1';
                 readonly nullable: false;
                 readonly on: {
-                  readonly localFields: readonly ['authorId'];
+                  readonly localFields: readonly ['partnershipId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly person: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Person';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['personId'];
                   readonly targetFields: readonly ['id'];
                 };
               };
             };
             readonly storage: {
-              readonly table: 'Post';
-              readonly namespaceId: 'public';
+              readonly table: 'ChildLink';
+              readonly namespaceId: 'genealogy';
               readonly fields: {
-                readonly authorId: { readonly column: 'authorId' };
-                readonly content: { readonly column: 'content' };
-                readonly createdAt: { readonly column: 'createdAt' };
                 readonly id: { readonly column: 'id' };
-                readonly title: { readonly column: 'title' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly partnershipId: { readonly column: 'partnershipId' };
+                readonly personId: { readonly column: 'personId' };
               };
             };
           };
-          readonly User: {
+          readonly Media: {
             readonly fields: {
-              readonly createdAt: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly personId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly person: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Person';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['personId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Media';
+              readonly namespaceId: 'genealogy';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly personId: { readonly column: 'personId' };
+              };
+            };
+          };
+          readonly PartnerLink: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly partnershipId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly personId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly partnerShip: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Partnership';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['partnershipId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly person: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Person';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['personId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PartnerLink';
+              readonly namespaceId: 'genealogy';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly partnershipId: { readonly column: 'partnershipId' };
+                readonly personId: { readonly column: 'personId' };
+              };
+            };
+          };
+          readonly Partnership: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly type: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly childLink: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'ChildLink';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['partnershipId'];
+                };
+              };
+              readonly partnerLink: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'PartnerLink';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['partnershipId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Partnership';
+              readonly namespaceId: 'genealogy';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly type: { readonly column: 'type' };
+              };
+            };
+          };
+          readonly Person: {
+            readonly fields: {
+              readonly birthDate: {
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-string@1';
                 };
               };
-              readonly email: {
+              readonly birthPlace: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly deathDate: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly deathPlace: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly deceased: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly firstName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly gender: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly id: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly name: {
+              readonly lastName: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly username: {
+              readonly maidenName: {
                 readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly marriedName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly middleName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly treeId: {
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
             readonly relations: {
-              readonly posts: {
-                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Post' };
+              readonly childLink: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'ChildLink';
+                };
                 readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['authorId'];
+                  readonly targetFields: readonly ['personId'];
+                };
+              };
+              readonly medias: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Media';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['personId'];
+                };
+              };
+              readonly partnerLink: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'PartnerLink';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['personId'];
+                };
+              };
+              readonly tree: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Tree';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['treeId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
             readonly storage: {
-              readonly table: 'User';
-              readonly namespaceId: 'public';
+              readonly table: 'Person';
+              readonly namespaceId: 'genealogy';
               readonly fields: {
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly email: { readonly column: 'email' };
+                readonly birthDate: { readonly column: 'birthDate' };
+                readonly birthPlace: { readonly column: 'birthPlace' };
+                readonly deathDate: { readonly column: 'deathDate' };
+                readonly deathPlace: { readonly column: 'deathPlace' };
+                readonly deceased: { readonly column: 'deceased' };
+                readonly firstName: { readonly column: 'firstName' };
+                readonly gender: { readonly column: 'gender' };
+                readonly id: { readonly column: 'id' };
+                readonly lastName: { readonly column: 'lastName' };
+                readonly maidenName: { readonly column: 'maidenName' };
+                readonly marriedName: { readonly column: 'marriedName' };
+                readonly middleName: { readonly column: 'middleName' };
+                readonly treeId: { readonly column: 'treeId' };
+              };
+            };
+          };
+          readonly Tree: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly persons: {
+                readonly to: {
+                  readonly namespace: 'genealogy' & NamespaceId;
+                  readonly model: 'Person';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['treeId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Tree';
+              readonly namespaceId: 'genealogy';
+              readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
-                readonly username: { readonly column: 'username' };
               };
+            };
+          };
+        };
+      };
+      readonly public: {
+        readonly models: {
+          readonly Conversation: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'Conversation';
+              readonly namespaceId: 'public';
+              readonly fields: { readonly id: { readonly column: 'id' } };
+            };
+          };
+          readonly Message: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'Message';
+              readonly namespaceId: 'public';
+              readonly fields: { readonly id: { readonly column: 'id' } };
+            };
+          };
+          readonly Notification: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'Notification';
+              readonly namespaceId: 'public';
+              readonly fields: { readonly id: { readonly column: 'id' } };
             };
           };
         };
@@ -647,20 +1349,74 @@ type ContractBase = Omit<
     readonly mutations: {
       readonly defaults: readonly [
         {
-          readonly onCreate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
-          readonly onUpdate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
           readonly ref: {
-            readonly entry: 'Post';
-            readonly field: 'updatedAt';
+            readonly entry: 'ChildLink';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Media';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PartnerLink';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Partnership';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Person';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Tree';
+            readonly field: 'id';
+            readonly namespace: 'genealogy';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Conversation';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },
         {
-          readonly onCreate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
-          readonly onUpdate: { readonly id: 'timestampNow'; readonly kind: 'generator' };
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
           readonly ref: {
-            readonly entry: 'User';
-            readonly field: 'updatedAt';
+            readonly entry: 'Message';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'cuid2'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Notification';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

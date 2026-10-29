@@ -1,3 +1,15 @@
+// ************************************************************************** //
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   tree.database.test.ts                              :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: lud-adam <>                                +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2026/10/29 13:40:38 by lud-adam          #+#    #+#             //
+//   Updated: 2026/10/29 16:19:44 by lud-adam         ###   ########.fr       //
+//                                                                            //
+// ************************************************************************** //
+
 import { createPerson, genea } from "../../person/person.database";
 
 import { sInputPerson } from "../../person/person.inputValidation";
@@ -69,14 +81,17 @@ export async function testCreateTree() {
   });
 
   const partnerLinkJulesWeber = await genea.PartnerLink.create({
+    personId: paulDp.id,
+    partnershipId: partnerShipJW.id,
+  });
+  // console.log("partner link jules weber: ", partnerLinkJulesWeber);
+
+  const partnerLinkPdp = await genea.PartnerLink.create({
     personId: julesWeber.id,
     partnershipId: partnerShipJW.id,
   });
 
-  const partnerLinkPdp = await genea.PartnerLink.create({
-    personId: paulDp.id,
-    partnershipId: partnerShipJW.id,
-  });
+  // console.log("partner link pdp: ", partnerLinkPdp);
 
   const partnerLinkAchille = await genea.ChildLink.create({
     personId: AchilleBetemps.id,
@@ -84,36 +99,75 @@ export async function testCreateTree() {
   });
 
   const weberFamilyTest = await genea.Tree.select("name")
-    .include(
-      "persons",
-      (persons) =>
-        persons
-          .select("firstName", "lastName")
-          .include("partnerLink", (partnerLink) =>
-            partnerLink
-              .select("personId")
-              .include("partnerShip", (partnerShip) =>
-                partnerShip.select("type"),
-              ),
-          ),
-      // .include("childLink"),
-      // .select("partnership"),
+    .include("persons", (persons) =>
+      persons
+        .select("firstName", "lastName", "birthDate", "birthPlace", "deceased")
+        .include("partnerLink", (partnerLink) =>
+          partnerLink
+            .select("personId", "id", "partnershipId")
+            .include("partnerShip", (partnerShip) =>
+              partnerShip
+                .select("type", "id")
+                .include("childLink", (childLink) =>
+                  childLink.select("personId", "partnershipId", "id"),
+                ),
+            ),
+        ),
     )
     .all();
+  printTree(weberFamilyTest[0]);
+}
 
-  // const weberPartnerShip = await genea.Partnership.select("type")
-  //   .include("partnerLink", (partnerLink) => partnerLink.select("personId"))
-  // .include("childLink")
-  // .all();
-  // console.log("Weber Family test: ", weberFamilyTest[0]);
-  // console.log(weberFamilyTest[0]);
-  console.log(weberFamilyTest[0].persons[0]);
-  console.log(weberFamilyTest[0].persons[0].partnerLink[0]);
-  // console.log(weberFamilyTest[0].persons[2]);
-  console.log(weberFamilyTest[0].persons[1]);
-  console.log(weberFamilyTest[0].persons[1].partnerLink[0]);
-  // console.log(weberFamilyTest[0].persons[2].partnerLink[0]);
-  // console.log("Weber PartnerShip: ", weberPartnerShip);
+async function printTree(tree) {
+  console.log("Family Tree: ", tree.name);
+  console.log("Persons: ");
+
+  for (let person of tree.persons) {
+    await printPerson(person);
+    console.log("\n");
+  }
+}
+
+async function printPerson(person) {
+  console.log("First name: ", person.firstName);
+  console.log("Last name: ", person.lastName);
+  console.log("Birth date: ", person.birthDate);
+  console.log("Birth place: ", person.birthPlace);
+  console.log("Dead: ", person.deceased == false ? "No" : "Yes");
+  for (var partnerLink of person.partnerLink) await printRelations(partnerLink);
+}
+
+async function printPartnerLink(partnerLink) {
+  console.log("BEGIN ------------------------------------");
+  console.log("PARTNER LINK");
+  console.log("id: ", partnerLink.id);
+  console.log("personId ", partnerLink.personId);
+  const person = await genea.Person.where({
+    id: partnerLink.personId,
+  }).first();
+  console.log("first name: ", person?.firstName);
+  console.log("last name: ", person?.lastName);
+  console.log("partnershipId: ", partnerLink.partnershipId);
+  console.log("END ------------------------------------");
+}
+
+async function printRelations(partnerLink) {
+  console.log("PRINT RELATIONS");
+  const relationShip = await genea.Partnership.where({
+    id: partnerLink.partnerShipId,
+  }).first();
+  await printPartnerLink(partnerLink);
+  // const person = await genea.Person.where({
+  //   id: partnerLink.personId,
+  // }).first();
+  // console.log(
+  //   "Relation Ship: ",
+  //   relationShip.type,
+  //   "with ",
+  //   person?.firstName,
+  //   " ",
+  //   person?.lastName,
+  // );
 }
 
 // const usersWithPostsAndComments = await db.orm.public.User.include(

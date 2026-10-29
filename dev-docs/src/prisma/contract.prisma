@@ -88,7 +88,7 @@ model Partnership {
 
 // Links a person to a partnership
 model PartnerLink {
-  id       String @id @default(cuid(2))
+  id String @id @default(cuid(2))
 
   personId String
   person   Person @relation(fields: [personId], references: [id])
