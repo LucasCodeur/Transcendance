@@ -26,6 +26,9 @@
 	novalidate
 	class="mt-6 flex flex-col gap-4"
 	use:enhance={({ formData, cancel }) => {
+		console.log("HEYY on est la!");
+		console.log("formData:");
+		console.log(formData);
 		const parsed = loginSchema.safeParse(Object.fromEntries(formData));
 		if (!parsed.success) {
 			clientErrors = z.flattenError(parsed.error).fieldErrors;

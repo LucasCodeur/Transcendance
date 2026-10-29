@@ -7,9 +7,33 @@ model User {
   emailVerified Boolean           @default(false)
   totpSecret    String?
   sessions      Session[]
+  organizations Organization[]
   oauthAccounts OAuthAccount[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
+}
+
+model Organization {
+	id		String	@id @default(uuid())
+	name	String	@unique
+	users	User[]
+}
+
+enum Role {
+	@@type("pg/text@1")
+	Owner = "owner"
+	Editor = "editor"
+	Contributor = "contributor"
+	Viewer = "viewer"
+}
+
+model UserOrganizations {
+	userId			String
+	organizationId	String
+	user			User @relation(fields: [userId], references:[id])
+	organization	Organization @relation(fields: [organizationId], references:[id])
+	role			Role @default(Viewer)
+	@@id([userId, organizationId])
 }
 
 model Session {

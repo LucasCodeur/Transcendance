@@ -18,9 +18,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'92fc322a68901af76252a3d36704a866928ceacbf7a8acf8b36d4210ade137cd'>;
+  StorageHashBase<'c6e212f66c37e91c1dda057e41dea3aace0a6bf58ce32de1b737fb58839f187b'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a26ac29ae5d8a5658b90884a49256700048b1beeba4d1ff0571a7d75a11a25e9'>;
+  ExecutionHashBase<'e08e1f29f403652525d216ef5623f7d94b21b52304d11aa226de70f9afed240b'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -241,6 +241,10 @@ export type FieldOutputTypes = {
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
     };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+    };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -257,6 +261,11 @@ export type FieldOutputTypes = {
       readonly passwordHash: CodecTypes['pg/text@1']['output'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['output'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['output'];
     };
   };
 };
@@ -269,6 +278,10 @@ export type FieldInputTypes = {
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
     };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+    };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -286,6 +299,11 @@ export type FieldInputTypes = {
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['input'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
   };
 };
 export type StorageColumnTypes = {
@@ -296,6 +314,10 @@ export type StorageColumnTypes = {
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
     };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -314,6 +336,11 @@ export type StorageColumnTypes = {
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['output'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
   };
 };
 export type StorageColumnInputTypes = {
@@ -324,6 +351,10 @@ export type StorageColumnInputTypes = {
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
     };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -341,6 +372,11 @@ export type StorageColumnInputTypes = {
       readonly passwordHash: CodecTypes['pg/text@1']['input'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['input'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['input'];
     };
   };
 };
@@ -354,6 +390,12 @@ export namespace Models {
     userId: CodecTypes['pg/text@1']['output'];
     user: public_User;
     readonly [RelationKeys]?: 'user';
+  };
+  export type public_Organization = {
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    users: public_User[];
+    readonly [RelationKeys]?: 'users';
   };
   export type public_Session = {
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -374,16 +416,27 @@ export namespace Models {
     totpSecret: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     oauthAccounts: public_OAuthAccount[];
+    organizations: public_Organization[];
     sessions: public_Session[];
-    readonly [RelationKeys]?: 'oauthAccounts' | 'sessions';
+    readonly [RelationKeys]?: 'oauthAccounts' | 'organizations' | 'sessions';
+  };
+  export type public_UserOrganizations = {
+    organizationId: CodecTypes['pg/text@1']['output'];
+    role: 'owner' | 'editor' | 'contributor' | 'viewer';
+    userId: CodecTypes['pg/text@1']['output'];
+    organization: public_Organization;
+    user: public_User;
+    readonly [RelationKeys]?: 'organization' | 'user';
   };
 }
 
 export declare const models: {
   public: {
     OAuthAccount: Models.public_OAuthAccount;
+    Organization: Models.public_Organization;
     Session: Models.public_Session;
     User: Models.public_User;
+    UserOrganizations: Models.public_UserOrganizations;
   };
 };
 
@@ -466,6 +519,26 @@ type ContractBase = Omit<
                   };
                 },
               ];
+            };
+            readonly Organization: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['name'] }];
+              indexes: readonly [];
+              foreignKeys: readonly [];
             };
             readonly Session: {
               columns: {
@@ -591,6 +664,80 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly UserOrganizations: {
+              columns: {
+                readonly organizationId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly role: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'viewer'>;
+                  };
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['userId', 'organizationId'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'UserOrganizations_organizationId_idx_2e17ef41';
+                  readonly prefix: 'UserOrganizations_organizationId_idx';
+                  readonly columns: readonly ['organizationId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'UserOrganizations_userId_idx_a489d58a';
+                  readonly prefix: 'UserOrganizations_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserOrganizations';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserOrganizations';
+                    readonly columns: readonly ['organizationId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Organization';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+          };
+          readonly valueSet: {
+            readonly Role: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['owner', 'editor', 'contributor', 'viewer'];
+            };
           };
         };
       };
@@ -606,8 +753,16 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OAuthAccount';
     };
+    readonly Organization: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Organization';
+    };
     readonly Session: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly UserOrganizations: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'UserOrganizations';
+    };
   };
   readonly domain: {
     readonly namespaces: {
@@ -659,6 +814,43 @@ type ContractBase = Omit<
                 readonly provider: { readonly column: 'provider' };
                 readonly providerUserId: { readonly column: 'providerUserId' };
                 readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly Organization: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly users: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:M';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['organizationId'];
+                };
+                readonly through: {
+                  readonly table: 'UserOrganizations';
+                  readonly namespaceId: 'public';
+                  readonly parentColumns: readonly ['organizationId'];
+                  readonly childColumns: readonly ['userId'];
+                  readonly targetColumns: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Organization';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
               };
             };
           };
@@ -767,6 +959,24 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['userId'];
                 };
               };
+              readonly organizations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Organization';
+                };
+                readonly cardinality: 'N:M';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+                readonly through: {
+                  readonly table: 'UserOrganizations';
+                  readonly namespaceId: 'public';
+                  readonly parentColumns: readonly ['userId'];
+                  readonly childColumns: readonly ['organizationId'];
+                  readonly targetColumns: readonly ['id'];
+                };
+              };
               readonly sessions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -794,6 +1004,73 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly UserOrganizations: {
+            readonly fields: {
+              readonly organizationId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly organization: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Organization';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['organizationId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'UserOrganizations';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly organizationId: { readonly column: 'organizationId' };
+                readonly role: { readonly column: 'role' };
+                readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+        };
+        readonly enum: {
+          readonly Role: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'Owner'; readonly value: 'owner' },
+              { readonly name: 'Editor'; readonly value: 'editor' },
+              { readonly name: 'Contributor'; readonly value: 'contributor' },
+              { readonly name: 'Viewer'; readonly value: 'viewer' },
+            ];
+          };
+        };
+        readonly enumMemberTypes?: {
+          readonly Role: readonly [
+            { readonly name: 'Owner'; readonly value: 'owner' },
+            { readonly name: 'Editor'; readonly value: 'editor' },
+            { readonly name: 'Contributor'; readonly value: 'contributor' },
+            { readonly name: 'Viewer'; readonly value: 'viewer' },
+          ];
         };
       };
     };
@@ -834,6 +1111,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'OAuthAccount';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Organization';
             readonly field: 'id';
             readonly namespace: 'public';
           };

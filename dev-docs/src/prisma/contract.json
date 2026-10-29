@@ -8,6 +8,10 @@
       "model": "OAuthAccount",
       "namespace": "public"
     },
+    "Organization": {
+      "model": "Organization",
+      "namespace": "public"
+    },
     "Session": {
       "model": "Session",
       "namespace": "public"
@@ -15,11 +19,38 @@
     "User": {
       "model": "User",
       "namespace": "public"
+    },
+    "UserOrganizations": {
+      "model": "UserOrganizations",
+      "namespace": "public"
     }
   },
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "Role": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "Owner",
+                "value": "owner"
+              },
+              {
+                "name": "Editor",
+                "value": "editor"
+              },
+              {
+                "name": "Contributor",
+                "value": "contributor"
+              },
+              {
+                "name": "Viewer",
+                "value": "viewer"
+              }
+            ]
+          }
+        },
         "models": {
           "OAuthAccount": {
             "fields": {
@@ -97,6 +128,66 @@
               },
               "namespaceId": "public",
               "table": "OAuthAccount"
+            }
+          },
+          "Organization": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "users": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "userId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "organizationId"
+                  ],
+                  "table": "UserOrganizations",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Organization"
             }
           },
           "Session": {
@@ -252,6 +343,34 @@
                   "namespace": "public"
                 }
               },
+              "organizations": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "organizationId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "userId"
+                  ],
+                  "table": "UserOrganizations",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
               "sessions": {
                 "cardinality": "1:N",
                 "on": {
@@ -297,6 +416,86 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "UserOrganizations": {
+            "fields": {
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Role",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "role": {
+                  "column": "role"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UserOrganizations"
             }
           }
         }
@@ -388,6 +587,34 @@
                   "columns": [
                     "userId",
                     "provider"
+                  ]
+                }
+              ]
+            },
+            "Organization": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
                   ]
                 }
               ]
@@ -532,6 +759,118 @@
                   ]
                 }
               ]
+            },
+            "UserOrganizations": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('owner', 'editor', 'contributor', 'viewer')",
+                  "name": "UserOrganizations_role_check_8ddc8756",
+                  "prefix": "UserOrganizations_role_check"
+                }
+              ],
+              "columns": {
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "viewer"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "UserOrganizations_userId_idx_a489d58a"
+                  },
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserOrganizations"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "UserOrganizations_organizationId_idx_2e17ef41"
+                  },
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserOrganizations"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Organization"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "UserOrganizations_organizationId_idx_2e17ef41",
+                  "prefix": "UserOrganizations_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "UserOrganizations_userId_idx_a489d58a",
+                  "prefix": "UserOrganizations_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "userId",
+                  "organizationId"
+                ]
+              },
+              "uniques": []
+            }
+          },
+          "valueSet": {
+            "Role": {
+              "kind": "valueSet",
+              "values": [
+                "owner",
+                "editor",
+                "contributor",
+                "viewer"
+              ]
             }
           }
         },
@@ -539,10 +878,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "92fc322a68901af76252a3d36704a866928ceacbf7a8acf8b36d4210ade137cd"
+    "storageHash": "c6e212f66c37e91c1dda057e41dea3aace0a6bf58ce32de1b737fb58839f187b"
   },
   "execution": {
-    "executionHash": "a26ac29ae5d8a5658b90884a49256700048b1beeba4d1ff0571a7d75a11a25e9",
+    "executionHash": "e08e1f29f403652525d216ef5623f7d94b21b52304d11aa226de70f9afed240b",
     "mutations": {
       "defaults": [
         {
@@ -552,6 +891,17 @@
           },
           "ref": {
             "entry": "OAuthAccount",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Organization",
             "field": "id",
             "namespace": "public"
           }
