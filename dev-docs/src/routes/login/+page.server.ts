@@ -17,7 +17,7 @@ const OAUTH_ERRORS: Record<string, string> = {
 
 export const load: PageServerLoad = ({ locals, url }) => {
 	if (locals.user) redirect(303, '/account');
-	const error = searchParams.get('error')
+	const error = url.searchParams.get('error')
 
 	return { oauthError: error ? (OAUTH_ERRORS[error] ?? null) : null };
 };
