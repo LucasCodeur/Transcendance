@@ -9,7 +9,7 @@ export type OAuthAccount = {
 	createdAt:		Date,
 }
 
-export type OAuthAccountRow = Omit<OAuthAccount, 'createdAt', 'provider'> & { createdAt: string; provider: string };
+export type OAuthAccountRow = Omit<OAuthAccount, 'createdAt' | 'provider'> & { createdAt: string; provider: string };
 
 function toOAuthAccount(row: OAuthAccountRow): OAuthAccount {
 	return {
@@ -23,6 +23,7 @@ export async function findOAuthAccountWithUser(provider: OAuthProvider, provider
 		: Promise<{ account: OAuthAccount; user: User } | null> {
 	const rows = await db.orm.public.OAuthAccount.include('user').first({ provider, providerUserId });
 
+	if (!rows) return null;
 	const { user, ...account } = rows;
 	return { user: toUser(user), account: toOAuthAccount(account) };
 }
