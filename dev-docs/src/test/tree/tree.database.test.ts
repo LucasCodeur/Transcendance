@@ -101,7 +101,14 @@ export async function testCreateTree() {
   const weberFamilyTest = await genea.Tree.select("name")
     .include("persons", (persons) =>
       persons
-        .select("firstName", "lastName", "birthDate", "birthPlace", "deceased")
+        .select(
+          "firstName",
+          "lastName",
+          "birthDate",
+          "birthPlace",
+          "deceased",
+          "id",
+        )
         .include("partnerLink", (partnerLink) =>
           partnerLink
             .select("personId", "id", "partnershipId")
@@ -120,11 +127,9 @@ export async function testCreateTree() {
 
 async function printTree(tree) {
   console.log("Family Tree: ", tree.name);
-  console.log("Persons: ");
-
   for (let person of tree.persons) {
     await printPerson(person);
-    console.log("\n");
+    break;
   }
 }
 
@@ -134,67 +139,26 @@ async function printPerson(person) {
   console.log("Birth date: ", person.birthDate);
   console.log("Birth place: ", person.birthPlace);
   console.log("Dead: ", person.deceased == false ? "No" : "Yes");
-  for (var partnerLink of person.partnerLink) await printRelations(partnerLink);
-}
-
-async function printPartnerLink(partnerLink) {
-  console.log("BEGIN ------------------------------------");
-  console.log("PARTNER LINK");
-  console.log("id: ", partnerLink.id);
-  console.log("personId ", partnerLink.personId);
-  const person = await genea.Person.where({
-    id: partnerLink.personId,
-  }).first();
-  console.log("first name: ", person?.firstName);
-  console.log("last name: ", person?.lastName);
-  console.log("partnershipId: ", partnerLink.partnershipId);
-  console.log("END ------------------------------------");
+  // console.log("Id: ", person.id);
+  printRelations(person.partnerLink);
 }
 
 async function printRelations(partnerLink) {
-  console.log("PRINT RELATIONS");
   const relationShip = await genea.Partnership.where({
     id: partnerLink.partnerShipId,
+  })
+    .include("partnerLink", (partnerLink) => partnerLink.select("personId"))
+    .first();
+  const person = await genea.Person.where({
+    id: partnerLink.personId,
   }).first();
-  await printPartnerLink(partnerLink);
-  // const person = await genea.Person.where({
-  //   id: partnerLink.personId,
+  console.log(relationShip.type, "with ");
+  // const partner = await genea.Person.where({
+  //   id: partnerLink.id,
   // }).first();
-  // console.log(
-  //   "Relation Ship: ",
-  //   relationShip.type,
-  //   "with ",
-  //   person?.firstName,
-  //   " ",
-  //   person?.lastName,
-  // );
+  // console.log("test: ", partner);
+  console.log(partner.firstName);
 }
-
-// const usersWithPostsAndComments = await db.orm.public.User.include(
-//   "posts",
-//   (post) => post.include("comments"),
-// ).all();
-// Array<{
-//   id;
-//   email;
-//   posts: Array<{
-//     id;
-//     title;
-//     published;
-//     createdAt;
-//     authorId;
-//     comments: Comment[];
-//   }>;
-// }>;
-
-// const parent = await prisma.parent.findUnique({
-//   where: { id: 1 },
-//   include: {
-//     children: true, // This fetches the child relation
-//   },
-// });
-
-// console.log(parent.children); // Displays array of children
 
 async function main() {
   await testCreateTree();
