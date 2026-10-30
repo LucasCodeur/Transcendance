@@ -2,12 +2,17 @@
 	import { enhance } from '$app/forms';
 	import { z } from 'zod';
 	import { loginSchema } from '#lib/schemas/auth.js';
+	import { OAUTH_PROVIDER_LABELS, oauthProviderSchema } from '#lib/schemas/oauth.js';
+	import { page } from '$app/state';
 	import type { PageProps } from './$types';
 
-	let { form }: PageProps = $props();
+	let { form, data }: PageProps = $props();
 
 	let clientErrors = $state<Record<string, string[] | undefined>>({});
 	let submitting = $state(false);
+
+	const redirectTo = $derived(page.url.searchParams.get('redirectTo'));
+	const redirectSuffix = $derived(redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : '');
 
 	const errors = $derived<Record<string, string[] | undefined>>({
 		...(form?.errors ?? {}),
@@ -20,6 +25,21 @@
 </svelte:head>
 
 <h1 class="text-2xl font-bold">Se connecter</h1>
+
+{#if data.oauthError}
+	<p role="alert" class="mt-4 rounded bg-red-50 px-3 py-2 text-sm text-red-800">{data.oauthError}</p>
+{/if}
+
+<div class="mt-6 flex flex-col gap-2">
+	{#each oauthProviderSchema.options as provider (provider)}
+		<a
+			href="/oauth/{provider}{redirectSuffix}"
+			class="rounded border border-gray-300 px-4 py-2 text-center font-semibold hover:bg-gray-100"
+		>
+			Continue with {OAUTH_PROVIDER_LABELS[provider]}
+		</a>
+	{/each}
+</div>
 
 <form
 	method="POST"
