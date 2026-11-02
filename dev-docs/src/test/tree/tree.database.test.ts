@@ -149,15 +149,11 @@ async function printRelations(partnerLink) {
   })
     .include("partnerLink", (partnerLink) => partnerLink.select("personId"))
     .first();
-  const person = await genea.Person.where({
+  const partners = await genea.Person.where({
     id: partnerLink.personId,
-  }).first();
-  console.log(relationShip.type, "with ");
-  // const partner = await genea.Person.where({
-  //   id: partnerLink.id,
-  // }).first();
-  // console.log("test: ", partner);
-  console.log(partner.firstName);
+  }).all();
+  console.log(relationShip.type, "with", partners[1].firstName);
+  console.log("Children :", partners[2].firstName);
 }
 
 async function main() {
