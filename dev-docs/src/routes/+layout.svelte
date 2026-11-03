@@ -33,6 +33,6 @@
 	</nav>
 </header>
 
-<main class="mx-auto max-w-md px-4 py-10">
+<main class="w-70/100 border border-black ml-auto mr-auto  px-4 py-10">
 	{@render children()}
 </main>
