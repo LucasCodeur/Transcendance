@@ -1,8 +1,7 @@
-import { safeParse, z } from 'zod';
+import z from 'zod';
 import { FORTYTWO_CLIENT_ID, FORTYTWO_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, ORIGIN }
 	from '$app/env/private';
 import type { OAuthProvider } from '#lib/schemas/oauth.ts';
-import { access } from 'node:fs';
 
 export type OAuthProfile = {
     providerUserId: string;
@@ -11,12 +10,12 @@ export type OAuthProfile = {
 };
 
 type ProviderConfig = {
-	authorizationEndpoint: string;  // étape 1 : où envoyer le navigateur
-	tokenEndpoint: string;          // étape 5 : où échanger le code
+	authorizationEndpoint: string;
+	tokenEndpoint: string;
 	scopes: string[];
 	clientId: string;
 	clientSecret: string;
-	getProfile(accessToken: string): Promise<OAuthProfile>;  // étape 6
+	getProfile(accessToken: string): Promise<OAuthProfile>;
 };
 
 const fortyTwoUserSchema = z.object({
@@ -34,6 +33,25 @@ const gitHubUserSchema = z.object({
 
 const gitHubEmailsSchema = z.array(z.object({ email: z.string(), primary: z.boolean(), verified: z.boolean() }));
 
+async function getJson<T extends z.ZodType>(url: string, accessToken: string, schema: T): Promise<z.infer<T>>{
+    const response = await fetch(url, {
+        headers: {
+            Authorization : `Bearer ${accessToken}`,
+            Accept: 'application/json', 
+             'User-Agent': 'ft_transcendence'
+        }
+    });
+    if (!response.ok)
+        throw new Error(`${url} answered ${response.status}`);
+
+    return schema.parse(await response.json());
+}
+
+function displayNameForm(...candidates: (string | null | undefined)[]): string {
+    const name = candidates.find((c)=> c && c.trim().length >= 2) ?? 'user';
+    return name.trim().slice(0, 50);
+}
+
 const providers: Record<OAuthProvider, ProviderConfig> = {
 	fortytwo: { 
         authorizationEndpoint: 'https://api.intra.42.fr/oauth/authorize',
@@ -45,9 +63,8 @@ const providers: Record<OAuthProvider, ProviderConfig> = {
             const me = await getJson('https://api.intra.42.fr/v2/me', accessToken, fortyTwoUserSchema);
             return {
                 providerUserId: String(me.id),
-                email: me.email,
-                displayName: me.displayname ?? me.login
-
+                email: me.email.trim().toLowerCase(),
+                displayName: displayNameForm(me.login, me.displayname)
             };
         }
      },
@@ -63,8 +80,8 @@ const providers: Record<OAuthProvider, ProviderConfig> = {
             const primary = emails.find((e) => e.primary && e.verified);
             return {
                 providerUserId: String(user.id),
-                email: primary?.email ?? null,
-                displayName: user.name ?? user.login
+                email: primary?.email.trim().toLowerCase() ?? null,
+                displayName: displayNameForm(user.name, user.login)
             };
         }
      }
@@ -116,22 +133,8 @@ async function exchangeCode(provider: OAuthProvider, code: string): Promise<stri
     return parsed.data.access_token;
 }
 
-async function getJson<T extends z.ZodType>(url: string, accessToken: string, schema: T): Promise<z.infer<T>>{
-    const response = await fetch(url, {
-        headers: {
-            Authorization : `Bearer ${accessToken}`,
-            Accept: 'application/json', 
-             'User-Agent': 'ft_transcendence'
-        }
-    });
-    if (!response.ok)
-        throw new Error(`${url} answered ${response.status}`);
+export async function fetchProfile(provider: OAuthProvider, code: string): Promise<OAuthProfile> {
+	const accessToken = await exchangeCode(provider, code);
 
-    return schema.parse(await response.json());
+	return providers[provider].getProfile(accessToken);
 }
-
-function displayNameForm(...candidates: (string | null | undefined)[]): string {
-    const name = candidates.find((c)=> c && c.trim().length >= 2) ?? 'user';
-    return name.trim().slice(0, 50);
-}
-
