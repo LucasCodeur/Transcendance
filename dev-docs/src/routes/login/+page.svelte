@@ -4,6 +4,7 @@
 	import { loginSchema } from '#lib/schemas/auth.js';
 	import { OAUTH_PROVIDER_LABELS, oauthProviderSchema } from '#lib/schemas/oauth.js';
 	import { page } from '$app/state';
+	import OAuthProviderIcon from '#lib/components/OAuthProviderIcon.svelte';
 	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
@@ -30,15 +31,22 @@
 	<p role="alert" class="mt-4 rounded bg-red-50 px-3 py-2 text-sm text-red-800">{data.oauthError}</p>
 {/if}
 
-<div class="mt-6 flex flex-col gap-2">
+<div class="mt-6 flex flex-col gap-3">
 	{#each oauthProviderSchema.options as provider (provider)}
 		<a
 			href="/oauth/{provider}{redirectSuffix}"
-			class="rounded border border-gray-300 px-4 py-2 text-center font-semibold hover:bg-gray-100"
+			class="group flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-900 shadow-sm transition hover:border-gray-400 hover:bg-gray-50 hover:shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 active:scale-[0.98]"
 		>
-			Continue with {OAUTH_PROVIDER_LABELS[provider]}
+			<OAuthProviderIcon {provider} class="size-5 shrink-0 transition-transform group-hover:scale-110" />
+			<span>Continue with {OAUTH_PROVIDER_LABELS[provider]}</span>
 		</a>
 	{/each}
+</div>
+
+<div class="mt-6 flex items-center gap-3 text-sm text-gray-500" aria-hidden="true">
+	<span class="h-px flex-1 bg-gray-200"></span>
+	or
+	<span class="h-px flex-1 bg-gray-200"></span>
 </div>
 
 <form
