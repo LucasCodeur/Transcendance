@@ -18,9 +18,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'92fc322a68901af76252a3d36704a866928ceacbf7a8acf8b36d4210ade137cd'>;
+  StorageHashBase<'13a3ea002146d9033b4634e858c9c762692644ff4ed2322f972188ecd79e6cdc'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a26ac29ae5d8a5658b90884a49256700048b1beeba4d1ff0571a7d75a11a25e9'>;
+  ExecutionHashBase<'a0bf9ed6c2d27bf98d3f79221697ce532fe7012634449e601411ec86afc71ab9'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -241,6 +241,12 @@ export type FieldOutputTypes = {
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
     };
+    readonly RecoveryCode: {
+      readonly codeHash: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -255,6 +261,7 @@ export type FieldOutputTypes = {
       readonly emailVerified: CodecTypes['pg/bool@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly passwordHash: CodecTypes['pg/text@1']['output'] | null;
+      readonly totpLastStep: CodecTypes['pg/int4@1']['output'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -269,6 +276,12 @@ export type FieldInputTypes = {
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
     };
+    readonly RecoveryCode: {
+      readonly codeHash: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
     readonly Session: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -283,6 +296,7 @@ export type FieldInputTypes = {
       readonly emailVerified: CodecTypes['pg/bool@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly passwordHash: CodecTypes['pg/text@1']['input'] | null;
+      readonly totpLastStep: CodecTypes['pg/int4@1']['input'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -295,6 +309,12 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly RecoveryCode: {
+      readonly codeHash: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
     };
     readonly Session: {
@@ -311,6 +331,7 @@ export type StorageColumnTypes = {
       readonly emailVerified: CodecTypes['pg/bool@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly passwordHash: CodecTypes['pg/text@1']['output'] | null;
+      readonly totpLastStep: CodecTypes['pg/int4@1']['output'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
@@ -323,6 +344,12 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly RecoveryCode: {
+      readonly codeHash: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
     };
     readonly Session: {
@@ -339,6 +366,7 @@ export type StorageColumnInputTypes = {
       readonly emailVerified: CodecTypes['pg/bool@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly passwordHash: CodecTypes['pg/text@1']['input'] | null;
+      readonly totpLastStep: CodecTypes['pg/int4@1']['input'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -351,6 +379,14 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     provider: CodecTypes['pg/text@1']['output'];
     providerUserId: CodecTypes['pg/text@1']['output'];
+    userId: CodecTypes['pg/text@1']['output'];
+    user: public_User;
+    readonly [RelationKeys]?: 'user';
+  };
+  export type public_RecoveryCode = {
+    codeHash: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
     userId: CodecTypes['pg/text@1']['output'];
     user: public_User;
     readonly [RelationKeys]?: 'user';
@@ -371,17 +407,20 @@ export namespace Models {
     emailVerified: CodecTypes['pg/bool@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
     passwordHash: CodecTypes['pg/text@1']['output'] | null;
+    totpLastStep: CodecTypes['pg/int4@1']['output'] | null;
     totpSecret: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     oauthAccounts: public_OAuthAccount[];
+    recoveryCodes: public_RecoveryCode[];
     sessions: public_Session[];
-    readonly [RelationKeys]?: 'oauthAccounts' | 'sessions';
+    readonly [RelationKeys]?: 'oauthAccounts' | 'recoveryCodes' | 'sessions';
   };
 }
 
 export declare const models: {
   public: {
     OAuthAccount: Models.public_OAuthAccount;
+    RecoveryCode: Models.public_RecoveryCode;
     Session: Models.public_Session;
     User: Models.public_User;
   };
@@ -457,6 +496,59 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'OAuthAccount';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly RecoveryCode: {
+              columns: {
+                readonly codeHash: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['userId', 'codeHash'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'RecoveryCode_userId_idx_a489d58a';
+                  readonly prefix: 'RecoveryCode_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'RecoveryCode';
                     readonly columns: readonly ['userId'];
                   };
                   readonly target: {
@@ -573,6 +665,12 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly many: false;
                 };
+                readonly totpLastStep: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly totpSecret: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -605,6 +703,10 @@ type ContractBase = Omit<
     readonly OAuthAccount: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OAuthAccount';
+    };
+    readonly RecoveryCode: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'RecoveryCode';
     };
     readonly Session: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
@@ -658,6 +760,50 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly provider: { readonly column: 'provider' };
                 readonly providerUserId: { readonly column: 'providerUserId' };
+                readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly RecoveryCode: {
+            readonly fields: {
+              readonly codeHash: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'RecoveryCode';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly codeHash: { readonly column: 'codeHash' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
                 readonly userId: { readonly column: 'userId' };
               };
             };
@@ -743,6 +889,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly totpLastStep: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly totpSecret: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -760,6 +910,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'OAuthAccount';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+              };
+              readonly recoveryCodes: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'RecoveryCode';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -789,6 +950,7 @@ type ContractBase = Omit<
                 readonly emailVerified: { readonly column: 'emailVerified' };
                 readonly id: { readonly column: 'id' };
                 readonly passwordHash: { readonly column: 'passwordHash' };
+                readonly totpLastStep: { readonly column: 'totpLastStep' };
                 readonly totpSecret: { readonly column: 'totpSecret' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -834,6 +996,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'OAuthAccount';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'RecoveryCode';
             readonly field: 'id';
             readonly namespace: 'public';
           };
