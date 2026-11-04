@@ -57,7 +57,7 @@ export function takeOAuthFlow(cookies: Cookies, provider: OAuthProvider, state: 
 		return null;
 	}
 
-	if (flow.provider !== provider || state === null || flow.state !== null)
+	if (flow.provider !== provider || state === null || flow.state !== state)
 		return null;
 	return flow;
 }
