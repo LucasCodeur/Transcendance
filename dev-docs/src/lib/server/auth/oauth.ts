@@ -1,7 +1,7 @@
 import type { OAuthProvider } from '#lib/schemas/oauth.ts';
 import type { OAuthProfile } from '#lib/server/auth/oauth-providers.ts';
-import { createUserWithOauthAccount, findOAuthAccountWithUser, findUserOAuthAccounts, insertOAuthAccount } from '../db/oauth-accounts';
-import { findUserByEmail, isUniqueViolation } from '../db/users';
+import { createUserWithOauthAccount, deleteOAuthAccount, findOAuthAccountWithUser, findUserOAuthAccounts, insertOAuthAccount } from '../db/oauth-accounts';
+import { findUserByEmail, findUserById, isUniqueViolation } from '../db/users';
 import { createSession } from './session';
 
 export type OAuthLoginResult =
@@ -71,5 +71,23 @@ export async function linkOAuthAccount(userId: string, provider: OAuthProvider, 
             return {ok: false, code: 'LINKED_TO_ANOTHER_USER'};
         throw error;
     }
+    return {ok: true};
+}
+
+export async function unlinkOAuthAccount(userId: string, provider: OAuthProvider):Promise<OAuthUnlinkResult>
+{
+    const user = await findUserById(userId);
+ 
+    if (!user)
+        throw new Error('User not found');
+
+    const userAccounts = await findUserOAuthAccounts(userId);
+
+    if (!userAccounts.some(account => account.provider === provider))
+        return {ok: false, code: 'NOT_LINKED'};
+    else if (user.passwordHash === null && userAccounts.length === 1)
+        return {ok: false, code: 'LAST_LOGIN_METHOD'};
+
+    await deleteOAuthAccount(userId, provider);
     return {ok: true};
 }
