@@ -1,9 +1,7 @@
 import type { OAuthProvider } from '#lib/schemas/oauth.ts';
 import type { OAuthProfile } from '#lib/server/auth/oauth-providers.ts';
-import { create } from 'node:domain';
-
-import { createUserWithOauthAccount, findOAuthAccountWithUser } from '../db/oauth-accounts';
-import { findUserByEmail } from '../db/users';
+import { createUserWithOauthAccount, findOAuthAccountWithUser, findUserOAuthAccounts, insertOAuthAccount } from '../db/oauth-accounts';
+import { findUserByEmail, isUniqueViolation } from '../db/users';
 import { createSession } from './session';
 
 export type OAuthLoginResult =
@@ -32,16 +30,46 @@ export async function loginWithOAuth(provider: OAuthProvider, profile: OAuthProf
         if (await findUserByEmail(profile.email) !== null)
             return {ok: false, code: 'EMAIL_TAKEN'};
 
-        const user = await createUserWithOauthAccount(
-            {email: profile.email, displayName: profile.displayName, passwordHash: null, emailVerified: true }, 
-            provider, 
-            profile.providerUserId
-        );
-        userId = user.id;
+        try {
+            const user = await createUserWithOauthAccount(
+                {email: profile.email, displayName: profile.displayName, passwordHash: null, emailVerified: true },
+                provider,
+                profile.providerUserId
+            );
+            userId = user.id;
+        } catch (error) {
+            if (isUniqueViolation(error)) return {ok: false, code: 'EMAIL_TAKEN'};
+            throw error;
+        }
     }
-    
     const {token, session} = await createSession(userId);
 
     return {ok: true, token, expiresAt: session.expiresAt};
 }
 
+export async function linkOAuthAccount(userId: string, provider: OAuthProvider, profile: OAuthProfile): Promise<OAuthLinkResult>
+{
+    const existing = await findOAuthAccountWithUser(provider, profile.providerUserId);
+
+    if (existing)
+    {
+        if (userId !== existing.user.id)
+            return {ok: false, code: 'LINKED_TO_ANOTHER_USER'};
+        return {ok: true};
+    }
+
+    const userAccounts = await findUserOAuthAccounts(userId);
+
+    if (userAccounts.some(account => account.provider === provider))
+        return {ok: false, code: 'PROVIDER_ALREADY_LINKED'};
+
+    try {
+        await insertOAuthAccount(userId, provider, profile.providerUserId);
+    } 
+    catch (error) {
+        if (isUniqueViolation(error)) 
+            return {ok: false, code: 'LINKED_TO_ANOTHER_USER'};
+        throw error;
+    }
+    return {ok: true};
+}
