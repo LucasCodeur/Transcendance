@@ -91,3 +91,13 @@ export async function unlinkOAuthAccount(userId: string, provider: OAuthProvider
     await deleteOAuthAccount(userId, provider);
     return {ok: true};
 }
+
+export async function getLoginMethods(userId: string): Promise<{ hasPassword: boolean; providers: OAuthProvider[] }>
+{
+    const user = await findUserById(userId);
+
+    const hasPassword = Boolean(user?.passwordHash);
+    const providers = (await findUserOAuthAccounts(userId)).map(account => account.provider);
+
+    return { hasPassword: hasPassword, providers: providers };
+}
