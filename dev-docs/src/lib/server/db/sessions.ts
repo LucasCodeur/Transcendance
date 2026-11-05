@@ -50,6 +50,13 @@ export async function updateSessionExpiry(id: string, expiresAt: Date): Promise<
 	});
 }
 
+export async function completePendingSession(id: string, expiresAt: Date): Promise<void> {
+	await db.orm.public.Session.where({ id }).update({
+		expiresAt: expiresAt.toISOString(),
+		totpPending: false
+	});
+}
+
 export async function deleteSession(id: string): Promise<void> {
 	await db.orm.public.Session.where({ id }).delete();
 }

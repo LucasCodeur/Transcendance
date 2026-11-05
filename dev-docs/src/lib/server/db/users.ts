@@ -7,6 +7,7 @@ export type User = {
 	passwordHash: string | null;
 	emailVerified: boolean;
 	totpSecret: string | null;
+	totpLastStep: number | null;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -27,6 +28,7 @@ export function toUser(row: UserRow): User {
 		passwordHash: row.passwordHash,
 		emailVerified: row.emailVerified,
 		totpSecret: row.totpSecret,
+		totpLastStep: row.totpLastStep,
 		createdAt: new Date(row.createdAt),
 		updatedAt: new Date(row.updatedAt)
 	};
