@@ -46,5 +46,11 @@ export const GET: RequestHandler = async ({params, url, locals, cookies}) => {
         redirect(303, `/login?error=${result.code.toLowerCase()}`);
     
     setSessionCookie(cookies, result.token, result.expiresAt);
+	
+	if (result.totpRequired) {
+		const query = flow.redirectTo ? `?redirectTo=${encodeURIComponent(flow.redirectTo)}` : '';
+		redirect(303, `/login/2fa${query}`);
+	}
+
     redirect(303, safeRedirect(flow.redirectTo));
 }

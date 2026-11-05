@@ -8,3 +8,8 @@
 <p>username: {data.user.displayName}</p>
 <p>email: {data.user.email}</p>
 <p>emailVerified: {data.user.emailVerified ? 'true' : 'false'}</p>
+<a href="/account/security"
+	class="mt-4 inline-block rounded bg-emerald-700 px-3 py-1 text-white hover:bg-emerald-800"
+>
+	Security
+</a>

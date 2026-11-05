@@ -50,6 +50,11 @@ export const actions: Actions = {
 		clearFailures(emailKey);
 
 		setSessionCookie(cookies, result.token, result.expiresAt);
+
+		const redirectTo = url.searchParams.get('redirectTo');
+		if (result.totpRequired) {
+			redirect(303, `/login/2fa?redirectTo=${encodeURIComponent(redirectTo ?? '')}`);
+		}
 		redirect(303, safeRedirect(url.searchParams.get('redirectTo')));
 	}
 };

@@ -2,10 +2,10 @@ import type { OAuthProvider } from '#lib/schemas/oauth.ts';
 import type { OAuthProfile } from '#lib/server/auth/oauth-providers.ts';
 import { createUserWithOauthAccount, deleteOAuthAccount, findOAuthAccountWithUser, findUserOAuthAccounts, insertOAuthAccount } from '../db/oauth-accounts';
 import { findUserByEmail, findUserById, isUniqueViolation } from '../db/users';
-import { createSession } from './session';
+import { startSession } from './session';
 
 export type OAuthLoginResult =
-	| { ok: true; token: string; expiresAt: Date }
+	| { ok: true; token: string; expiresAt: Date, totpRequired: boolean }
 	| { ok: false; code: 'EMAIL_TAKEN' | 'EMAIL_MISSING' };
 
 export type OAuthLinkResult =
@@ -19,9 +19,12 @@ export async function loginWithOAuth(provider: OAuthProvider, profile: OAuthProf
     const existing = await findOAuthAccountWithUser(provider, profile.providerUserId);
 
     let userId: string;
+	let user;
 
-    if (existing)
+    if (existing) {
+		user = existing.user;
         userId = existing.user.id;
+	}
     else
     {
         if (profile.email === null)
@@ -31,7 +34,7 @@ export async function loginWithOAuth(provider: OAuthProvider, profile: OAuthProf
             return {ok: false, code: 'EMAIL_TAKEN'};
 
         try {
-            const user = await createUserWithOauthAccount(
+            user = await createUserWithOauthAccount(
                 {email: profile.email, displayName: profile.displayName, passwordHash: null, emailVerified: true },
                 provider,
                 profile.providerUserId
@@ -42,9 +45,9 @@ export async function loginWithOAuth(provider: OAuthProvider, profile: OAuthProf
             throw error;
         }
     }
-    const {token, session} = await createSession(userId);
+    const {token, session} = await startSession(user);
 
-    return {ok: true, token, expiresAt: session.expiresAt};
+    return {ok: true, token, expiresAt: session.expiresAt, totpRequired: session.totpPending };
 }
 
 export async function linkOAuthAccount(userId: string, provider: OAuthProvider, profile: OAuthProfile): Promise<OAuthLinkResult>

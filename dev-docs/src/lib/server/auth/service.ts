@@ -1,9 +1,9 @@
 import type { LoginInput, RegisterInput } from '#lib/schemas/auth.js';
 import { createUser, findUserByEmail, isUniqueViolation } from '#lib/server/db/users.js';
 import { getDummyHash, hashPassword, verifyPassword } from './password.js';
-import { createSession } from './session.js';
+import { createSession, startSession } from './session.js';
 
-type AuthSuccess = { ok: true; token: string; expiresAt: Date};
+type AuthSuccess = { ok: true; token: string; expiresAt: Date, totpRequired: boolean };
 
 export type RegisterResult = AuthSuccess | { ok: false; code: 'EMAIL_TAKEN' };
 export type LoginResult = AuthSuccess | { ok: false; code: 'INVALID_CREDENTIALS' };
@@ -24,7 +24,7 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
 	}
 	const { token, session } = await createSession(user.id);
 
-	return { ok: true, token, expiresAt: session.expiresAt };
+	return { ok: true, token, expiresAt: session.expiresAt, totpRequired: false };
 }
 
 export async function loginUser(input: LoginInput): Promise<LoginResult> {
@@ -36,7 +36,7 @@ export async function loginUser(input: LoginInput): Promise<LoginResult> {
 
 	if (!(await verifyPassword(user.passwordHash, input.password))) return { ok: false, code: 'INVALID_CREDENTIALS' };
 	
-	const { token, session } = await createSession(user.id);
+	const { token, session } = await startSession(user);
 
-	return { ok: true, token, expiresAt: session.expiresAt };
+	return { ok: true, token, expiresAt: session.expiresAt, totpRequired: session.totpPending };
 }
