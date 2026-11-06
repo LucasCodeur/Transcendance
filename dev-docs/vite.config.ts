@@ -2,6 +2,23 @@ import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import { Server } from "socket.io";
+
+const forWebSocket = {
+        name: "ahah",
+        configureServer: (serv) => {
+			const io = new Server(serv.httpServer);
+			io.on('connection', (client) => {
+				console.log("websocket connection received");
+				client.on("data", (data) => {
+					client.emit("data", data);
+					client.broadcast.emit("data", data);
+					// console.log("received from a client: ")
+					// console.log(data);
+				});
+			});
+		},
+};
 
 export default defineConfig({
 	plugins: [
@@ -17,6 +34,7 @@ export default defineConfig({
 			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 			adapter: adapter()
-		})
+		}),
+		forWebSocket,
 	]
 });
