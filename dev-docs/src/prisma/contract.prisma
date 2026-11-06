@@ -1,50 +1,5 @@
 // use prisma-8
 
-// Platform Account
-
-// An User and only one can have 0, 1, or multiple Membership
-// model User {
-//   id            String            @id @default(uuid())
-//   email         String            @unique
-//   displayName   String
-//   passwordHash  String?
-//   emailVerified Boolean           @default(false)
-//   totpSecret    String?
-//   sessions      Session[]
-//   memberships   Membership[]
-//   createdAt     TimestamptzString @default(now())
-//   updatedAt     temporal.updatedAtString()
-// }
-//
-// // Open session, hashed token
-// model Session {
-//   id          String            @id
-//   userId      String
-//   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   expiresAt   TimestamptzString
-//   totpPending Boolean           @default(false)
-//   createdAt   TimestamptzString @default(now())
-//
-//   @@index([userId])
-// }
-//
-// // External identity associated with a user
-// model OAuthAccount {
-//   id String @id @default(cuid(2))
-// }
-//
-// // A family
-// model Organization {
-//   id String @id @default(cuid(2))
-// }
-//
-// // A User's membership in an Organization, along with their role
-// model Membership {
-//   id     String @id @default(cuid(2))
-//   userId Int
-//   user   User   @relation(fields: [userId], references: [id])
-// }
-
 namespace genealogy {
 
 // Family tree belonging to an organization
@@ -58,6 +13,7 @@ model Tree {
 model Person {
   id String @id @default(cuid(2))
 
+  // WARN: to change
   gender      String
   firstName   String
   middleName  String?
@@ -99,7 +55,8 @@ model PartnerLink {
 
 // Links a child to a partnership with a parentage type
 model ChildLink {
-  id String @id @default(cuid(2))
+  id   String @id @default(cuid(2))
+  type String
 
   personId String
   person   Person @relation(fields: [personId], references: [id])
