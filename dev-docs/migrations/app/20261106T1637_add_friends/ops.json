@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.Friend",
+    "label": "Create table \"Friend\"",
+    "summary": "Creates table \"Friend\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Friend"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Friend\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Friend\"",
+        "sql": "CREATE TABLE \"public\".\"Friend\" (\n  \"friendId\" text NOT NULL,\n  \"type\" text DEFAULT 'pending' NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"userId\", \"friendId\"),\n  CONSTRAINT \"Friend_type_check_89e02a8c\" CHECK (\"type\" IN ('pending', 'accepted'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Friend\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Friend.Friend_friendId_idx_7ad40ec8",
+    "label": "Create index \"Friend_friendId_idx_7ad40ec8\" on \"Friend\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Friend_friendId_idx_7ad40ec8",
+        "table": "Friend"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Friend_friendId_idx_7ad40ec8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend_friendId_idx_7ad40ec8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Friend_friendId_idx_7ad40ec8\"",
+        "sql": "CREATE INDEX \"Friend_friendId_idx_7ad40ec8\" ON \"public\".\"Friend\" (\"friendId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Friend_friendId_idx_7ad40ec8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend_friendId_idx_7ad40ec8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Friend.Friend_userId_idx_a489d58a",
+    "label": "Create index \"Friend_userId_idx_a489d58a\" on \"Friend\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Friend_userId_idx_a489d58a",
+        "table": "Friend"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Friend_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Friend_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"Friend_userId_idx_a489d58a\" ON \"public\".\"Friend\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Friend_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Friend_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Friend.Friend_userId_fkey",
+    "label": "Add foreign key \"Friend_userId_fkey\" on \"Friend\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Friend_userId_fkey",
+        "table": "Friend"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Friend_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Friend_userId_fkey",
+          "public",
+          "\"public\".\"Friend\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Friend_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Friend\"\nADD CONSTRAINT \"Friend_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Friend_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Friend_userId_fkey",
+          "public",
+          "\"public\".\"Friend\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Friend.Friend_friendId_fkey",
+    "label": "Add foreign key \"Friend_friendId_fkey\" on \"Friend\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Friend_friendId_fkey",
+        "table": "Friend"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Friend_friendId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Friend_friendId_fkey",
+          "public",
+          "\"public\".\"Friend\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Friend_friendId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Friend\"\nADD CONSTRAINT \"Friend_friendId_fkey\"\nFOREIGN KEY (\"friendId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Friend_friendId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Friend_friendId_fkey",
+          "public",
+          "\"public\".\"Friend\""
+        ]
+      }
+    ]
+  }
+]

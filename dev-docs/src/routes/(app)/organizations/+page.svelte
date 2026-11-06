@@ -15,7 +15,7 @@
 	let errors = $derived( {
 		...(form?.errors ?? {}),
 		...clientErrors,
-	})
+	});
 </script>
 
 <div class="mb-5 rounded-sm p-2  border border-black">

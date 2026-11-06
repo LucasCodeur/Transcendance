@@ -13,7 +13,8 @@
 
 <header class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
 	<a href="/" class="text-lg font-bold">Généalogie</a>
-	<a href="/organizations" class="text-lg font-bold">Oragnizations</a>
+	<a href="/organizations" class="text-lg font-bold">Organizations</a>
+	<a href="/friends" class="text-lg font-bold">Friends</a>
 
 	<nav class="flex items-center gap-4">
 		{#if data.user}

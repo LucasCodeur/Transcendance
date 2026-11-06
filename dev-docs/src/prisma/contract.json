@@ -4,6 +4,10 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "Friend": {
+      "model": "Friend",
+      "namespace": "public"
+    },
     "OAuthAccount": {
       "model": "OAuthAccount",
       "namespace": "public"
@@ -29,6 +33,19 @@
     "namespaces": {
       "public": {
         "enum": {
+          "FriendStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "Pending",
+                "value": "pending"
+              },
+              {
+                "name": "Accepted",
+                "value": "accepted"
+              }
+            ]
+          },
           "Role": {
             "codecId": "pg/text@1",
             "members": [
@@ -52,6 +69,86 @@
           }
         },
         "models": {
+          "Friend": {
+            "fields": {
+              "friendId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "FriendStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "friend": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "friendId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "friendId": {
+                  "column": "friendId"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Friend"
+            }
+          },
           "OAuthAccount": {
             "fields": {
               "createdAt": {
@@ -328,6 +425,34 @@
               }
             },
             "relations": {
+              "friends": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "friendId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "userId"
+                  ],
+                  "table": "Friend",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
               "oauthAccounts": {
                 "cardinality": "1:N",
                 "on": {
@@ -507,6 +632,107 @@
       "public": {
         "entries": {
           "table": {
+            "Friend": {
+              "checks": [
+                {
+                  "expression": "\"type\" IN ('pending', 'accepted')",
+                  "name": "Friend_type_check_89e02a8c",
+                  "prefix": "Friend_type_check"
+                }
+              ],
+              "columns": {
+                "friendId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "pending"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "FriendStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Friend_userId_idx_a489d58a"
+                  },
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Friend"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "Friend_friendId_idx_7ad40ec8"
+                  },
+                  "source": {
+                    "columns": [
+                      "friendId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Friend"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "friendId"
+                  ],
+                  "name": "Friend_friendId_idx_7ad40ec8",
+                  "prefix": "Friend_friendId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "Friend_userId_idx_a489d58a",
+                  "prefix": "Friend_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "userId",
+                  "friendId"
+                ]
+              },
+              "uniques": []
+            },
             "OAuthAccount": {
               "columns": {
                 "createdAt": {
@@ -863,6 +1089,13 @@
             }
           },
           "valueSet": {
+            "FriendStatus": {
+              "kind": "valueSet",
+              "values": [
+                "pending",
+                "accepted"
+              ]
+            },
             "Role": {
               "kind": "valueSet",
               "values": [
@@ -878,7 +1111,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c6e212f66c37e91c1dda057e41dea3aace0a6bf58ce32de1b737fb58839f187b"
+    "storageHash": "df8e1426f61c69f940a5ea20e58f4f14341001079c22ca3369fa8ebfc45e087d"
   },
   "execution": {
     "executionHash": "e08e1f29f403652525d216ef5623f7d94b21b52304d11aa226de70f9afed240b",

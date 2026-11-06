@@ -4,7 +4,6 @@ import { db } from "#lib/server/db/client.js";
 import { redirect } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
-import { error } from 'node:console';
 
 export async function load({ locals }) {
 	let data:UserOrganization = {

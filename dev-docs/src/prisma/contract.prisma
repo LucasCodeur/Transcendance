@@ -6,12 +6,29 @@ model User {
   passwordHash  String?
   emailVerified Boolean           @default(false)
   totpSecret    String?
+  friends		User[] @relation("friend")
   sessions      Session[]
   organizations Organization[]
   oauthAccounts OAuthAccount[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }
+
+enum FriendStatus {
+	@@type("pg/text@1")
+	Pending = "pending"
+	Accepted = "accepted"
+}
+
+model Friend {
+	userId		String
+	friendId	String
+	user		User	@relation("friend", fields: [userId], references:[id]) // ok my first idea was to put "friend" on the other one, but in the way i thought this model, it seems that friend must be here ...
+	friend		User	@relation(fields: [friendId], references:[id])
+	type		FriendStatus @default(Pending)
+	@@id([userId, friendId])
+}
+// what is type ? pending, friend, accept ?
 
 model Organization {
 	id		String	@id @default(uuid())
