@@ -1,5 +1,4 @@
 // use prisma-8
-
 namespace genealogy {
 
 // Family tree belonging to an organization
@@ -87,4 +86,49 @@ model Message {
 // Notification intended for a user
 model Notification {
   id String @id @default(cuid(2))
+}
+
+model User {
+  id            String            @id @default(uuid())
+  email         String            @unique
+  displayName   String
+  passwordHash  String?
+  emailVerified Boolean           @default(false)
+  totpSecret    String?
+  totpLastStep  Int?
+  sessions      Session[]
+  oauthAccounts OAuthAccount[]
+  recoveryCodes     RecoveryCode[]
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
+}
+
+model Session {
+  id          String            @id
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt   TimestamptzString
+  totpPending Boolean           @default(false)
+  createdAt   TimestamptzString @default(now())
+  @@index([userId])
+}
+
+model OAuthAccount {
+  id                String            @id @default(uuid())
+  provider          String
+  providerUserId    String
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         TimestamptzString @default(now())
+  @@unique([provider, providerUserId])
+  @@unique([userId, provider])
+}
+
+model RecoveryCode {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  createdAt TimestamptzString @default(now())
+  @@unique([userId, codeHash])
 }
