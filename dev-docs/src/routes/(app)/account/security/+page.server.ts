@@ -46,7 +46,7 @@ export const actions: Actions = {
 		
 		const parsed = totpCodeSchema.safeParse(Object.fromEntries(await request.formData()));
 		if (!parsed.success) {
-			return fail(400, { action: confirm, errors: z.flattenError(parsed.error).fieldErrors });
+			return fail(400, { action: 'confirm', errors: z.flattenError(parsed.error).fieldErrors });
 		}
 
 		const result = await enableTwoFactor(locals.user.id, secret, parsed.data.code);
