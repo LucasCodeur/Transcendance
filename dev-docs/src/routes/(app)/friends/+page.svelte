@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { Button } from "#lib/components/ui/button/index.ts";
 	import { z } from 'zod';
 	interface Friend {
 		pending: string[],
@@ -26,7 +27,19 @@
 		<p class="mt-4 ml-4">No request pending...</p>
 	{/if}
 	{#each data.pending as pending}
-		<p class="mt-4 ml-4">friend request sent to {pending}</p>
+		<div class="m-5 flex justify-around">
+				<p class="font-semibold mt-auto mb-auto text-center">{pending} sent you a friend request:</p>
+
+				<form method="POST" action="?/accept_deny">
+					<input class="hidden" name="type" value="accept" />
+					<Button type="sumbit" name="friend" value={pending} class="text-green-500" variant="outline">accept</Button>
+				</form>
+
+				<form method="POST" action="?/accept_deny">
+					<input class="hidden" name="type" value="deny" />
+					<Button type="submit" name="friend" value={pending} class="text-red-500 " variant="outline">deny</Button>
+				</form>
+		</div>
 	{/each}
 </div>
 
@@ -53,6 +66,7 @@
 <div class="mb-5 rounded-sm p-2  border border-black">
 	<p class="font-bold text-4xl">Add Friend:</p>
 	<form
+		action="?/create"
 		method="POST"
 		use:enhance={({ formData, cancel }) => {
 			const parsed = friendRequestScheme.safeParse(Object.fromEntries(formData));
