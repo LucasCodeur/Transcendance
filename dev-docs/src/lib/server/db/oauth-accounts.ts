@@ -9,7 +9,7 @@ export type OAuthAccount = {
 	createdAt:		Date,
 }
 
-export type OAuthAccountRow = Omit<OAuthAccount, 'createdAt' | 'provider'> & { createdAt: string; provider: string };
+type OAuthAccountRow = Omit<OAuthAccount, 'createdAt' | 'provider'> & { createdAt: string; provider: string };
 
 function toOAuthAccount(row: OAuthAccountRow): OAuthAccount {
 	return {

@@ -1,7 +1,7 @@
 import type { OAuthProvider } from '#lib/schemas/oauth.ts';
 import type { OAuthProfile } from '#lib/server/auth/oauth-providers.ts';
 import { createUserWithOauthAccount, deleteOAuthAccount, findOAuthAccountWithUser, findUserOAuthAccounts, insertOAuthAccount } from '../db/oauth-accounts';
-import { findUserByEmail, findUserById, isUniqueViolation } from '../db/users';
+import { findUserByEmail, findUserById, isUniqueViolation } from '#lib/server/db/users.ts';
 import { startSession } from './session';
 
 export type OAuthLoginResult =
@@ -82,7 +82,7 @@ export async function unlinkOAuthAccount(userId: string, provider: OAuthProvider
     const user = await findUserById(userId);
  
     if (!user)
-        throw new Error('User not found');
+		return { ok: false, code: 'NOT_LINKED' };
 
     const userAccounts = await findUserOAuthAccounts(userId);
 

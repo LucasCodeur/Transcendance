@@ -51,7 +51,7 @@ export function takeOAuthFlow(cookies: Cookies, provider: OAuthProvider, state: 
 	let flow: OAuthFlow;
 	try {
 		const parsed = oauthFlowSchema.safeParse(JSON.parse(raw));
-		if (!parsed.data) return null;
+		if (!parsed.success) return null;
 		flow = parsed.data;
 	} catch {
 		return null;
