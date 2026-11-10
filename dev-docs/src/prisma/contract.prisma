@@ -30,6 +30,14 @@ model Friend {
 }
 // what is type ? pending, friend, accept ?
 
+model Message {
+	messageId	String @id @default(uuid())
+	senderId	String
+	receiverId	String
+	content		String
+	timestamp	TimestamptzString @default(now())
+}
+
 model Organization {
 	id		String	@id @default(uuid())
 	name	String	@unique

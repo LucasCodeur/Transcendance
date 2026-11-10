@@ -8,6 +8,10 @@
       "model": "Friend",
       "namespace": "public"
     },
+    "Message": {
+      "model": "Message",
+      "namespace": "public"
+    },
     "OAuthAccount": {
       "model": "OAuthAccount",
       "namespace": "public"
@@ -147,6 +151,67 @@
               },
               "namespaceId": "public",
               "table": "Friend"
+            }
+          },
+          "Message": {
+            "fields": {
+              "content": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "messageId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "receiverId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "senderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "timestamp": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "content": {
+                  "column": "content"
+                },
+                "messageId": {
+                  "column": "messageId"
+                },
+                "receiverId": {
+                  "column": "receiverId"
+                },
+                "senderId": {
+                  "column": "senderId"
+                },
+                "timestamp": {
+                  "column": "timestamp"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Message"
             }
           },
           "OAuthAccount": {
@@ -733,6 +798,47 @@
               },
               "uniques": []
             },
+            "Message": {
+              "columns": {
+                "content": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "messageId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "receiverId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "senderId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "timestamp": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "messageId"
+                ]
+              },
+              "uniques": []
+            },
             "OAuthAccount": {
               "columns": {
                 "createdAt": {
@@ -1111,12 +1217,23 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "df8e1426f61c69f940a5ea20e58f4f14341001079c22ca3369fa8ebfc45e087d"
+    "storageHash": "822d7d3d4ec9cd98501b968ed6fe38134cd66fe946866a27454d2958c465bda9"
   },
   "execution": {
-    "executionHash": "e08e1f29f403652525d216ef5623f7d94b21b52304d11aa226de70f9afed240b",
+    "executionHash": "42a70e3c0ed42e7a7971dd0372b490fe40da42bcd617773c5936a9b35f3a2850",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Message",
+            "field": "messageId",
+            "namespace": "public"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",

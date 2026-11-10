@@ -3,19 +3,28 @@ import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { Server } from "socket.io";
+import { db } from "#lib/server/db/client.ts";
 
 const forWebSocket = {
         name: "ahah",
         configureServer: (serv) => {
 			const io = new Server(serv.httpServer);
 			io.on('connection', (client) => {
+				console.log(client);
 				console.log("websocket connection received");
+				client.on("loadConversation", (data) => {
+					console.log(client);
+					console.log("a client asked for a conversation");
+					console.dir(data, {depth: null});
+				})
+				/*
 				client.on("data", (data) => {
 					client.emit("data", data);
 					client.broadcast.emit("data", data);
 					// console.log("received from a client: ")
 					// console.log(data);
 				});
+				*/
 			});
 		},
 };

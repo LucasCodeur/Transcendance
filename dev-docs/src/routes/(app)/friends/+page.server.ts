@@ -5,19 +5,16 @@ import { db } from '#lib/server/db/client.ts'
 
 export async function load ({locals}){
 	let data = {
+		me: undefined,
 		pending: [],
 		friends: [],
 		sent: [],
 	}
 	if (!locals.user)
 		return data;
-	console.log(locals);
+	data.me = locals.user.displayName;
 
 	const all_friends = await db.orm.public.Friend.where({userId: locals.user.id});
-	console.log("~~~~~~~~~~~~~~~~");
-	console.log(await all_friends.all());
-	console.log("~~~~~~~~~~~~~~~~");
-
 
 	const sent_requests = await all_friends.where({type: "pending"}).all();
 	for (const sent_request of sent_requests) {
@@ -37,11 +34,6 @@ export async function load ({locals}){
 		data.pending.push(u?.displayName);
 	}
 
-	console.log("accepted_friendss:");
-	console.log(sent_requests);
-
-	console.log("accepted_friends:");
-	console.log(accepted_friends);
 	return (data);
 }
 

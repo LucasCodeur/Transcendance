@@ -86,7 +86,9 @@
 						// which would open a chatbox and a chat with the users !
 
 						// retrieve messages
-
+						console.log("should sent event to the ws server");
+						socket.emit("loadConversation", {user:data.me, friend:friend});
+						console.log(`data.me = ${data.me}`);
 						show_chat(friend);
 
 						// connect to websocket 
@@ -828,8 +830,8 @@
 		</div>
 
 		<div class="flex justify-between">
-			<input class="rounded-xl w-70/100 bg-taupe-50" type="text">
-			<input class="rounded-xl border border-black w-20/100 bg-taupe-50" type="submit" value="send">
+			<input class="rounded-xl w-80/100 bg-taupe-50" type="text">
+			<Button  variant="outline" type="submit">send</Button>
 		</div>
 
 	</div>
