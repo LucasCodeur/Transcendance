@@ -5,6 +5,7 @@
 	import { enhance } from '$app/forms';
 	import { Button } from "#lib/components/ui/button/index.ts";
 	import { z } from 'zod';
+	import { io } from 'socket.io-client';
 	interface Friend {
 		pending: string[],
 		friends: string[],
@@ -42,6 +43,8 @@
 	$effect( () => {
 		chat.scrollTo(0, chat.scrollHeight);
 	});
+
+	const socket = io();
 </script>
 
 
@@ -136,9 +139,9 @@
 </div>
 
 <div  
-	class="p-4 rounded-xl inset-shadow-sm/50 bg-sky-100 {hidden} fixed right-3 bottom-3 size-60/100  border border-red-600"
+	class="p-4 rounded-xl inset-shadow-sm/50 bg-sky-100 {hidden} fixed right-3 bottom-3 size-60/100 max-w-150  border border-red-600"
 >
-	<div class="flex flex-col justify-between  h-full">
+	<div class="flex flex-col justify-between gap-2 h-full">
 
 		<div class="rounded-xl flex p-4 justify-between border border-black">
 			<p class="mt-auto mb-auto font-semibold">messages with {friendChat}</p>
