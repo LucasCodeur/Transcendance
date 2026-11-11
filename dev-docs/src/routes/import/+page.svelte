@@ -1,7 +1,15 @@
-<script lang="ts">
-  import { useFileDialog } from '@ariefsn/svelte-use';
-  const { files, open, reset } = useFileDialog({ accept: 'image/*', multiple: true });
+<script>
+  let files = $state(null);
 </script>
-<button onclick={open}>Select Files</button>
-<button onclick={reset}>Clear</button>
-<p>{files().length} file(s) selected</p>
+
+<label for="file">Upload file:</label>
+<input type="file" id="file" bind:files />
+
+{#if files && files.length > 0}
+  <p>Selected: {files[0].name} ({files[0].size} bytes)</p>
+{/if}
+
+<form method="POST" action="?/upload" enctype="multipart/form-data">
+  <input type="file" name="file" />
+  <button type="submit">Upload</button>
+</form>
