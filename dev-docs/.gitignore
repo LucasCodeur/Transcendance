@@ -1,0 +1,35 @@
+node_modules
+/db
+
+# Output
+.npmrc
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# prisma
+prisma-8.md
+.gitattributes
+
+# others
+*.swp
+*.log
+node_modules/
+dist/
