@@ -1,0 +1,646 @@
+
+0 HEAD
+1 SOUR GENEALOGY_TEST
+2 VERS 1.0
+2 NAME GEDCOM Parser Test Suite
+2 CORP Atelier Genealogique
+3 ADDR 12 rue des Archives
+4 CONT Batiment B
+3 CITY Marseille
+3 STAE Bouches-du-Rhone
+3 POST 13001
+3 CTRY France
+2 DATA Base genealogique fictive
+3 DATE 9 NOV 2026
+3 COPR Donnees fictives
+1 DEST GEDCOM_PARSER
+1 DATE 9 NOV 2026
+2 TIME 14:00:00
+1 SUBM @U1@
+1 SUBN @N1@
+1 FILE gedcom_551_full_test.ged
+1 COPR Copyright test - donnees fictives
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+2 VERS 1
+1 LANG French
+1 PLAC
+2 FORM Ville, Departement, Region, Pays
+1 NOTE Fichier de test couvrant les structures GEDCOM 5.5.1.
+2 CONT Toutes les personnes et les documents sont fictifs.
+2 CONC Aucune donnee personnelle reelle n'est utilisee.
+
+0 @U1@ SUBM
+1 NAME Administrateur Genealogique
+1 ADDR 12 rue des Archives
+2 CONT Bureau des recherches
+2 ADR1 12 rue des Archives
+2 ADR2 Batiment B
+2 ADR3 Service Genealogie
+2 CITY Marseille
+2 STAE Provence-Alpes-Cote d'Azur
+2 POST 13001
+2 CTRY France
+1 PHON +33491000000
+1 PHON +33491000001
+1 EMAIL test@example.org
+1 FAX +33491000002
+1 WWW https://example.org
+1 LANG French
+1 LANG English
+1 RFN SUBMITTER-001
+1 RIN 1001
+1 REFN DOSSIER-001
+2 TYPE Reference interne
+1 OBJE @O1@
+1 NOTE Auteur fictif du fichier.
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @N1@ SUBN
+1 SUBM @U1@
+1 FAMF Famille_Dupont
+1 TEMP PARIS
+1 ANCE 4
+1 DESC 4
+1 ORDI N
+1 RIN 2001
+1 NOTE Soumission de test.
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @I1@ INDI
+1 NAME Jean /DUPONT/
+2 TYPE aka
+2 NPFX Monsieur
+2 GIVN Jean
+2 NICK Jeannot
+2 SPFX de
+2 SURN DUPONT
+2 NSFX Jr
+2 NOTE Nom utilise dans les actes.
+2 SOUR @S1@
+3 PAGE Acte de naissance page 12
+3 QUAY 3
+1 NAME Jean Dupont
+2 TYPE birth
+2 FONE Jean Dupont
+3 TYPE phonetic
+3 GIVN Jean
+3 SURN Dupont
+2 ROMN Jean Dupont
+3 TYPE pinyin
+3 GIVN Jean
+3 SURN Dupont
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1900
+2 PLAC Marseille, Bouches-du-Rhone, France
+3 FORM Ville, Departement, Pays
+3 FONE Marsay
+4 TYPE phonetic
+3 ROMN Marseille
+4 TYPE standard
+3 MAP
+4 LATI N43.2965
+4 LONG E5.3698
+3 NOTE Lieu de naissance fictif.
+2 ADDR 15 rue Saint-Ferreol
+3 ADR1 15 rue Saint-Ferreol
+3 ADR2 Appartement 2
+3 ADR3 Quartier Centre
+3 CITY Marseille
+3 STAE Bouches-du-Rhone
+3 POST 13001
+3 CTRY France
+3 PHON +33491000000
+3 EMAIL jean@example.org
+3 FAX +33491000003
+3 WWW https://example.org/jean
+2 AGNC Etat civil de Marseille
+2 RELI Catholique
+2 RESN locked
+2 NOTE Acte de naissance reconstitue.
+2 SOUR @S1@
+3 PAGE Registre 1900, acte 124
+3 EVEN BIRT
+4 ROLE CHIL
+3 DATA
+4 DATE 16 MAR 1900
+4 TEXT Jean Dupont ne le 15 mars.
+5 CONT Fils de Pierre Dupont et Marie Martin.
+3 QUAY 3
+2 OBJE @O2@
+1 CHR
+2 DATE 20 MAR 1900
+2 PLAC Marseille, France
+2 RELI Catholique
+1 DEAT
+2 DATE 20 JUN 1970
+2 PLAC Paris, France
+2 CAUS Maladie
+2 AGNC Etat civil de Paris
+2 AGE 70y
+2 SOUR @S2@
+2 NOTE Deces fictif.
+1 BURI
+2 DATE 23 JUN 1970
+2 PLAC Paris, France
+1 CREM
+2 DATE 23 JUN 1970
+2 PLAC Paris, France
+1 BAPM
+2 DATE 20 MAR 1900
+2 PLAC Marseille, France
+1 CHRA
+2 DATE 15 MAR 1950
+2 PLAC Paris, France
+1 BARM
+2 DATE 15 MAR 1913
+2 PLAC Marseille, France
+1 BASM
+2 DATE 15 MAR 1913
+2 PLAC Marseille, France
+1 BLES
+2 DATE 1 JAN 1901
+2 PLAC Marseille, France
+1 CONF
+2 DATE 15 MAY 1915
+2 PLAC Marseille, France
+1 FCOM
+2 DATE 1 MAY 1910
+2 PLAC Marseille, France
+1 ORDN
+2 DATE 1 JAN 1925
+2 PLAC Paris, France
+1 ADOP
+2 DATE 1 JAN 1930
+2 PLAC Paris, France
+2 FAMC @F2@
+3 ADOP BOTH
+1 NATU
+2 DATE 1 JAN 1940
+2 PLAC Paris, France
+1 EMIG
+2 DATE 1 JAN 1935
+2 PLAC Alger, Algerie
+1 IMMI
+2 DATE 1 JAN 1936
+2 PLAC Marseille, France
+1 CENS
+2 DATE 1 MAR 1921
+2 PLAC Marseille, France
+1 PROB
+2 DATE 1 JUL 1970
+2 PLAC Paris, France
+1 WILL
+2 DATE 1 JAN 1965
+2 PLAC Paris, France
+1 GRAD
+2 DATE 1 JUL 1920
+2 PLAC Marseille, France
+1 RETI
+2 DATE 1 JAN 1960
+2 PLAC Paris, France
+1 EVEN
+2 TYPE Participation a une exposition
+2 DATE 1 JUN 1950
+2 PLAC Paris, France
+2 AGNC Association culturelle
+2 NOTE Evenement fictif.
+1 CAST Bourgeoisie
+2 DATE 1 JAN 1920
+2 PLAC Marseille, France
+1 DSCR Taille moyenne, yeux marron
+2 CONT Cheveux bruns
+2 CONC , cicatrice au menton
+2 DATE 1 JAN 1920
+2 PLAC Marseille, France
+1 EDUC Etudes secondaires
+2 DATE 1 JUL 1918
+2 PLAC Marseille, France
+1 IDNO TEST-ID-1900-001
+2 DATE 1 JAN 1920
+2 PLAC Marseille, France
+1 NATI Francaise
+2 DATE 1 JAN 1920
+2 PLAC Marseille, France
+1 NCHI 2
+2 DATE 1 JAN 1940
+1 NMR 1
+2 DATE 1 JAN 1940
+1 OCCU Menuisier
+2 DATE FROM 1920 TO 1960
+2 PLAC Marseille, France
+1 PROP Maison familiale
+2 DATE 1 JAN 1930
+2 PLAC Marseille, France
+1 RELI Catholique
+2 DATE 1 JAN 1920
+2 PLAC Marseille, France
+1 RESI
+2 DATE FROM 1920 TO 1935
+2 PLAC Marseille, France
+2 ADDR 15 rue Saint-Ferreol
+3 CITY Marseille
+3 STAE Bouches-du-Rhone
+3 POST 13001
+3 CTRY France
+1 SSN TEST-SSN-001
+2 DATE 1 JAN 1920
+1 TITL Monsieur
+2 DATE 1 JAN 1920
+1 FACT Distinction professionnelle
+2 TYPE Distinction
+2 DATE 1 JAN 1950
+2 PLAC Paris, France
+2 NOTE Fait fictif.
+1 BAPL
+2 DATE 1 JAN 1930
+2 TEMP PARIS
+2 PLAC Paris, France
+2 STAT COMPLETED
+3 DATE 1 JAN 1930
+1 CONL
+2 DATE 1 JAN 1931
+2 TEMP PARIS
+2 PLAC Paris, France
+2 STAT COMPLETED
+3 DATE 1 JAN 1931
+1 ENDL
+2 DATE 1 JAN 1932
+2 TEMP PARIS
+2 PLAC Paris, France
+2 STAT COMPLETED
+3 DATE 1 JAN 1932
+1 SLGC
+2 DATE 1 JAN 1933
+2 TEMP PARIS
+2 PLAC Paris, France
+2 FAMC @F1@
+2 STAT COMPLETED
+3 DATE 1 JAN 1933
+1 FAMC @F1@
+2 PEDI birth
+2 STAT proven
+2 NOTE Filiation biologique.
+1 FAMS @F1@
+2 NOTE Conjoint de Marie Martin.
+1 ASSO @I3@
+2 RELA Ami
+2 NOTE Association fictive.
+2 SOUR @S3@
+1 ALIA @I4@
+1 ANCI @U1@
+1 DESI @U1@
+1 RFN RFN-1900-001
+1 AFN AFN-1900-001
+1 REFN PERSONNE-001
+2 TYPE Identifiant applicatif
+1 REFN ARCHIVE-001
+2 TYPE Reference archive
+1 RIN 3001
+1 SUBM @U1@
+1 RESN privacy
+1 NOTE Note individuelle de test.
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+2 NOTE Modification fictive.
+
+0 @I2@ INDI
+1 NAME Marie /MARTIN/
+2 TYPE birth
+2 GIVN Marie
+2 SURN MARTIN
+2 SPFX de
+2 SOUR @S1@
+1 SEX F
+1 BIRT
+2 DATE 10 APR 1905
+2 PLAC Aix-en-Provence, Bouches-du-Rhone, France
+2 SOUR @S1@
+1 CHR
+2 DATE 15 APR 1905
+2 PLAC Aix-en-Provence, France
+1 DEAT
+2 DATE 10 JAN 1980
+2 PLAC Marseille, France
+1 OCCU Couturiere
+1 RELI Catholique
+1 FAMS @F1@
+1 FAMS @F2@
+1 REFN PERSONNE-002
+1 RIN 3002
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @I3@ INDI
+1 NAME Pierre /DURAND/
+2 GIVN Pierre
+2 SURN DURAND
+1 SEX M
+1 BIRT
+2 DATE 1 JAN 1901
+2 PLAC Lyon, Rhone, France
+1 DEAT
+2 DATE 1 JAN 1981
+2 PLAC Lyon, France
+1 NOTE Ami de Jean Dupont.
+1 ASSO @I1@
+2 RELA Ami
+1 REFN PERSONNE-003
+1 RIN 3003
+
+0 @I4@ INDI
+1 NAME Jean /DUPONT/
+2 TYPE aka
+2 GIVN Jean
+2 SURN DUPONT
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1900
+2 PLAC Marseille, France
+1 NOTE Autre fiche representant potentiellement le meme individu.
+1 REFN PERSONNE-004
+
+0 @I5@ INDI
+1 NAME Paul /DUPONT/
+2 GIVN Paul
+2 SURN DUPONT
+1 SEX M
+1 BIRT
+2 DATE 12 MAY 1930
+2 PLAC Marseille, France
+1 FAMC @F1@
+2 PEDI birth
+2 STAT proven
+1 FAMS @F3@
+1 OCCU Medecin
+1 REFN PERSONNE-005
+
+0 @I6@ INDI
+1 NAME Jeanne /DUPONT/
+2 GIVN Jeanne
+2 SURN DUPONT
+1 SEX F
+1 BIRT
+2 DATE 5 JUL 1933
+2 PLAC Marseille, France
+1 FAMC @F1@
+2 PEDI birth
+1 REFN PERSONNE-006
+
+0 @I7@ INDI
+1 NAME Luc /DUPONT/
+2 GIVN Luc
+2 SURN DUPONT
+1 SEX M
+1 BIRT
+2 DATE 2 FEB 1955
+2 PLAC Paris, France
+1 FAMC @F3@
+2 PEDI birth
+1 REFN PERSONNE-007
+
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 CHIL @I5@
+1 CHIL @I6@
+1 NCHI 2
+1 MARR
+2 DATE 10 JUN 1928
+2 PLAC Marseille, Bouches-du-Rhone, France
+2 HUSB
+3 AGE 28y
+2 WIFE
+3 AGE 23y
+2 AGNC Etat civil de Marseille
+2 SOUR @S1@
+3 PAGE Registre des mariages, acte 52
+3 QUAY 3
+1 ENGA
+2 DATE 1 JAN 1928
+2 PLAC Marseille, France
+1 MARB
+2 DATE 1 MAY 1928
+2 PLAC Marseille, France
+1 MARC
+2 DATE 10 JUN 1928
+2 PLAC Marseille, France
+1 MARL
+2 DATE 1 JUN 1928
+2 PLAC Marseille, France
+1 MARS
+2 DATE 10 JUN 1928
+2 PLAC Marseille, France
+1 CENS
+2 DATE 1 MAR 1931
+2 PLAC Marseille, France
+1 RESI
+2 DATE FROM 1928 TO 1935
+2 PLAC Marseille, France
+1 EVEN Fete familiale
+2 TYPE Reunion
+2 DATE 1 JAN 1950
+2 PLAC Marseille, France
+1 SLGS
+2 DATE 10 JUN 1928
+2 TEMP PARIS
+2 PLAC Paris, France
+2 STAT COMPLETED
+3 DATE 10 JUN 1928
+1 REFN FAMILLE-001
+2 TYPE Reference familiale
+1 RIN 4001
+1 SUBM @U1@
+1 NOTE Famille fictive Dupont-Martin.
+1 SOUR @S1@
+2 PAGE Registre des mariages
+2 QUAY 3
+1 OBJE @O3@
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @F2@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 CHIL @I5@
+1 RESN privacy
+1 NCHI 1
+1 ADOP
+2 DATE 1 JAN 1930
+2 PLAC Paris, France
+2 NOTE Adoption fictive utilisee pour tester les liens.
+1 REFN FAMILLE-002
+1 RIN 4002
+
+0 @F3@ FAM
+1 HUSB @I5@
+1 WIFE @I2@
+1 CHIL @I7@
+1 MARR
+2 DATE 1 JAN 1954
+2 PLAC Paris, France
+1 REFN FAMILLE-003
+1 RIN 4003
+
+0 @S1@ SOUR
+1 DATA
+2 EVEN BIRT
+3 DATE 15 MAR 1900
+3 PLAC Marseille, France
+2 EVEN MARR
+3 DATE 10 JUN 1928
+3 PLAC Marseille, France
+2 AGNC Archives municipales de Marseille
+2 NOTE Donnees extraites des registres.
+1 AUTH Service des archives fictives
+2 CONT Departement des archives historiques
+2 CONC , section genealogie
+1 TITL Registre d'etat civil de Marseille
+2 CONT Periode 1900-1930
+2 CONC , volume 12
+1 ABBR Registre Marseille 1900
+1 PUBL Archives fictives, edition 2020
+2 CONT Reproduction de demonstration
+1 TEXT Transcription de l'acte de naissance.
+2 CONT Jean Dupont est ne le 15 mars 1900.
+1 REPO @R1@
+2 CALN MAR-1900-012
+3 MEDI fiche
+2 CALN MAR-1900-013
+3 MEDI microfilm
+1 REFN SOURCE-001
+2 TYPE Archive
+1 RIN 5001
+1 NOTE Source fictive.
+1 OBJE @O2@
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @S2@ SOUR
+1 DATA
+2 EVEN DEAT
+3 DATE 20 JUN 1970
+3 PLAC Paris, France
+2 AGNC Archives de Paris
+1 AUTH Service des archives de Paris
+1 TITL Registre des deces 1970
+1 ABBR Deces Paris 1970
+1 PUBL Archives fictives, 2020
+1 TEXT Acte de deces fictif.
+1 REPO @R2@
+2 CALN PAR-1970-100
+3 MEDI fiche
+1 REFN SOURCE-002
+1 RIN 5002
+
+0 @S3@ SOUR
+1 DATA
+2 EVEN EVEN
+3 DATE 1 JAN 1950
+3 PLAC Paris, France
+1 AUTH Association fictive
+1 TITL Registre des associations
+1 ABBR ASSO-1950
+1 PUBL Archives fictives
+1 TEXT Mention de Pierre Durand.
+1 REPO @R1@
+2 CALN ASSO-001
+1 REFN SOURCE-003
+1 RIN 5003
+
+0 @R1@ REPO
+1 NAME Archives municipales de Marseille
+1 ADDR 10 rue des Archives
+2 ADR1 10 rue des Archives
+2 ADR2 Salle de lecture
+2 ADR3 Service genealogie
+2 CITY Marseille
+2 STAE Bouches-du-Rhone
+2 POST 13001
+2 CTRY France
+1 PHON +33491000010
+1 EMAIL archives-marseille@example.org
+1 FAX +33491000011
+1 WWW https://example.org/archives-marseille
+1 NOTE Depot fictif.
+1 REFN DEPOT-001
+1 RIN 6001
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @R2@ REPO
+1 NAME Archives municipales de Paris
+1 ADDR 5 rue des Archives
+2 CITY Paris
+2 POST 75004
+2 CTRY France
+1 REFN DEPOT-002
+1 RIN 6002
+
+0 @O1@ OBJE
+1 FILE media/famille_dupont.jpg
+2 FORM jpg
+3 TYPE photo
+2 TITL Photographie de famille
+1 FILE media/famille_dupont.pdf
+2 FORM pdf
+3 TYPE document
+2 TITL Copie numerique de la photographie
+1 REFN MEDIA-001
+2 TYPE Reference media
+1 RIN 7001
+1 NOTE Media fictif.
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 @O2@ OBJE
+1 FILE media/acte_naissance_1900.jpg
+2 FORM jpg
+3 TYPE document
+2 TITL Acte de naissance de Jean Dupont
+1 REFN MEDIA-002
+1 RIN 7002
+
+0 @O3@ OBJE
+1 FILE media/acte_mariage_1928.pdf
+2 FORM pdf
+3 TYPE document
+2 TITL Acte de mariage de Jean et Marie
+1 REFN MEDIA-003
+1 RIN 7003
+
+0 @R3@ REPO
+1 NAME Depot documentaire fictif
+1 ADDR 1 place des Archives
+2 CITY Lyon
+2 STAE Rhone
+2 POST 69001
+2 CTRY France
+1 REFN DEPOT-003
+
+0 @NOTE1@ NOTE Note generale du dossier genealogique.
+1 CONT Deuxieme ligne de la note.
+1 CONC Suite de la deuxieme ligne.
+1 REFN NOTE-001
+1 RIN 8001
+1 SOUR @S1@
+2 PAGE Introduction
+2 QUAY 2
+1 CHAN
+2 DATE 9 NOV 2026
+3 TIME 14:00:00
+
+0 TRLR
