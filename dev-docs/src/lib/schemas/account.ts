@@ -27,3 +27,7 @@ export const changePasswordSchema = z
 		message: 'The new password must be different from the current one',
 		path: ['password']
 	});
+
+export type ProfileInput = z.infer<typeof profileSchema>;
+export type SetPasswordInput = z.infer<typeof setPasswordSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

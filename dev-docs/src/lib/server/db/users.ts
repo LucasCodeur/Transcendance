@@ -74,3 +74,7 @@ export async function setUserPasswordHashIfEmpty(id: string, passwordHash: strin
 
 	return count === 1;
 }
+
+export async function updateUserPasswordHash(id: string, passwordHash: string): Promise<void> {
+	await db.orm.public.User.where({ id }).update({ passwordHash });
+}
