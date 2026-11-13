@@ -195,7 +195,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "senderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "content": {
@@ -597,6 +614,21 @@
                   "namespace": "public"
                 }
               },
+              "messages": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "senderId"
+                  ]
+                },
+                "to": {
+                  "model": "Message",
+                  "namespace": "public"
+                }
+              },
               "oauthAccounts": {
                 "cardinality": "1:N",
                 "on": {
@@ -927,8 +959,37 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
-              "indexes": [],
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Message_senderId_idx_4689c490"
+                  },
+                  "source": {
+                    "columns": [
+                      "senderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Message"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "senderId"
+                  ],
+                  "name": "Message_senderId_idx_4689c490",
+                  "prefix": "Message_senderId_idx",
+                  "unique": false
+                }
+              ],
               "primaryKey": {
                 "columns": [
                   "messageId"
@@ -1392,7 +1453,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "245226d6a499199b2f2b9c5eec1cfef1c2724248ecb99fb474816c56023efe99"
+    "storageHash": "3a4af187cfbc2f5c9921cb5133bd6d6a565d6271c6dce1107af0451caf967cf0"
   },
   "execution": {
     "executionHash": "99f5b84790ce288e9ca6b8618bfc8e2c6b259ddfb96e91b4a13ccf79377a25ef",

@@ -7,11 +7,12 @@ model User {
   emailVerified Boolean           @default(false)
   totpSecret    String?
   friends		User[] @relation("friend")
+  messages		Message[]
   totpLastStep  Int?
   sessions      Session[]
   organizations Organization[]
   oauthAccounts OAuthAccount[]
-  recoveryCodes     RecoveryCode[]
+  recoveryCodes RecoveryCode[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }
@@ -33,7 +34,8 @@ model Friend {
 // what is type ? pending, friend, accept ?
 
 model Message {
-	messageId	String @id @default(uuid())
+	messageId	String	@id @default(uuid())
+	user		User	@relation(fields: [senderId], references:[id])
 	senderId	String
 	receiverId	String
 	content		String

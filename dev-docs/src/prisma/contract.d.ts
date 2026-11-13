@@ -18,7 +18,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'245226d6a499199b2f2b9c5eec1cfef1c2724248ecb99fb474816c56023efe99'>;
+  StorageHashBase<'3a4af187cfbc2f5c9921cb5133bd6d6a565d6271c6dce1107af0451caf967cf0'>;
 export type ExecutionHash =
   ExecutionHashBase<'99f5b84790ce288e9ca6b8618bfc8e2c6b259ddfb96e91b4a13ccf79377a25ef'>;
 export type ProfileHash =
@@ -472,7 +472,8 @@ export namespace Models {
     receiverId: CodecTypes['pg/text@1']['output'];
     senderId: CodecTypes['pg/text@1']['output'];
     timestamp: CodecTypes['pg/timestamptz-string@1']['output'];
-    readonly [RelationKeys]?: never;
+    user: public_User;
+    readonly [RelationKeys]?: 'user';
   };
   export type public_OAuthAccount = {
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -517,12 +518,13 @@ export namespace Models {
     totpSecret: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     friends: public_User[];
+    messages: public_Message[];
     oauthAccounts: public_OAuthAccount[];
     organizations: public_Organization[];
     recoveryCodes: public_RecoveryCode[];
     sessions: public_Session[];
     readonly [RelationKeys]?:
-      'friends' | 'oauthAccounts' | 'organizations' | 'recoveryCodes' | 'sessions';
+      'friends' | 'messages' | 'oauthAccounts' | 'organizations' | 'recoveryCodes' | 'sessions';
   };
   export type public_UserOrganizations = {
     organizationId: CodecTypes['pg/text@1']['output'];
@@ -669,8 +671,28 @@ type ContractBase = Omit<
               };
               primaryKey: { readonly columns: readonly ['messageId'] };
               uniques: readonly [];
-              indexes: readonly [];
-              foreignKeys: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Message_senderId_idx_4689c490';
+                  readonly prefix: 'Message_senderId_idx';
+                  readonly columns: readonly ['senderId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Message';
+                    readonly columns: readonly ['senderId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly OAuthAccount: {
               columns: {
@@ -1122,7 +1144,17 @@ type ContractBase = Omit<
                 };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['senderId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'Message';
               readonly namespaceId: 'public';
@@ -1376,6 +1408,17 @@ type ContractBase = Omit<
                   readonly parentColumns: readonly ['userId'];
                   readonly childColumns: readonly ['friendId'];
                   readonly targetColumns: readonly ['id'];
+                };
+              };
+              readonly messages: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Message';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['senderId'];
                 };
               };
               readonly oauthAccounts: {
