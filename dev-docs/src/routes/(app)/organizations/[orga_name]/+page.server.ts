@@ -2,10 +2,19 @@ import { redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 import { db } from "#lib/server/db/client.ts";
 
+interface OrgaUser {
+	name: string,
+	role: string,
+}
+
+interface Orga {
+	name: string | undefined,
+	users: OrgaUser[],
+}
 
 export async function load({params, locals}) {
 
-	const orga_data = {
+	const orga_data: Orga = {
 		name:undefined,
 		users: [],
 	}

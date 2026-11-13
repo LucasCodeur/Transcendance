@@ -6,15 +6,18 @@
 	import { Button } from "#lib/components/ui/button/index.ts";
 	import { z } from 'zod';
 	import { io } from 'socket.io-client';
+	import type { PageProps } from './$types';
+
 	interface Friend {
 		pending: string[],
 		friends: string[],
 		sent: string[],
 	}
-	import { friendRequestScheme } from '#lib/schemas/friend' 
-	let { data, form } = $props();
-	let clientErrors = $state({});
-	let errors = $derived({
+
+	import { friendRequestScheme } from '#lib/schemas/friend.ts' 
+	let { data, form }: PageProps = $props();
+	let clientErrors = $state<Record<string, string[] | undefined>>({});
+	let errors = $derived<Record<string, string[] | undefined>>({
 		...(form?.errors ?? {}),
 		...clientErrors,
 	});
@@ -26,22 +29,23 @@
 			hidden = "hidden";
 	}
 
-	function hide_chat(name) {
+	function hide_chat(name:string) {
 		friendChat="";
 		hidden="hidden";
 	}
 
-	function show_chat(name) {
+	function show_chat(name:string) {
 		friendChat = name;
 		hidden="";
 	}
 
 	let hidden=$state("");
 	let friendChat=$state("");
-	let chat;
+	let chat: HTMLElement | null;
 
 	$effect( () => {
-		chat.scrollTo(0, chat.scrollHeight);
+		if (chat !== null)
+			chat.scrollTo(0, chat.scrollHeight);
 	});
 
 	const socket = io();
@@ -59,7 +63,7 @@
 
 				<form method="POST" action="?/accept_deny">
 					<input class="hidden" name="type" value="accept" />
-					<Button type="sumbit" name="friend" value={pending} class="text-green-500" variant="outline">accept</Button>
+					<Button type="submit" name="friend" value={pending} class="text-green-500" variant="outline">accept</Button>
 				</form>
 
 				<form method="POST" action="?/accept_deny">
@@ -150,8 +154,10 @@
 			<div class="">
 				<Button onclick={(e) =>
 					{
-						toggle_chat_hidden();
-						chat.scrollTo(0, chat.scrollHeight);
+						if (chat !== null) {
+							toggle_chat_hidden();
+							chat.scrollTo(0, chat.scrollHeight);
+						}
 					}
 				}>x</Button>
 			</div>

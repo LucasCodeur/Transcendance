@@ -2,9 +2,17 @@ import { friendRequestScheme, friendAcceptDenyScheme } from "#lib/schemas/friend
 import { fail } from "@sveltejs/kit";
 import { z } from 'zod';
 import { db } from '#lib/server/db/client.ts'
+import { Interface } from "node:readline";
+
+interface FriendData {
+	me: undefined | string,
+	pending: string[],
+	friends: string[],
+	sent: string[],
+}
 
 export async function load ({locals}){
-	let data = {
+	let data: FriendData = {
 		me: undefined,
 		pending: [],
 		friends: [],
@@ -18,20 +26,23 @@ export async function load ({locals}){
 
 	const sent_requests = await all_friends.where({type: "pending"}).all();
 	for (const sent_request of sent_requests) {
-		const u = await db.orm.public.User.select("displayName").where({id: sent_request.friendId}).first();
-		data.sent.push(u?.displayName);
+		const u: {displayName: string} | null = await db.orm.public.User.select("displayName").where({id: sent_request.friendId}).first();
+		if (u !== null)
+			data.sent.push(u.displayName);
 	}
 
 	const accepted_friends = await all_friends.where({type: "accepted"}).all();
 	for (const accepted_friend of accepted_friends) {
-		const u = await db.orm.public.User.select("displayName").where({id: accepted_friend.friendId}).first();
-		data.friends.push(u?.displayName);
+		const u: {displayName: string} | null = await db.orm.public.User.select("displayName").where({id: accepted_friend.friendId}).first();
+		if (u !== null)
+			data.friends.push(u.displayName);
 	}
 
 	const incoming_friends = await db.orm.public.Friend.where({friendId: locals.user.id}).where({type: "pending"}).all();
 	for (const incoming_friend of incoming_friends) {
-		const u = await db.orm.public.User.select("displayName").where({id: incoming_friend.userId}).first();
-		data.pending.push(u?.displayName);
+		const u: {displayName: string} | null = await db.orm.public.User.select("displayName").where({id: incoming_friend.userId}).first();
+		if (u !== null)
+			data.pending.push(u.displayName);
 	}
 
 	return (data);
@@ -40,8 +51,8 @@ export async function load ({locals}){
 export const actions = {
 	create: async ({request, locals}) => {
 		// WARN UNCOMMENT BEFORE SHIP OR FF 
-		// if (!locals.user)
-		// 	return fail(400, {errors:"not logged in!"});
+		if (!locals.user)
+			return fail(400, {errors:"not logged in!"});
 		const form = Object.fromEntries(await request.formData());
 		const parsed = friendRequestScheme.safeParse(form);
 		if (!parsed.success)
@@ -64,9 +75,6 @@ export const actions = {
 			const allFriend = await db.orm.public.Friend.all();
 			console.log(allFriend);
 			const sent = await db.orm.public.Friend.where({userId: locals.user.id}).where({friendId: users[0].id}).all();
-			console.log(`sent.length = ${sent.length}`);
-			console.log(`users[0].id = ${users[0].id}`);
-			console.log(`locals.user.id = ${locals.user.id}`);
 			if (sent.length > 0) {
 				return fail(400, {errors: 
 					{friendName: 'friend request already sent!'}
@@ -105,13 +113,8 @@ export const actions = {
 	},
 
 	accept_deny: async({request, locals}) => {
-		// WARN UNCOMMENT BEFORE SHIP OR FF 
-		// if (!locals.user)
-		// 	return fail(400, {errors:"not logged in!"});
-		
-
-		//const form = Object.fromEntries(await request.formData());
-		//const parsed = friendRequestScheme.safeParse(form);
+		if (!locals.user)
+			return fail(400, {errors:"not logged in!"});
 
 		const form = Object.fromEntries(await request.formData());
 		const parsed = friendAcceptDenyScheme.safeParse(form);

@@ -59,6 +59,8 @@ export const actions = {
 			const user = await db.orm.public.User.where({email: locals.user.email}).update({
 				organizations: (orga) => orga.connect({id: new_org.id}),
 			});
+			if (user === null || user.id === undefined)
+				return fail(400, {errors: {orga_name: "user error while processing request"}});
 			await db.orm.public.UserOrganizations.where({userId: user.id}).where({organizationId: new_org.id}).update(
 				{role: "owner"});
 			new_org.id;

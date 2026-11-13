@@ -1,3 +1,3 @@
 export interface UserOrganization {
-	oraginzations: string[],
+	organizations: string[],
 }

@@ -3,16 +3,17 @@
 	import { enhance } from '$app/forms';
 	import { orgaCreationSchema } from "#lib/schemas/orga.ts"
 	import type { UserOrganization } from '#lib/interfaces/organizations/UserOrganization.ts';
+	import type { PageProps } from './$types';
 
-	let { data, form } = $props();
+	let { data, form }: PageProps = $props();
 
 	let my_data: UserOrganization = $derived(data);
-	let clientErrors = $state({});
+	let clientErrors = $state<Record<string, string[] | undefined>>({});
 	// this will take error from form error (potentially returning from server)
 	// and errors from ClientErrors (javascript part of forms)
 	// so wether an error comes from the server or the client, we can display
 	// it using an {#if ...}
-	let errors = $derived( {
+	let errors = $derived<Record<string, string[] | undefined>>({
 		...(form?.errors ?? {}),
 		...clientErrors,
 	});

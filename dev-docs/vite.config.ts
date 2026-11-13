@@ -7,7 +7,7 @@ import { db } from "#lib/server/db/client.ts";
 
 const forWebSocket = {
         name: "ahah",
-        configureServer: (serv) => {
+        configureServer: (serv: any) => {
 			const io = new Server(serv.httpServer);
 			io.on('connection', (client) => {
 				console.log(client);
