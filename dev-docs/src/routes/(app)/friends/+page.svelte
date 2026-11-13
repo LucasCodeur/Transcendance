@@ -39,9 +39,10 @@
 		hidden="";
 	}
 
-	let hidden=$state("");
+	let hidden=$state("hidden");
 	let friendChat=$state("");
 	let chat: HTMLElement | null;
+	let chat_content: null | string;
 
 	$effect( () => {
 		if (chat !== null)
@@ -157,6 +158,9 @@
 						if (chat !== null) {
 							toggle_chat_hidden();
 							chat.scrollTo(0, chat.scrollHeight);
+							socket.on(friendChat, (data) => {
+								console.log(`received a message from ${friendChat}`);
+							});
 						}
 					}
 				}>x</Button>
@@ -836,8 +840,12 @@
 		</div>
 
 		<div class="flex justify-between">
-			<input class="rounded-xl w-80/100 bg-taupe-50" type="text">
-			<Button  variant="outline" type="submit">send</Button>
+			<input bind:value={chat_content} class="rounded-xl w-80/100 bg-taupe-50" type="text">
+			<Button  
+				onclick={() => {socket.emit("send_message", {to:friendChat, content:chat_content});}
+				}
+				variant="outline" 
+				type="submit">send</Button>
 		</div>
 
 	</div>
