@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import {
 			deleteSession,
 			deleteUserSessions,
+			deleteOtherUserSessions,
 			findSessionWithUser,
 			insertSession,
 			updateSessionExpiry,
@@ -75,4 +76,8 @@ export async function completeTotpSession(sessionId: string): Promise<Date> {
 
 	await completePendingSession(sessionId, expiresAt);
 	return expiresAt;
+}
+
+export async function invalidateOtherUserSessions(userId: string, keepSessionId: string): Promise<void> {
+	await deleteOtherUserSessions(userId, keepSessionId);
 }

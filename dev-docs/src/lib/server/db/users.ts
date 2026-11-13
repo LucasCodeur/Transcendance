@@ -64,3 +64,13 @@ export function isUniqueViolation(error: unknown): boolean {
 		error.sqlState === '23505'
 	);
 }
+
+export async function updateUserDisplayName(id: string, displayName: string): Promise<void> {
+	await db.orm.public.User.where({ id }).update({ displayName });
+}
+
+export async function setUserPasswordHashIfEmpty(id: string, passwordHash: string): Promise<boolean> {
+	const count = await db.orm.public.User.where({ id}).where((u) => u.passwordHash.isNull()).updateAndCount({ passwordHash });
+
+	return count === 1;
+}
