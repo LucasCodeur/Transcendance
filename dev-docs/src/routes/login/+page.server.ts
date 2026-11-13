@@ -7,8 +7,19 @@ import { safeRedirect } from '#lib/server/auth/redirect.js'; // WARNING: same he
 import { loginUser } from '#lib/server/auth/service.js';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = ({ locals }) => {
+const OAUTH_ERRORS: Record<string, string> = {
+	oauth_invalid: 'The login attempt expired or was invalid. Please try again.',
+	oauth_cancelled: 'Login cancelled',
+	oauth_failed: 'The provider could not be reached. Please try again.',
+	email_missing: 'Your provider account has no verified email address.',
+	email_taken: 'An account already uses this email. Log in with your password, then link this provider from your account page.'
+}
+
+export const load: PageServerLoad = ({ locals, url }) => {
 	if (locals.user) redirect(303, '/account');
+	const error = url.searchParams.get('error')
+
+	return { oauthError: error ? (OAUTH_ERRORS[error] ?? null) : null };
 };
 
 export const actions: Actions = {
@@ -39,6 +50,11 @@ export const actions: Actions = {
 		clearFailures(emailKey);
 
 		setSessionCookie(cookies, result.token, result.expiresAt);
+
+		const redirectTo = url.searchParams.get('redirectTo');
+		if (result.totpRequired) {
+			redirect(303, `/login/2fa?redirectTo=${encodeURIComponent(redirectTo ?? '')}`);
+		}
 		redirect(303, safeRedirect(url.searchParams.get('redirectTo')));
 	}
 };

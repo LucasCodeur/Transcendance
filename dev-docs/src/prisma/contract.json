@@ -20,6 +20,10 @@
       "model": "Organization",
       "namespace": "public"
     },
+    "RecoveryCode": {
+      "model": "RecoveryCode",
+      "namespace": "public"
+    },
     "Session": {
       "model": "Session",
       "namespace": "public"
@@ -352,6 +356,74 @@
               "table": "Organization"
             }
           },
+          "RecoveryCode": {
+            "fields": {
+              "codeHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "codeHash": {
+                  "column": "codeHash"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "RecoveryCode"
+            }
+          },
           "Session": {
             "fields": {
               "createdAt": {
@@ -474,6 +546,13 @@
                   "kind": "scalar"
                 }
               },
+              "totpLastStep": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "totpSecret": {
                 "nullable": true,
                 "type": {
@@ -561,6 +640,21 @@
                   "namespace": "public"
                 }
               },
+              "recoveryCodes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "RecoveryCode",
+                  "namespace": "public"
+                }
+              },
               "sessions": {
                 "cardinality": "1:N",
                 "on": {
@@ -596,6 +690,9 @@
                 },
                 "passwordHash": {
                   "column": "passwordHash"
+                },
+                "totpLastStep": {
+                  "column": "totpLastStep"
                 },
                 "totpSecret": {
                   "column": "totpSecret"
@@ -951,6 +1048,79 @@
                 }
               ]
             },
+            "RecoveryCode": {
+              "columns": {
+                "codeHash": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "RecoveryCode_userId_idx_a489d58a"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "RecoveryCode"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "RecoveryCode_userId_idx_a489d58a",
+                  "prefix": "RecoveryCode_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "userId",
+                    "codeHash"
+                  ]
+                }
+              ]
+            },
             "Session": {
               "columns": {
                 "createdAt": {
@@ -1064,6 +1234,11 @@
                 "passwordHash": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": true
+                },
+                "totpLastStep": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": true
                 },
                 "totpSecret": {
@@ -1217,10 +1392,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "822d7d3d4ec9cd98501b968ed6fe38134cd66fe946866a27454d2958c465bda9"
+    "storageHash": "245226d6a499199b2f2b9c5eec1cfef1c2724248ecb99fb474816c56023efe99"
   },
   "execution": {
-    "executionHash": "42a70e3c0ed42e7a7971dd0372b490fe40da42bcd617773c5936a9b35f3a2850",
+    "executionHash": "99f5b84790ce288e9ca6b8618bfc8e2c6b259ddfb96e91b4a13ccf79377a25ef",
     "mutations": {
       "defaults": [
         {
@@ -1252,6 +1427,17 @@
           },
           "ref": {
             "entry": "Organization",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "RecoveryCode",
             "field": "id",
             "namespace": "public"
           }

@@ -7,9 +7,11 @@ model User {
   emailVerified Boolean           @default(false)
   totpSecret    String?
   friends		User[] @relation("friend")
+  totpLastStep  Int?
   sessions      Session[]
   organizations Organization[]
   oauthAccounts OAuthAccount[]
+  recoveryCodes     RecoveryCode[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }
@@ -80,4 +82,13 @@ model OAuthAccount {
   createdAt         TimestamptzString @default(now())
   @@unique([provider, providerUserId])
   @@unique([userId, provider])
+}
+
+model RecoveryCode {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  createdAt TimestamptzString @default(now())
+  @@unique([userId, codeHash])
 }

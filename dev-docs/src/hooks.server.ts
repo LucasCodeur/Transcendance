@@ -17,17 +17,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (result.renewed) setSessionCookie(event.cookies, token, result.session.expiresAt);
 
-	event.locals.user = {
-		id: result.user.id,
-		email: result.user.email,
-		displayName: result.user.displayName,
-		emailVerified: result.user.emailVerified
-	};
 	event.locals.session = {
 		id: result.session.id,
 		userId: result.session.userId,
 		expiresAt: result.session.expiresAt,
 		totpPending: result.session.totpPending
+	};
+
+	if (event.locals.session.totpPending) return resolve(event); // do not fill user if totpPending
+
+	event.locals.user = {
+		id: result.user.id,
+		email: result.user.email,
+		displayName: result.user.displayName,
+		emailVerified: result.user.emailVerified
 	};
 
 	return resolve(event);

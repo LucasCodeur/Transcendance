@@ -1,0 +1,206 @@
+[
+  {
+    "id": "table.RecoveryCode",
+    "label": "Create table \"RecoveryCode\"",
+    "summary": "Creates table \"RecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "RecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"RecoveryCode\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"RecoveryCode\"",
+        "sql": "CREATE TABLE \"public\".\"RecoveryCode\" (\n  \"codeHash\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"RecoveryCode\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.totpLastStep",
+    "label": "Add column \"totpLastStep\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "totpLastStep",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"totpLastStep\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "totpLastStep"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"totpLastStep\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"totpLastStep\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"totpLastStep\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "totpLastStep"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.RecoveryCode.RecoveryCode_userId_codeHash_key",
+    "label": "Add unique constraint on \"RecoveryCode\" (userId, codeHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "RecoveryCode_userId_codeHash_key",
+        "table": "RecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"RecoveryCode_userId_codeHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RecoveryCode_userId_codeHash_key",
+          "public",
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"RecoveryCode_userId_codeHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"RecoveryCode\" ADD CONSTRAINT \"RecoveryCode_userId_codeHash_key\" UNIQUE (\"userId\", \"codeHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"RecoveryCode_userId_codeHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RecoveryCode_userId_codeHash_key",
+          "public",
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.RecoveryCode.RecoveryCode_userId_idx_a489d58a",
+    "label": "Create index \"RecoveryCode_userId_idx_a489d58a\" on \"RecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "RecoveryCode_userId_idx_a489d58a",
+        "table": "RecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"RecoveryCode_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RecoveryCode_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"RecoveryCode_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"RecoveryCode_userId_idx_a489d58a\" ON \"public\".\"RecoveryCode\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"RecoveryCode_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RecoveryCode_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.RecoveryCode.RecoveryCode_userId_fkey",
+    "label": "Add foreign key \"RecoveryCode_userId_fkey\" on \"RecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "RecoveryCode_userId_fkey",
+        "table": "RecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"RecoveryCode_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RecoveryCode_userId_fkey",
+          "public",
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"RecoveryCode_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"RecoveryCode\"\nADD CONSTRAINT \"RecoveryCode_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"RecoveryCode_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RecoveryCode_userId_fkey",
+          "public",
+          "\"public\".\"RecoveryCode\""
+        ]
+      }
+    ]
+  }
+]
