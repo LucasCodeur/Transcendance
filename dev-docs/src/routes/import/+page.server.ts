@@ -1,14 +1,10 @@
 import { GedcomDocument, TokenNames } from "@domorium/validator";
-import type { ASTNode, GedcomError } from "@domorium/validator";
+import { fail } from "@sveltejs/kit";
 import { GedcomErrorCode } from "@domorium/validator";
 import { error } from "@sveltejs/kit";
 
-export const load: import = ({ locals, url }) => {
-	if (locals.user) redirect(303, '/account');
-	const error = url.searchParams.get('error')
-
-	return { oauthError: error ? (OAUTH_ERRORS[error] ?? null) : null };
-};
+import type { Actions } from "./$types";
+import type { ASTNode, GedcomError } from "@domorium/validator";
 
 async function printGedcomTree(document) {
   const payload = (node: ASTNode, tag: string): string | undefined =>
@@ -25,22 +21,40 @@ async function printGedcomTree(document) {
   }
 }
 
-export const actions = {
+export const actions: Actions = {
   upload: async ({ request }) => {
     const data: FormData = await request.formData();
-    console.log("DATA:", data);
     const file = data.get("file");
+
     if (file && file.size > 0) {
       const document: GedcomDocument = new GedcomDocument().createDocument(
         await file.text(),
       );
       const errors: GedcomError[] = document.getErrors();
+      const filesErrors = errors
+        .filter((error) => error.level === "error")
+        .map(
+          (error) =>
+            `Problem inside fill: ${error.message}` +
+            ` begin line: ` +
+            `${JSON.stringify(error.range.start)}` +
+            ` finish line: ` +
+            `${JSON.stringify(error.range.end)}`,
+        );
 
-      for (let error of errors) {
-        if (error.level === "error") console.log(error.message);
+      // console.log("FILE: ", await file.text());
+      console.log("BEFORE FOR ERRORS:", errors);
+      if (filesErrors.length > 0) {
+        return fail(400, {
+          errors: {
+            file: filesErrors,
+          },
+        });
       }
-      // await printGedcomTree(document);
+    } else if (!(file instanceof File) || file.size === 0) {
+      return fail(400, { error: "Please select a file." });
     }
+    // printGedcomTree(document);
     return { success: true };
   },
 };
