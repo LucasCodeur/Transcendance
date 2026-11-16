@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const sInputPerson = z.object({
+export const personSchema = z.object({
   gender: z.literal(["Male", "Female"]), // WARN: Only Male, Female ?
   firstName: z // WARN: What's the character limit?
     .string()
@@ -41,4 +41,4 @@ export const sInputPerson = z.object({
     .optional(),
 });
 
-export type inputPerson = z.infer<typeof sInputPerson>;
+export type personSchema = z.infer<typeof personSchema>;
