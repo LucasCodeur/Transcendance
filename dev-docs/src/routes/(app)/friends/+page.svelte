@@ -42,14 +42,23 @@
 	let hidden=$state("hidden");
 	let friendChat=$state("");
 	let chat: HTMLElement | null;
-	let chat_content: null | string;
+	let chat_content: null | string = $state();
 
 	$effect( () => {
 		if (chat !== null)
 			chat.scrollTo(0, chat.scrollHeight);
 	});
 
-	const socket = io();
+	const	socket = io();
+
+	interface Messages {
+		sender: string;
+		receiver: string;
+		date: string;
+	}
+
+	let		messages: null | Messages[] = $state();
+	// so a routes, where we can get all messages between two users !
 </script>
 
 
@@ -91,11 +100,17 @@
 						// which would open a chatbox and a chat with the users !
 
 						// retrieve messages
+
 						console.log("should sent event to the ws server");
 						socket.emit("loadConversation", {user:data.me, friend:friend});
 						console.log(`data.me = ${data.me}`);
 						show_chat(friend);
-
+						if (chat !== null) {
+							chat.scrollTo(0, chat.scrollHeight);
+						}
+						socket.on(friendChat, (data) => {
+							console.log(`received a message from ${friendChat}`);
+						});
 						// connect to websocket 
 						
 					}}
@@ -155,17 +170,54 @@
 			<div class="">
 				<Button onclick={(e) =>
 					{
-						if (chat !== null) {
-							toggle_chat_hidden();
-							chat.scrollTo(0, chat.scrollHeight);
-							socket.on(friendChat, (data) => {
-								console.log(`received a message from ${friendChat}`);
-							});
-						}
+						toggle_chat_hidden();
 					}
 				}>x</Button>
 			</div>
 		</div>
+		<!--
+
+		so, an array of messages,
+		each messages of form:
+		{
+			sender,
+			receiver,
+			date,
+		}
+
+		<Message.Root align="end">
+			<Message.Avatar>
+				<Avatar.Root>
+					<Avatar.Image src="/avatars/10.png" alt="@me" />
+					<Avatar.Fallback>ME</Avatar.Fallback>
+				</Avatar.Root>
+			</Message.Avatar>
+			<Message.Content>
+				<Bubble.Root>
+					<Bubble.Content>Deploying to prod real quick.</Bubble.Content>
+				</Bubble.Root>
+			</Message.Content>
+		</Message.Root>
+
+		<Message.Root align="end">
+		{#each messages as message}
+		if message.sender !== current {
+			</Message.Root>
+			<Message.Root align="end">
+				<Message.Avatar>
+					<Avatar.Root>
+						<Avatar.Image src="/avatars/10.png" alt="@me" />
+						<Avatar.Fallback>ME</Avatar.Fallback>
+					</Avatar.Root>
+				</Message.Avatar>
+		}
+		else {
+		}
+			
+		{/each}
+
+		-->
+	
 
 		<div bind:this={chat} class="h-70/100 p-2 rounded-xl border border-black overflow-auto">
 			<div class="  flex w-full  flex-col gap-6 py-12">
@@ -217,7 +269,6 @@
 						</Avatar.Root>
 					</Message.Avatar>
 					<Message.Content>
-						<Bubble.Group>
 							<Bubble.Root variant="muted">
 								<Bubble.Content>It's always a one-line change 😭.</Bubble.Content>
 							</Bubble.Root>
@@ -833,7 +884,6 @@
 									<span>👍</span>
 								</Bubble.Reactions>
 							</Bubble.Root>
-						</Bubble.Group>
 					</Message.Content>
 				</Message.Root>
 			</div>
