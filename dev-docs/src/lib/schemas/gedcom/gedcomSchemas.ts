@@ -1,13 +1,13 @@
 import * as z from "zod";
 
-export const sInputPerson = z.object({
-  gender: z.literal(["Male", "Female"]), // WARN: Only Male, Female ?
-  firstName: z // WARN: What's the character limit?
+export const personSchema = z.object({
+  gender: z.literal(["M", "F"]), // WARN: Only Male, Female ?
+  givenName: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
     .regex(/[a-zA-Z']/gm),
-  lastName: z // WARN: What's the character limit?
+  surName: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
@@ -20,6 +20,30 @@ export const sInputPerson = z.object({
     .regex(/[a-zA-Z']/gm)
     .optional(),
   marriedName: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  occupation: z // WARN: What's the character limit?
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  education: z // WARN: What's the character limit?
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  nationality: z // WARN: What's the character limit?
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
+  religion: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
@@ -39,6 +63,24 @@ export const sInputPerson = z.object({
     .max(100)
     .regex(/[a-zA-Z]/gm)
     .optional(),
+  note: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z]/gm)
+    .optional(),
+  source: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z]/gm)
+    .optional(),
+  objet: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/[a-zA-Z]/gm)
+    .optional(),
 });
 
-export type inputPerson = z.infer<typeof sInputPerson>;
+export type personSchema = z.infer<typeof personSchema>;
