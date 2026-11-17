@@ -1,12 +1,14 @@
 import * as z from "zod";
 
 export const personSchema = z.object({
-  gender: z.literal(["M", "F"]), // WARN: Only Male, Female ?
+  gedcomId: z.string(),
+  gender: z.literal(["M", "F"]).optional(), // WARN: Only Male, Female ?
   givenName: z // WARN: What's the character limit?
     .string()
     .min(1)
     .max(100)
-    .regex(/[a-zA-Z']/gm),
+    .regex(/[a-zA-Z']/gm)
+    .optional(),
   surName: z // WARN: What's the character limit?
     .string()
     .min(1)

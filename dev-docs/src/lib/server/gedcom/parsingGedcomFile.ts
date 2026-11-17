@@ -3,6 +3,8 @@ import { GedcomDocument } from "@domorium/validator";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom";
 
 import type { GedcomError } from "@domorium/validator";
+import type { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
+import type { ASTNode } from "@domorium/validator";
 
 export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
   const gedcomString: string | null = await gedcomFile.text();
@@ -15,6 +17,7 @@ export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
       return gedcomErrors;
     } else {
       utilsGedcom.printGedcomTree(document);
+      addASTGedcomToDb(document);
     }
   }
 }
@@ -47,13 +50,31 @@ function validateGedcomFile(document: GedcomDocument): string[] {
 function addASTGedcomToDb(document: GedcomDocument) {
   // Build all differents array needed.
   // Parse all informations
-  for (const record of document.getNodes()) {
-    utilsGedcom.printNode(record);
-  }
+  // for (const record of document.getNodes()) {
+  //   utilsGedcom.printNode(record);
+  // }
   // check all informations with zod schema if errors -> warn client
   // Add all relations array relations
   // ADD all person inside db
   // ADD all relations inside db
+  let persons: personSchema[] = [];
+  parseAST(document.getNodes(), persons);
+  console.log("PERSON: ", persons);
+}
+
+function parseAST(nodes: ASTNode[], persons: personSchema[]) {
+  let i = 0;
+  let max = nodes.length;
+  while (i < max) {
+    if (nodes[i].tokens.TAG?.value === "INDI") {
+      let person: personSchema = {};
+      // console.log("PARSE AST : nodes[i]", nodes[i]);
+      parsePerson(nodes[i].children, person);
+      console.log("PARSEAST person: ", person);
+      persons.push(person);
+    }
+    i++;
+  }
 }
 
 // function addPersons(node: ASTNode) {
@@ -99,7 +120,7 @@ function addASTGedcomToDb(document: GedcomDocument) {
 //  NAME  Nom complet
 //  GIVN  Prénom
 //  SURN  Nom de famille
-//  SEX  Sexe
+//  SEX   Sexe
 //  BIRT  Naissance
 //  DEAT  Décès
 //  BURI  Enterrement
@@ -121,7 +142,52 @@ function addASTGedcomToDb(document: GedcomDocument) {
  * @param
  * @return
  */
-// parseInidividual()
+function parsePerson(nodes: ASTNode[], person: personSchema) {
+  for (let node of nodes) {
+    let value: string | undefined = node.tokens?.VALUE?.value;
+    let tag: string | undefined = node.tokens?.TAG?.value;
+
+    if (tag === "NAME") {
+      parseName(node.children, person);
+    } else if (node.tokens?.TAG?.value[0] === "@") person.gedcomId = value;
+    else if (
+      node.tokens?.TAG?.value === "SEX M" ||
+      node.tokens?.TAG?.value === "SEX F"
+    )
+      parseGender(node, person);
+    else if (node.tokens?.TAG?.value === "BIRT")
+      parseBirth(node.children, person);
+  }
+}
+
+// 1 BIRT
+// 2 DATE 10 JAN 1980
+// 2 PLAC Paris, France
+function parseBirth(nodes: ASTNode[], person: personSchema) {
+  for (let node of nodes) {
+    let value: string | undefined = node.tokens?.VALUE?.value;
+    let tag: string | undefined = node.tokens?.TAG?.value;
+    if (tag === "DATE")
+      person.birthDate = new Date(utilsGedcom.formatDate(value));
+    else if (tag === "PLAC") person.birthPlace = value;
+  }
+}
+
+// 1 SEX M
+function parseGender(node: ASTNode, person: personSchema) {
+  let tag: string | undefined = node.tokens?.TAG?.value;
+  if (tag === "SEX M") person.gender = "M";
+  else if (tag === "SEX F") person.gender = "F";
+}
+
+function parseName(nodes: ASTNode[], person: personSchema) {
+  for (let node of nodes) {
+    if (node.tokens?.TAG?.value === "GIVN")
+      person.givenName = node.tokens?.VALUE?.value;
+    else if (node.tokens?.TAG?.value === "SURN")
+      person.surName = node.tokens?.VALUE?.value;
+  }
+}
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 

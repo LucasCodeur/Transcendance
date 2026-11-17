@@ -2,6 +2,29 @@ import type { ASTNode } from "@domorium/validator";
 import { GedcomDocument } from "@domorium/validator";
 
 export namespace utilsGedcom {
+  const MONTHS: Record<string, string> = {
+    JAN: "01",
+    FEB: "02",
+    MAR: "03",
+    APR: "04",
+    MAY: "05",
+    JUN: "06",
+    JUL: "07",
+    AUG: "08",
+    SEP: "09",
+    OCT: "10",
+    NOV: "11",
+    DEC: "12",
+  };
+
+  export function formatDate(date: string): string {
+    let newDate: string = "";
+    let parts: string[] = date.split(" ");
+    let month: string = MONTHS[parts[1]];
+    newDate = parts[2] + "-" + month + "-" + parts[0];
+    return newDate;
+  }
+
   export function printGedcomTree(document: GedcomDocument) {
     for (const record of document.getNodes()) {
       printNode(record);
