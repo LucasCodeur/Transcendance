@@ -1,88 +1,55 @@
 import * as z from "zod";
 
-export const personSchema = z.object({
-  gedcomId: z.string(),
-  gender: z.literal(["M", "F"]).optional(), // WARN: Only Male, Female ?
-  givenName: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  surName: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  middleName: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  marriedName: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  occupation: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  education: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  nationality: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  religion: z // WARN: What's the character limit?
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z']/gm)
-    .optional(),
-  birthDate: z.date(),
-  birthPlace: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z]/gm),
-  deceased: z.boolean(),
-  deathDate: z.date().optional(),
-  deathPlace: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z]/gm)
-    .optional(),
-  note: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z]/gm)
-    .optional(),
-  source: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z]/gm)
-    .optional(),
-  objet: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/[a-zA-Z]/gm)
-    .optional(),
+const optionalText = z.string().trim().min(1).max(200).optional();
+
+const addressSchema = z.object({
+  value: optionalText,
+  city: optionalText,
+  state: optionalText,
+  postalCode: optionalText,
+  country: optionalText,
 });
 
-export type personSchema = z.infer<typeof personSchema>;
+const eventSchema = z.object({
+  date: optionalText,
+  place: optionalText,
+  address: addressSchema.optional(),
+  note: optionalText,
+  sourceIds: z.array(z.string()).default([]),
+});
+
+const sourceReferenceSchema = z.object({
+  gedcomId: z.string().min(1),
+  page: optionalText,
+});
+
+export const personSchema = z.object({
+  gedcomId: z.string().min(1),
+
+  gender: z.enum(["M", "F", "U"]).optional(),
+
+  givenName: optionalText,
+  surName: optionalText,
+  nickName: optionalText,
+  marriedName: optionalText,
+
+  birth: eventSchema.optional(),
+  death: eventSchema.optional(),
+  burial: eventSchema.optional(),
+
+  occupations: z.array(optionalText).default([]),
+  education: z.array(optionalText).default([]),
+  nationality: optionalText,
+  religion: optionalText,
+
+  deceased: z.boolean(),
+
+  familyAsSpouseIds: z.array(z.string()).default([]),
+  familyAsChildIds: z.array(z.string()).default([]),
+
+  notes: z.array(optionalText).default([]),
+  sources: z.array(sourceReferenceSchema).default([]),
+  objectIds: z.array(z.string()).default([]),
+});
+
+export type Person = z.infer<typeof personSchema>;
