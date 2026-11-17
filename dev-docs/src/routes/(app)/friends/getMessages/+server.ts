@@ -25,16 +25,29 @@ export async function POST({request, locals}) {
 								.first();
 		if (!friendStatus || friendStatus.type !== "accepted")
 			return Response.json({status:403, errors: 'can not get message with a non friend user'});
-		const messages = await db.orm.public.Message.where({
+		const messages1 = await db.orm.public.Message.where({
 			senderId: locals.user.id,
 			receiverId: otherId,
 			}).select("timestamp", "content").all();
-		for (const message of messages) {
+		for (const message of messages1) {
 			message.sender = locals.user.displayName;
 			message.receiver = other.displayName;
 		}
-		// we also need to get other side messages 
-		// concatenate them and return them !
+
+		const messages2 = await db.orm.public.Message.where({
+			senderId: otherId,
+			receiverId: locals.user.id,
+			}).select("timestamp", "content").all();
+		for (const message of messages2) {
+			message.timestamp = Date(message.timestamp);
+			message.sender = other.displayName;
+			message.receiver = locals.user.displayName;
+		}
+		const messages = [...messages1, ...messages2];
+		messages.sort((a,b) => {
+			return new Date(b.timestamp) - new Date(a.timestamp);
+		});
+
 		console.log("messages:");
 		console.log(messages);
 		return (Response.json(messages));

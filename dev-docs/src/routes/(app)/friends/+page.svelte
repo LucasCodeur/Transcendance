@@ -100,6 +100,19 @@
 						// which would open a chatbox and a chat with the users !
 
 						// retrieve messages
+						// use fetch to call friends/getMessages api
+						// const options  = {
+								// 	method:"POST",
+								// 	headers: {
+								// 		"Content-type": "application/json",
+								// 		"Cookie:": "session={}",
+								// 	}
+								// };
+						//fetch(url + "/getMessages", options)
+						// print messages retreived
+						console.log("data.url:");
+						console.log(data.url + "/getMessages");
+
 
 						console.log("should sent event to the ws server");
 						socket.emit("loadConversation", {user:data.me, friend:friend});

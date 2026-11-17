@@ -9,15 +9,20 @@ interface FriendData {
 	pending: string[],
 	friends: string[],
 	sent: string[],
+	url: string | undefined;
 }
 
-export async function load ({locals}){
+export async function load ({url, locals}){
 	let data: FriendData = {
 		me: undefined,
 		pending: [],
 		friends: [],
 		sent: [],
+		url: url.href,
 	}
+	console.log("url:");
+	console.log(url);
+
 	if (!locals.user)
 		return data;
 	data.me = locals.user.displayName;
