@@ -161,9 +161,6 @@
 						console.log(messages_data);
 						split_messages(messages_data);
 
-						console.log("should sent event to the ws server");
-						socket.emit("loadConversation", {user:data.me, friend:friend});
-						console.log(`data.me = ${data.me}`);
 						show_chat(friend);
 						if (chat !== null) {
 							chat.scrollTo(0, chat.scrollHeight);
