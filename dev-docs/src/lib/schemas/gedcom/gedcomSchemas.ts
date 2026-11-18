@@ -24,8 +24,6 @@ const sourceReferenceSchema = z.object({
 });
 
 export const personSchema = z.object({
-  gedcomId: z.string().min(1),
-
   gender: z.enum(["M", "F", "U"]).optional(),
 
   givenName: optionalText,
@@ -50,6 +48,10 @@ export const personSchema = z.object({
   notes: z.array(optionalText).default([]),
   sources: z.array(sourceReferenceSchema).default([]),
   objectIds: z.array(z.string()).default([]),
+
+  gedcomId: z.string().min(1),
+  familyChildrenId: z.string().min(1),
+  familySpouseId: z.string().min(1),
 });
 
 export type Person = z.infer<typeof personSchema>;
