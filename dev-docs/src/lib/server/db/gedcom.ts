@@ -24,7 +24,11 @@ namespace geneaDB {
 
       treeId: treeId,
     });
+  }
 
+  export async function addRelations(person: Person)
+  {
+     
   }
 
   namespace utils {
@@ -41,7 +45,7 @@ namespace geneaDB {
 
       console.log("Id: ", person.id);
 
-	  console.log("Gender: ", person.gender);
+      console.log("Gender: ", person.gender);
 
       console.log("Given name: ", person.givenName?);
       console.log("Surname", person.surName);

@@ -42,16 +42,13 @@ export const personSchema = z.object({
 
   deceased: z.boolean(),
 
+  gedcomId: z.string().min(1),
   familyAsSpouseIds: z.array(z.string()).default([]),
   familyAsChildIds: z.array(z.string()).default([]),
 
   notes: z.array(optionalText).default([]),
   sources: z.array(sourceReferenceSchema).default([]),
   objectIds: z.array(z.string()).default([]),
-
-  gedcomId: z.string().min(1),
-  familyChildrenId: z.string().min(1),
-  familySpouseId: z.string().min(1),
 });
 
 export type Person = z.infer<typeof personSchema>;
