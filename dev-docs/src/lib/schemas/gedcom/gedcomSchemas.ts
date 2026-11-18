@@ -52,3 +52,12 @@ export const personSchema = z.object({
 });
 
 export type Person = z.infer<typeof personSchema>;
+
+export const relationSchema = z.object({
+  familyGedcomId: z.string().min(1),
+  personGedcomId: z.string().min(1),
+
+  role: z.enum(["HUSB", "WIFE", "CHIL"]),
+});
+
+export type Relation = z.infer<typeof relationSchema>;
