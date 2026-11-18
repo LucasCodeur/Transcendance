@@ -8,10 +8,12 @@ import type { ASTNode } from "@domorium/validator";
 
 export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
   const gedcomString: string | null = await gedcomFile.text();
+
   if (gedcomString && gedcomString?.length > 0) {
     const document: GedcomDocument = new GedcomDocument().createDocument(
       gedcomString,
     );
+
     const gedcomErrors: string[] | undefined = validateGedcomFile(document);
     if (gedcomErrors.length > 0) {
       return gedcomErrors;
@@ -24,6 +26,7 @@ export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
 
 function validateGedcomFile(document: GedcomDocument): string[] {
   const errors: GedcomError[] = document.getErrors();
+
   const filesErrors = errors
     .filter((error) => error.level === "error")
     .map(
@@ -34,6 +37,7 @@ function validateGedcomFile(document: GedcomDocument): string[] {
         ` finish line: ` +
         `${JSON.stringify(error.range.end)}`,
     );
+
   return filesErrors;
 }
 
@@ -58,24 +62,157 @@ function addASTGedcomToDb(document: GedcomDocument) {
   // ADD all person inside db
   // ADD all relations inside db
   let persons: Person[] = [];
+
   parseAST(document.getNodes(), persons);
+
   console.log("PERSON: ", persons);
 }
 
 function parseAST(nodes: ASTNode[], persons: Person[]) {
   let i = 0;
   let max = nodes.length;
+
   while (i < max) {
     if (nodes[i].tokens.TAG?.value === "INDI") {
       let person: Person = {};
+
       // console.log("PARSE AST : nodes[i]", nodes[i]);
+      // console.log(nodes[i].tokens.POINTER.value);
+      person.gedcomId = nodes[i].tokens.POINTER.value;
       parsePerson(nodes[i].children, person);
-      console.log("PARSEAST person: ", person);
+
       persons.push(person);
     }
     i++;
   }
 }
+
+// TODO: to conform with my prisma schema.
+// 0 @I1@ INDI
+// 1 NAME Jean /Dupont/
+// 2 GIVN Jean
+// 2 SURN Dupont
+// 1 SEX M
+// 1 BIRT
+// 2 DATE 10 JAN 1980
+// 2 PLAC Paris, France
+// 1 FAMS @F1@
+
+/**
+ * @brief Parses information about a person. A person is an individual with information such as first name, last name, birthday, etc.
+ * @param
+ * @param
+ * @return
+ */
+function parsePerson(nodes: ASTNode[], person: Person) {
+  for (let node of nodes) {
+    let value = node.tokens?.VALUE?.value;
+    let tag = node.tokens?.TAG?.value;
+
+    switch (tag) {
+      case "NAME":
+        parseName(node, person);
+        break;
+      case "SEX":
+        person.gender = value;
+        break;
+      case "BIRT":
+        parseEvent(node.children ?? [], person, "birth");
+        break;
+      case "DEAT":
+        parseEvent(node.children ?? [], person, "death");
+        break;
+      case "BURI":
+        parseEvent(node.children ?? [], person, "burial");
+        break;
+      case "FAMS":
+        if (node.tokens?.XREF?.value) {
+          if (person.familyAsSpouseIds == null) person.familyAsSpouseIds = [];
+          person.familyAsSpouseIds.push(node.tokens.XREF.value);
+        }
+        break;
+      case "FAMC":
+        if (node.tokens?.XREF?.value) {
+          if (person.familyAsSpouseIds == null) person.familyAsChildIds = [];
+          person.familyAsChildIds.push(node.tokens.XREF.value);
+        }
+        break;
+    }
+  }
+}
+
+function parseName(nodeName: ASTNode, person: Person) {
+  const fullName = nodeName.tokens?.VALUE?.value.replaceAll("/", "");
+  if (fullName) {
+    person.fullName = fullName;
+  }
+
+  const children = nodeName.children ?? [];
+
+  for (const node of children) {
+    const tag = node.tokens?.TAG?.value;
+    const value = node.tokens?.VALUE?.value;
+
+    if (!value) continue;
+
+    if (tag === "GIVN") {
+      person.givenName = value;
+    } else if (tag === "SURN") {
+      person.surName = value;
+    } else if (tag === "NICK") {
+      person.nickname = value;
+    }
+
+    if ((!person.givenName || !person.surName) && fullName) {
+      let parts: string[] = fullName.split(" ");
+      person.givenName = parts[0];
+      person.surName = parts[1];
+    }
+  }
+}
+
+type Event = {
+  date?: Date;
+  place?: string;
+  address?: string;
+};
+
+function parseEvent(
+  nodes: ASTNode[],
+  person: Person,
+  eventType: "birth" | "death" | "burial",
+) {
+  const event: Event = {};
+
+  for (const node of nodes) {
+    const tag = node.tokens?.TAG?.value;
+    const value = node.tokens?.VALUE?.value;
+
+    if (!value) continue;
+
+    if (tag === "DATE") {
+      event.date = new Date(utilsGedcom.formatDate(value));
+    } else if (tag === "PLAC") {
+      event.place = value;
+    } else if (tag === "ADDR") {
+      event.address = value;
+    }
+  }
+
+  if (eventType === "birth") {
+    person.birthDate = event.date;
+    person.birthPlace = event.place;
+    person.birthAddress = event.address;
+  } else if (eventType === "death") {
+    person.deathDate = event.date;
+    person.deathPlace = event.place;
+  } else if (eventType === "burial") {
+    person.burialDate = event.date;
+    person.burialPlace = event.place;
+  }
+}
+
+// ----------------------------------------------------------------------------------------------------------------------------------- //
 
 // function addPersons(node: ASTNode) {
 //   const tag: string | undefined = getTag(node);
@@ -104,91 +241,6 @@ function parseAST(nodes: ASTNode[], persons: Person[]) {
  * @return
  */
 // parseHeader()
-// ----------------------------------------------------------------------------------------------------------------------------------- //
-// TODO: to conform with my prisma schema.
-// 0 @I1@ INDI
-// 1 NAME Jean /Dupont/
-// 2 GIVN Jean
-// 2 SURN Dupont
-// 1 SEX M
-// 1 BIRT
-// 2 DATE 10 JAN 1980
-// 2 PLAC Paris, France
-// 1 FAMS @F1@
-
-// NOTE:
-//  NAME  Nom complet
-//  GIVN  Prénom
-//  SURN  Nom de famille
-//  SEX   Sexe
-//  BIRT  Naissance
-//  DEAT  Décès
-//  BURI  Enterrement
-//  RESI  Résidence
-//  OCCU  Profession
-//  EDUC  Éducation
-//  RELI  Religion
-//  NATI  Nationalité
-//  FAMS  Famille comme conjoint
-//  FAMC  Famille comme enfant
-//  ADOP  Adoption
-//  NOTE  Note
-//  SOUR  Source
-//  OBJE  Objet ou média
-
-/**
- * @brief Parses information about a person. A person is an individual with information such as first name, last name, birthday, etc.
- * @param
- * @param
- * @return
- */
-function parsePerson(nodes: ASTNode[], person: Person) {
-  for (let node of nodes) {
-    let value: string | undefined = node.tokens?.VALUE?.value;
-    let tag: string | undefined = node.tokens?.TAG?.value;
-
-    if (tag === "NAME") {
-      parseName(node.children, person);
-    } else if (node.tokens?.TAG?.value[0] === "@") person.gedcomId = value;
-    else if (
-      node.tokens?.TAG?.value === "SEX M" ||
-      node.tokens?.TAG?.value === "SEX F"
-    )
-      parseGender(node, person);
-    else if (node.tokens?.TAG?.value === "BIRT")
-      parseBirth(node.children, person);
-  }
-}
-
-// 1 BIRT
-// 2 DATE 10 JAN 1980
-// 2 PLAC Paris, France
-function parseBirth(nodes: ASTNode[], person: Person) {
-  for (let node of nodes) {
-    let value: string | undefined = node.tokens?.VALUE?.value;
-    let tag: string | undefined = node.tokens?.TAG?.value;
-    if (tag === "DATE")
-      person.birthDate = new Date(utilsGedcom.formatDate(value));
-    else if (tag === "PLAC") person.birthPlace = value;
-  }
-}
-
-// 1 SEX M
-function parseGender(node: ASTNode, person: Person) {
-  let tag: string | undefined = node.tokens?.TAG?.value;
-  if (tag === "SEX M") person.gender = "M";
-  else if (tag === "SEX F") person.gender = "F";
-}
-
-function parseName(nodes: ASTNode[], person: Person) {
-  for (let node of nodes) {
-    if (node.tokens?.TAG?.value === "GIVN")
-      person.givenName = node.tokens?.VALUE?.value;
-    else if (node.tokens?.TAG?.value === "SURN")
-      person.surName = node.tokens?.VALUE?.value;
-  }
-}
-
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 
 // TODO: to conform with my prisma schema.
