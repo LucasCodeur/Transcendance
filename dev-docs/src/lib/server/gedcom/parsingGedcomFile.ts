@@ -3,7 +3,7 @@ import { GedcomDocument } from "@domorium/validator";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom";
 
 import type { GedcomError } from "@domorium/validator";
-import type { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
+import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
 
 export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
@@ -57,17 +57,17 @@ function addASTGedcomToDb(document: GedcomDocument) {
   // Add all relations array relations
   // ADD all person inside db
   // ADD all relations inside db
-  let persons: personSchema[] = [];
+  let persons: Person[] = [];
   parseAST(document.getNodes(), persons);
   console.log("PERSON: ", persons);
 }
 
-function parseAST(nodes: ASTNode[], persons: personSchema[]) {
+function parseAST(nodes: ASTNode[], persons: Person[]) {
   let i = 0;
   let max = nodes.length;
   while (i < max) {
     if (nodes[i].tokens.TAG?.value === "INDI") {
-      let person: personSchema = {};
+      let person: Person = {};
       // console.log("PARSE AST : nodes[i]", nodes[i]);
       parsePerson(nodes[i].children, person);
       console.log("PARSEAST person: ", person);
@@ -142,7 +142,7 @@ function parseAST(nodes: ASTNode[], persons: personSchema[]) {
  * @param
  * @return
  */
-function parsePerson(nodes: ASTNode[], person: personSchema) {
+function parsePerson(nodes: ASTNode[], person: Person) {
   for (let node of nodes) {
     let value: string | undefined = node.tokens?.VALUE?.value;
     let tag: string | undefined = node.tokens?.TAG?.value;
@@ -163,7 +163,7 @@ function parsePerson(nodes: ASTNode[], person: personSchema) {
 // 1 BIRT
 // 2 DATE 10 JAN 1980
 // 2 PLAC Paris, France
-function parseBirth(nodes: ASTNode[], person: personSchema) {
+function parseBirth(nodes: ASTNode[], person: Person) {
   for (let node of nodes) {
     let value: string | undefined = node.tokens?.VALUE?.value;
     let tag: string | undefined = node.tokens?.TAG?.value;
@@ -174,13 +174,13 @@ function parseBirth(nodes: ASTNode[], person: personSchema) {
 }
 
 // 1 SEX M
-function parseGender(node: ASTNode, person: personSchema) {
+function parseGender(node: ASTNode, person: Person) {
   let tag: string | undefined = node.tokens?.TAG?.value;
   if (tag === "SEX M") person.gender = "M";
   else if (tag === "SEX F") person.gender = "F";
 }
 
-function parseName(nodes: ASTNode[], person: personSchema) {
+function parseName(nodes: ASTNode[], person: Person) {
   for (let node of nodes) {
     if (node.tokens?.TAG?.value === "GIVN")
       person.givenName = node.tokens?.VALUE?.value;
