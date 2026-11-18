@@ -10,17 +10,19 @@ const addressSchema = z.object({
   country: optionalText,
 });
 
+const sourceReferenceSchema = z.object({
+  gedcomId: z.string().min(1),
+
+  page: optionalText,
+});
+
 const eventSchema = z.object({
   date: optionalText,
   place: optionalText,
   address: addressSchema.optional(),
+
   note: optionalText,
   sourceIds: z.array(z.string()).default([]),
-});
-
-const sourceReferenceSchema = z.object({
-  gedcomId: z.string().min(1),
-  page: optionalText,
 });
 
 export const personSchema = z.object({
@@ -52,6 +54,32 @@ export const personSchema = z.object({
 });
 
 export type Person = z.infer<typeof personSchema>;
+
+const familyEventSchema = z.object({
+  date: z.string().optional(),
+  place: z.string().optional(),
+  address: z.string().optional(),
+
+  sourceIds: z.array(z.string()).default([]),
+  notes: z.array(z.string()).default([]),
+});
+
+export const familySchema = z.object({
+  gedcomId: z.string().min(1),
+
+  husdbandGedcomId: z.string().optional(),
+  wifeGedcomId: z.string().optional(),
+
+  childGedcomIds: z.array(z.string()).default([]),
+
+  marriage: familyEventSchema.optional(),
+  divorce: familyEventSchema.optional(),
+
+  sourceIds: z.array(z.string()).default([]),
+  notes: z.array(z.string()).default([]),
+});
+
+export type Family = z.infer<typeof familySchema>;
 
 export const relationSchema = z.object({
   familyGedcomId: z.string().min(1),
