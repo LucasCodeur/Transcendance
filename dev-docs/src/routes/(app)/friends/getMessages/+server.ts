@@ -39,16 +39,17 @@ export async function POST({request, locals}) {
 			receiverId: locals.user.id,
 			}).select("timestamp", "content").all();
 		for (const message of messages2) {
-			message.timestamp = Date(message.timestamp);
 			message.sender = other.displayName;
 			message.receiver = locals.user.displayName;
 		}
 		const messages = [...messages1, ...messages2];
+
 		messages.sort((a,b) => {
-			return new Date(b.timestamp) - new Date(a.timestamp);
+			return  new Date(a.timestamp) - new Date(b.timestamp);
 		});
 
-		console.log("messages:");
+		console.log("messages :");
 		console.log(messages);
+
 		return (Response.json(messages));
 	}

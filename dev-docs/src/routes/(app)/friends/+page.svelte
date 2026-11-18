@@ -51,14 +51,59 @@
 
 	const	socket = io();
 
+
 	interface Messages {
 		sender: string;
 		receiver: string;
 		date: string;
 	}
 
-	let		messages: null | Messages[] = $state();
+	let		messages_data: null | Messages[] = $state([]);
 	// so a routes, where we can get all messages between two users !
+	let		splitted_messages: null | Messages[][] = $state([]);
+	let		align:string = "";
+
+	function split_messages(messages_data) {
+
+		if (messages_data.length === 0)
+			return ;
+		splitted_messages = [];
+		let tmp_messages_block = [];
+		tmp_messages_block.push(messages_data[0]);
+		let last_sender = messages_data[0].sender;
+		for (let i = 1; i < messages_data.length; i++) {
+			console.log(`messages_data[${i}]`);
+			if (messages_data[i].sender === last_sender) {
+				tmp_messages_block.push(messages_data[i]);
+			}
+			else {
+				splitted_messages.push(tmp_messages_block);
+				tmp_messages_block = [messages_data[i]];
+				last_sender = messages_data[i].sender;
+			}
+		}
+		if (tmp_messages_block.length > 0)
+			splitted_messages.push(tmp_messages_block);
+		console.log("splitted_messages:");
+		console.log(splitted_messages);
+	}
+
+	socket.on("new_message", (data) => {
+		console.log("received a new message, data:");
+		console.log(data);
+		if (data.sender === friendChat || data.receiver === friendChat) {
+			messages_data.push(data);
+			console.log("messages_date:");
+			split_messages(messages_data);
+		}
+	});
+
+	function align_to_empty() {
+		align = "";
+	}
+	function align_to_end(){
+		align = "end";
+	}
 </script>
 
 
@@ -95,24 +140,26 @@
 				<Button 
 					class="w-80/100" 
 					variant="outline"
-					onclick={() => {
+					onclick={async () => {
 						// here we should set some variables
 						// which would open a chatbox and a chat with the users !
 
 						// retrieve messages
 						// use fetch to call friends/getMessages api
-						// const options  = {
-								// 	method:"POST",
-								// 	headers: {
-								// 		"Content-type": "application/json",
-								// 		"Cookie:": "session={}",
-								// 	}
-								// };
-						//fetch(url + "/getMessages", options)
-						// print messages retreived
-						console.log("data.url:");
-						console.log(data.url + "/getMessages");
+						const options  = {
+									method:"POST",
+									credentials: "same-origin",
+									headers: {
+										"Content-type": "application/json",
+									},
+									body: JSON.stringify({from:data.me, to:friend}),
+								};
+						const messages_response = await fetch(data.url + "/getMessages", options);
+						messages_data = await messages_response.json();
 
+						console.log("messages_data:");
+						console.log(messages_data);
+						split_messages(messages_data);
 
 						console.log("should sent event to the ws server");
 						socket.emit("loadConversation", {user:data.me, friend:friend});
@@ -145,7 +192,7 @@
 	{/each}
 </div>
 
-<div class="h-1000 mb-5 rounded-sm p-2  border border-black">
+<div class="mb-5 rounded-sm p-2  border border-black">
 	<p class=" font-bold text-4xl">Add Friend:</p>
 	<form
 		action="?/create"
@@ -234,671 +281,696 @@
 
 		<div bind:this={chat} class="h-70/100 p-2 rounded-xl border border-black overflow-auto">
 			<div class="  flex w-full  flex-col gap-6 py-12">
-				<Message.Root align="end">
+				{#each splitted_messages as messages_block}
+					{#if messages_block[0].sender === data.me}
+						{align_to_end()}
+					{:else}
+						{align_to_empty()}
+					{/if}
+					<Message.Root align={align}>
 					<Message.Avatar>
 						<Avatar.Root>
-							<Avatar.Image src="/avatars/10.png" alt="@me" />
-							<Avatar.Fallback>ME</Avatar.Fallback>
+							<!-- <Avatar.Image src="/avatars/10.png" alt="@me" /> -->
+							<Avatar.Fallback>{messages_block[0].sender[0].toUpperCase()}</Avatar.Fallback>
 						</Avatar.Root>
 					</Message.Avatar>
 					<Message.Content>
-						<Bubble.Root>
-							<Bubble.Content>Deploying to prod real quick.</Bubble.Content>
-						</Bubble.Root>
-					</Message.Content>
-				</Message.Root>
-				<Message.Root>
-					<Message.Avatar>
-						<Avatar.Root>
-							<Avatar.Image src="/avatars/02.png" alt="@rabbit" />
-							<Avatar.Fallback>R</Avatar.Fallback>
-						</Avatar.Root>
-					</Message.Avatar>
-					<Message.Content>
+					{#each messages_block as message}
 						<Bubble.Root variant="muted">
-							<Bubble.Content>It's 4:55 PM. On a Friday.</Bubble.Content>
+							<Bubble.Content>{message.content}</Bubble.Content>
 						</Bubble.Root>
+					{/each}
+
 					</Message.Content>
-				</Message.Root>
-				<Message.Root align="end">
-					<Message.Avatar>
-						<Avatar.Root>
-							<Avatar.Image src="/avatars/10.png" alt="@me" />
-							<Avatar.Fallback>ME</Avatar.Fallback>
-						</Avatar.Root>
-					</Message.Avatar>
-					<Message.Content>
-						<Bubble.Root>
-							<Bubble.Content>It's a one-line change.</Bubble.Content>
-						</Bubble.Root>
-						<Message.Footer>Delivered</Message.Footer>
-					</Message.Content>
-				</Message.Root>
-				<Message.Root>
-					<Message.Avatar>
-						<Avatar.Root>
-							<Avatar.Image src="/avatars/02.png" alt="@rabbit" />
-							<Avatar.Fallback>R</Avatar.Fallback>
-						</Avatar.Root>
-					</Message.Avatar>
-					<Message.Content>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>It's always a one-line change 😭.</Bubble.Content>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-							<Bubble.Root variant="muted">
-								<Bubble.Content>Alright, let me take a look.</Bubble.Content>
-								<Bubble.Reactions aria-label="Reactions: thumbs up">
-									<span>👍</span>
-								</Bubble.Reactions>
-							</Bubble.Root>
-					</Message.Content>
-				</Message.Root>
+					</Message.Root>
+				{/each}
+
+				<!-- <Message.Root align="end"> -->
+				<!-- 	<Message.Avatar> -->
+				<!-- 		<Avatar.Root> -->
+				<!-- 			<Avatar.Image src="/avatars/10.png" alt="@me" /> -->
+				<!-- 			<Avatar.Fallback>ME</Avatar.Fallback> -->
+				<!-- 		</Avatar.Root> -->
+				<!-- 	</Message.Avatar> -->
+				<!-- 	<Message.Content> -->
+				<!-- 		<Bubble.Root> -->
+				<!-- 			<Bubble.Content>Deploying to prod real quick.</Bubble.Content> -->
+				<!-- 		</Bubble.Root> -->
+				<!-- 	</Message.Content> -->
+				<!-- </Message.Root> -->
+
+				<!-- <Message.Root> -->
+				<!-- 	<Message.Avatar> -->
+				<!-- 		<Avatar.Root> -->
+				<!-- 			<Avatar.Image src="/avatars/02.png" alt="@rabbit" /> -->
+				<!-- 			<Avatar.Fallback>R</Avatar.Fallback> -->
+				<!-- 		</Avatar.Root> -->
+				<!-- 	</Message.Avatar> -->
+				<!-- 	<Message.Content> -->
+				<!-- 		<Bubble.Root variant="muted"> -->
+				<!-- 			<Bubble.Content>It's 4:55 PM. On a Friday.</Bubble.Content> -->
+				<!-- 		</Bubble.Root> -->
+				<!-- 	</Message.Content> -->
+				<!-- </Message.Root> -->
+				<!-- <Message.Root align="end"> -->
+				<!-- 	<Message.Avatar> -->
+				<!-- 		<Avatar.Root> -->
+				<!-- 			<Avatar.Image src="/avatars/10.png" alt="@me" /> -->
+				<!-- 			<Avatar.Fallback>ME</Avatar.Fallback> -->
+				<!-- 		</Avatar.Root> -->
+				<!-- 	</Message.Avatar> -->
+				<!-- 	<Message.Content> -->
+				<!-- 		<Bubble.Root> -->
+				<!-- 			<Bubble.Content>It's a one-line change.</Bubble.Content> -->
+				<!-- 		</Bubble.Root> -->
+				<!-- 		<Message.Footer>Delivered</Message.Footer> -->
+				<!-- 	</Message.Content> -->
+				<!-- </Message.Root> -->
+				<!-- <Message.Root> -->
+				<!-- 	<Message.Avatar> -->
+				<!-- 		<Avatar.Root> -->
+				<!-- 			<Avatar.Image src="/avatars/02.png" alt="@rabbit" /> -->
+				<!-- 			<Avatar.Fallback>R</Avatar.Fallback> -->
+				<!-- 		</Avatar.Root> -->
+				<!-- 	</Message.Avatar> -->
+				<!-- 	<Message.Content> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>It's always a one-line change 😭.</Bubble.Content> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 			<Bubble.Root variant="muted"> -->
+				<!-- 				<Bubble.Content>Alright, let me take a look.</Bubble.Content> -->
+				<!-- 				<Bubble.Reactions aria-label="Reactions: thumbs up"> -->
+				<!-- 					<span>👍</span> -->
+				<!-- 				</Bubble.Reactions> -->
+				<!-- 			</Bubble.Root> -->
+				<!-- 	</Message.Content> -->
+				<!-- </Message.Root> -->
 			</div>
 		</div>
 
@@ -908,7 +980,9 @@
 				onclick={() => {socket.emit("send_message", {to:friendChat, content:chat_content});}
 				}
 				variant="outline" 
-				type="submit">send</Button>
+				type="submit">
+				send
+			</Button>
 		</div>
 
 	</div>
