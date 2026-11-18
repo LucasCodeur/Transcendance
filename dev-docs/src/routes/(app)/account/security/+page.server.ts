@@ -1,19 +1,22 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { secondFactorSchema, totpCodeSchema } from '#lib/schemas/two-factor.js';
-import { clearFailures, recordFailure, tooManyAttempts } from '#lib/server/auth/rate-limit.js';
-import { beginTotpSetup, clearTotpSetup, readTotpSetup } from '#lib/server/auth/totp-setup.js';
+import { changePasswordSchema, setPasswordSchema } from '#lib/schemas/account.ts';
+import { secondFactorSchema, totpCodeSchema } from '#lib/schemas/two-factor.ts';
+import { changePassword, setPassword } from '#lib/server/account/service.ts';
+import { getLoginMethods } from '#lib/server/auth/oauth.ts';
+import { clearFailures, recordFailure, tooManyAttempts } from '#lib/server/auth/rate-limit.ts';
+import { beginTotpSetup, clearTotpSetup, readTotpSetup } from '#lib/server/auth/totp-setup.ts';
 import {
 	describeTotpSetup,
 	disableTwoFactor,
 	enableTwoFactor,
 	getTwoFactorStatus,
 	regenerateRecoveryCodes
-} from '#lib/server/auth/two-factor.js';
+} from '#lib/server/auth/two-factor.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_ATTEMPTS = 5;
-const TOO_MANY = 'Too many attemps. try again in few minutes.';
+const TOO_MANY = 'Too many attempts. Try again in few minutes.';
 const NOTICES: Record<string, string> =  {
 	recovery_code_used: 'You logged in with a recovery code. It cannot be used again.',
 };
@@ -25,7 +28,10 @@ export const load: PageServerLoad = async ({ locals, cookies, url }) => {
 	const secret = status.enabled ? null : readTotpSetup(cookies, locals.user.id);
 	const notice = url.searchParams.get('notice');
 
+	const { hasPassword } = await getLoginMethods(locals.user.id);
+
 	return {
+		hasPassword,
 		status,
 		setup: secret ? await describeTotpSetup(secret, locals.user.email) : null,
 		notice: notice ? (NOTICES[notice] ?? null) : null
@@ -33,6 +39,42 @@ export const load: PageServerLoad = async ({ locals, cookies, url }) => {
 }
 
 export const actions: Actions = {
+	setPassword: async ({ request, locals }) => {
+		if (!locals.user || !locals.session) error(401);
+
+		const parsed = setPasswordSchema.safeParse(Object.fromEntries(await request.formData()));
+		if (!parsed.success)
+			return fail(400, { action: 'setPassword', errors: z.flattenError(parsed.error).fieldErrors });
+
+		const result = await setPassword(locals.user.id, locals.session.id, parsed.data)
+		if (!result.ok)
+			return fail(400, { action: 'setPassword', errors: 'You already have a password. Reload the page to change it' });
+
+		return { action: 'setPassword', error: 'Password set. Your other devices have been logged out.' };
+	},
+
+	changePassword: async ({ request, locals }) => {
+		if (!locals.user || !locals.session) error(401);
+
+		const parsed = changePasswordSchema.safeParse(Object.fromEntries(await request.formData()));
+		if (!parsed.success)
+			return fail(400, { action: 'changePassword', errors: z.flattenError(parsed.error).fieldErrors });
+
+		const key = `password:${locals.user.id}`;
+		if (tooManyAttempts(key, MAX_ATTEMPTS)) return fail(429, { action: 'changePassword', error: TOO_MANY });
+
+		const result = await changePassword(locals.user.id, locals.session.id, parsed.data);
+		if (!result.ok) {
+			if (result.code === 'NO_PASSWORD')
+				return fail(400, { action: 'changePassword', error: 'You have no password yet. Reload the page to set one.' });
+			recordFailure(key);
+			return fail(400, { action: 'changePassword', errors: { currentPassword: ['Incorrect password'] } });
+		}
+		clearFailures(key);
+
+		return { action: 'changePassword', message: 'Password changed. Your other devices have been logged out.' };
+	},
+
 	setup: async ({ locals, cookies }) => {
 		if (!locals.user) error(401);
 		beginTotpSetup(cookies, locals.user.id);

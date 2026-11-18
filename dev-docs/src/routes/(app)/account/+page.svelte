@@ -25,7 +25,7 @@
 		...clientErrors });
 	const profileMessage = $derived(form?.action === 'profile' && 'message' in form ? form.message : null);
 	const providerError = $derived(form?.action === 'provider' && 'error' in form ? form.error : null);
-	const providerMessage = $derived(form?.action === 'provider' && 'message' in form ? form.error : null);
+	const providerMessage = $derived(form?.action === 'provider' && 'message' in form ? form.message : null);
 
 	const displayNameValue = $derived(form?.action === 'profile' && 'displayName' in form ? form.displayName : null);
 	
@@ -46,13 +46,6 @@
 	<Alert.Root variant="destructive">
 		<CircleAlertIcon aria-hidden="true" />
 		<Alert.Description>{data.message}</Alert.Description>
-	</Alert.Root>
-{/if}
-
-{#if data.linked}
-	<Alert.Root role="status">
-		<CircleCheckIcon aria-hidden="true" />
-		<Alert.Description>{OAUTH_PROVIDER_LABELS[data.linked]} account linked.</Alert.Description>
 	</Alert.Root>
 {/if}
 
@@ -127,6 +120,12 @@
 	</Card.Header>
 
 	<Card.Content class="flex flex-col gap-4">
+		{#if data.linked}
+			<Alert.Root role="status">
+				<CircleCheckIcon aria-hidden="true" />
+				<Alert.Description>{OAUTH_PROVIDER_LABELS[data.linked]} account linked.</Alert.Description>
+			</Alert.Root>
+		{/if}
 		{#if providerError}
 			<Alert.Root variant="destructive">
 				<CircleAlertIcon aria-hidden="true" />
