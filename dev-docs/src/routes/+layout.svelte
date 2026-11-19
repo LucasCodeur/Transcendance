@@ -2,12 +2,16 @@
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import TreeDeciduousIcon from '@lucide/svelte/icons/tree-deciduous';
+	import { ModeWatcher } from 'mode-watcher';
 	import UserMenu from '#lib/components/UserMenu.svelte';
+	import ThemeToggle from '#lib/components/ThemeToggle.svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 </script>
+
+<ModeWatcher />
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
@@ -31,15 +35,17 @@
 				<TreeDeciduousIcon class="size-5" aria-hidden="true" />
 				Genealogy
 			</a>
-
-			{#if data.user}
-				<UserMenu user={data.user} />
-			{:else}
-				<nav aria-label="Authentication" class="flex items-center gap-2">
-					<Button href="/login" variant="ghost" size="sm">Log in</Button>
-					<Button href="/register" size="sm">Sign up</Button>
-				</nav>
-			{/if}
+			<div class="flex items-center gap-2">
+				<ThemeToggle />
+				{#if data.user}
+					<UserMenu user={data.user} />
+				{:else}
+					<nav aria-label="Authentication" class="flex items-center gap-2">
+						<Button href="/login" variant="ghost" size="sm">Log in</Button>
+						<Button href="/register" size="sm">Sign up</Button>
+					</nav>
+				{/if}
+			</div>
 		</div>
 	</header>
 
