@@ -32,12 +32,12 @@ export const actions: Actions = {
 		const key = `2fa:${session.userId}`;
 
 		if (tooManyAttempts(key, MAX_ATTEMPTS))
-			return fail(429, { message: 'Too much try, retry in few minutes' });
+			return fail(429, { error: 'Too many attempts. Try in a few minutes.' });
 
 		const result = await verifySecondFactor(session.userId, parsed.data!.code);
 		if (!result.ok) {
 			recordFailure(key);
-			return fail(400, { message: 'Invalid code.' });
+			return fail(400, { error: 'Invalid code.' });
 		}
 
 		clearFailures(key);
