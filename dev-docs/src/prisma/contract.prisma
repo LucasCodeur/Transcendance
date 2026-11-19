@@ -37,49 +37,49 @@ model Person {
 
   medias          Media[]
 
-  partnerGedcomId string
   partnerLink     PartnerLink[]
 
-  childGedcomId   string
   childLink       ChildLink[]
 }
 
 // Partnership between individuals, including type and start/end dates
 model Partnership {
-  id          String        @id @default(cuid(2))
-  type        String
-  partnerLink PartnerLink[]
-  childLink   ChildLink[]
+  id              String        @id @default(cuid(2))
+  type            String
+  partnerLink     PartnerLink[]
+  childLink       ChildLink[]
 }
 
 // Links a person to a partnership
 model PartnerLink {
-  id String @id @default(cuid(2))
+  id              String @id @default(cuid(2))
 
-  personId String
-  person   Person @relation(fields: [personId], references: [id])
+  personId        String
+  person          Person @relation(fields: [personId], references: [id])
 
-  partnershipId String
-  partnerShip   Partnership @relation(fields: [partnershipId], references: [id])
+  partnershipId   String
+  partnerGedcomId String
+  partnerShip     Partnership @relation(fields: [partnershipId], references: [id])
 }
 
 // Links a child to a partnership with a parentage type
 model ChildLink {
-  id   String @id @default(cuid(2))
-  type String
+  id              String @id @default(cuid(2))
+  type            String
 
-  personId String
-  person   Person @relation(fields: [personId], references: [id])
+  personId        String
+  childGedcomId   String
+  person          Person @relation(fields: [personId], references: [id])
 
-  partnershipId String
-  partnerShip   Partnership @relation(fields: [partnershipId], references: [id])
+  partnershipId   String
+  partnerShip     Partnership @relation(fields: [partnershipId], references: [id])
 }
 
 // Media file attached to a person
 model Media {
-  id       String @id @default(cuid(2))
-  personId String
-  person   Person @relation(fields: [personId], references: [id])
+  id              String @id @default(cuid(2))
+  personId        String
+  person          Person @relation(fields: [personId], references: [id])
 }
 
 }
@@ -109,7 +109,7 @@ model User {
   totpLastStep  Int?
   sessions      Session[]
   oauthAccounts OAuthAccount[]
-  recoveryCodes     RecoveryCode[]
+  recoveryCodes RecoveryCode[]
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }

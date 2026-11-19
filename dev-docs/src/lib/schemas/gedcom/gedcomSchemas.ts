@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const optionalText = z.string().trim().min(1).max(200).optional();
+const optionalText = z.string().trim().min(1).max(200);
 
 const addressSchema = z.object({
   value: optionalText,
@@ -17,21 +17,22 @@ const sourceReferenceSchema = z.object({
 });
 
 const eventSchema = z.object({
-  date: optionalText,
-  place: optionalText,
+  date: optionalText.optional(),
+  place: optionalText.optional(),
   address: addressSchema.optional(),
 
-  note: optionalText,
-  sourceIds: z.array(z.string()).default([]),
+  note: optionalText.optional(),
+  sourceIds: z.array(z.string()).default([]).optional(),
 });
 
 export const personSchema = z.object({
   gender: z.enum(["M", "F", "U"]).optional(),
 
-  givenName: optionalText,
-  surName: optionalText,
-  nickName: optionalText,
-  marriedName: optionalText,
+  fullname: optionalText.optional(),
+  givenname: optionalText.optional(),
+  surname: optionalText.optional(),
+  nickname: optionalText.optional(),
+  marriedname: optionalText.optional(),
 
   birth: eventSchema.optional(),
   death: eventSchema.optional(),
@@ -39,18 +40,18 @@ export const personSchema = z.object({
 
   occupations: z.array(optionalText).default([]),
   education: z.array(optionalText).default([]),
-  nationality: optionalText,
-  religion: optionalText,
+  nationality: optionalText.optional(),
+  religion: optionalText.optional(),
 
-  deceased: z.boolean(),
+  deceased: z.boolean().optional(),
 
-  gedcomId: z.string().min(1),
-  familyAsSpouseIds: z.array(z.string()).default([]),
-  familyAsChildIds: z.array(z.string()).default([]),
+  gedcomId: z.string().min(1).optional(),
+  familyAsSpouseIds: z.array(z.string()).default([]).optional(),
+  familyAsChildIds: z.array(z.string()).default([]).optional(),
 
-  notes: z.array(optionalText).default([]),
-  sources: z.array(sourceReferenceSchema).default([]),
-  objectIds: z.array(z.string()).default([]),
+  notes: z.array(optionalText).default([]).optional(),
+  sources: z.array(sourceReferenceSchema).default([]).optional(),
+  objectIds: z.array(z.string()).default([]).optional(),
 });
 
 export type Person = z.infer<typeof personSchema>;

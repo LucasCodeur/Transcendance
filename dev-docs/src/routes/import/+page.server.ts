@@ -1,4 +1,4 @@
-import { importGedcomFile } from "#lib/server/gedcom/parsingGedcomFile.ts";
+import { importGedcomFile } from "#lib/server/gedcom/parsing/parsingGedcomFile.ts";
 import { fail } from "@sveltejs/kit";
 
 import type { Actions } from "./$types";

@@ -1,6 +1,6 @@
 import { GedcomDocument } from "@domorium/validator";
-
-import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom";
+import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
+import { parsePerson } from "#lib/server/gedcom/parsing/parsingPerson.ts";
 
 import type { GedcomError } from "@domorium/validator";
 import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
@@ -74,7 +74,15 @@ function parseAST(nodes: ASTNode[], persons: Person[]) {
 
   while (i < max) {
     if (nodes[i].tokens.TAG?.value === "INDI") {
-      let person: Person = {};
+      // let person: Person = {
+      //   gender: "M",
+      //   fullname: "",
+      //   givenname: "",
+      //   surname: "",
+      //   nickname: "",
+      //   marriedname: "",
+      // };
+      let person: Person = {} as Person;
 
       // console.log("PARSE AST : nodes[i]", nodes[i]);
       // console.log(nodes[i].tokens.POINTER.value);
@@ -97,120 +105,6 @@ function parseAST(nodes: ASTNode[], persons: Person[]) {
 // 2 DATE 10 JAN 1980
 // 2 PLAC Paris, France
 // 1 FAMS @F1@
-
-/**
- * @brief Parses information about a person. A person is an individual with information such as first name, last name, birthday, etc.
- * @param
- * @param
- * @return
- */
-function parsePerson(nodes: ASTNode[], person: Person) {
-  for (let node of nodes) {
-    let value = node.tokens?.VALUE?.value;
-    let tag = node.tokens?.TAG?.value;
-
-    switch (tag) {
-      case "NAME":
-        parseName(node, person);
-        break;
-      case "SEX":
-        person.gender = value;
-        break;
-      case "BIRT":
-        parseEvent(node.children ?? [], person, "birth");
-        break;
-      case "DEAT":
-        parseEvent(node.children ?? [], person, "death");
-        break;
-      case "BURI":
-        parseEvent(node.children ?? [], person, "burial");
-        break;
-      case "FAMS":
-        if (node.tokens?.XREF?.value) {
-          if (person.familyAsSpouseIds == null) person.familyAsSpouseIds = [];
-          person.familyAsSpouseIds.push(node.tokens.XREF.value);
-        }
-        break;
-      case "FAMC":
-        if (node.tokens?.XREF?.value) {
-          if (person.familyAsSpouseIds == null) person.familyAsChildIds = [];
-          person.familyAsChildIds.push(node.tokens.XREF.value);
-        }
-        break;
-    }
-  }
-}
-
-function parseName(nodeName: ASTNode, person: Person) {
-  const fullName = nodeName.tokens?.VALUE?.value.replaceAll("/", "");
-  if (fullName) {
-    person.fullName = fullName;
-  }
-
-  const children = nodeName.children ?? [];
-
-  for (const node of children) {
-    const tag = node.tokens?.TAG?.value;
-    const value = node.tokens?.VALUE?.value;
-
-    if (!value) continue;
-
-    if (tag === "GIVN") {
-      person.givenName = value;
-    } else if (tag === "SURN") {
-      person.surName = value;
-    } else if (tag === "NICK") {
-      person.nickname = value;
-    }
-
-    if ((!person.givenName || !person.surName) && fullName) {
-      let parts: string[] = fullName.split(" ");
-      person.givenName = parts[0];
-      person.surName = parts[1];
-    }
-  }
-}
-
-type Event = {
-  date?: Date;
-  place?: string;
-  address?: string;
-};
-
-function parseEvent(
-  nodes: ASTNode[],
-  person: Person,
-  eventType: "birth" | "death" | "burial",
-) {
-  const event: Event = {};
-
-  for (const node of nodes) {
-    const tag = node.tokens?.TAG?.value;
-    const value = node.tokens?.VALUE?.value;
-
-    if (!value) continue;
-
-    if (tag === "DATE") {
-      event.date = new Date(utilsGedcom.formatDate(value));
-    } else if (tag === "PLAC") {
-      event.place = value;
-    } else if (tag === "ADDR") {
-      event.address = value;
-    }
-  }
-
-  if (eventType === "birth") {
-    person.birthDate = event.date;
-    person.birthPlace = event.place;
-    person.birthAddress = event.address;
-  } else if (eventType === "death") {
-    person.deathDate = event.date;
-    person.deathPlace = event.place;
-  } else if (eventType === "burial") {
-    person.burialDate = event.date;
-    person.burialPlace = event.place;
-  }
-}
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 
