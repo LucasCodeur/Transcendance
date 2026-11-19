@@ -1,7 +1,9 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
-	import { enhance } from '$app/forms';
+	import TreeDeciduousIcon from '@lucide/svelte/icons/tree-deciduous';
+	import UserMenu from '#lib/components/UserMenu.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
@@ -11,27 +13,37 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<header class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-	<a href="/" class="text-lg font-bold">Généalogie</a>
+<!-- keyboard user -->
+<a
+	href="#main"
+	class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:ring-3 focus:ring-ring/50"
+>
+	Skip to main content
+</a>
 
-	<nav class="flex items-center gap-4">
-		{#if data.user}
-			<a href="/account" class="hover:underline">{data.user.displayName}</a>
-			<!-- POST, not a link: a GET /logout could be triggered by another site. -->
-			<form method="POST" action="/logout" use:enhance>
-				<button type="submit" class="rounded border border-gray-300 px-3 py-1 hover:bg-gray-100">
-					logout
-				</button>
-			</form>
-		{:else}
-			<a href="/login" class="hover:underline">Se connecter</a>
-			<a href="/register" class="rounded bg-emerald-700 px-3 py-1 text-white hover:bg-emerald-800">
-				Créer un compte
+<div class="flex min-h-svh flex-col">
+	<header class="sticky top-0 z-40 border-b bg-background">
+		<div class="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
+			<a 
+				href="/"
+				class="flex items-center gap-2 rounded-md font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+			>
+				<TreeDeciduousIcon class="size-5" aria-hidden="true" />
+				Genealogy
 			</a>
-		{/if}
-	</nav>
-</header>
 
-<main class="mx-auto max-w-md px-4 py-10">
-	{@render children()}
-</main>
+			{#if data.user}
+				<UserMenu user={data.user} />
+			{:else}
+				<nav aria-label="Authentication" class="flex items-center gap-2">
+					<Button href="/login" variant="ghost" size="sm">Log in</Button>
+					<Button href="/register" size="sm">Sign up</Button>
+				</nav>
+			{/if}
+		</div>
+	</header>
+
+	<main id="main" tabindex="-1" class="mx-auto w-full max-w-5xl flex-1 px-4 py-10 outline-none">
+		{@render children()}
+	</main>
+</div>
