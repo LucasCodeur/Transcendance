@@ -163,8 +163,8 @@
 	<Card.Content class="flex flex-col gap-4">
 		{#if recoveryCodes}
 			<Alert.Root role="status" aria-labelledby="recovery-title">
-				<TriangelAlertIcon aria-hidden="true" />
-				<Alert.title id="recovery-title">Your recovery codes</Alert.title>
+				<TriangleAlertIcon aria-hidden="true" />
+				<Alert.Title id="recovery-title">Your recovery codes</Alert.Title>
 				<Alert.Description>
 					<p>Save Them somewhere safe now: they will not be shown again. Each code works once.</p>
 					<ul class="mt-2 grid grid-cols-2 gap-1 font-mono text-foreground">

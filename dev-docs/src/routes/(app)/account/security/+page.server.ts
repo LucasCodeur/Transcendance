@@ -48,9 +48,9 @@ export const actions: Actions = {
 
 		const result = await setPassword(locals.user.id, locals.session.id, parsed.data)
 		if (!result.ok)
-			return fail(400, { action: 'setPassword', errors: 'You already have a password. Reload the page to change it' });
+			return fail(400, { action: 'setPassword', error: 'You already have a password. Reload the page to change it' });
 
-		return { action: 'setPassword', error: 'Password set. Your other devices have been logged out.' };
+		return { action: 'setPassword', message: 'Password set. Your other devices have been logged out.' };
 	},
 
 	changePassword: async ({ request, locals }) => {
