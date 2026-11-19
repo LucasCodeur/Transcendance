@@ -11,7 +11,7 @@
 	] as const;
 </script>
 
-<div class="flex flex-col gap-6">
+<div class="mx-auto flex w-full max-w-2xl flex-col gap-6">
 	<div>
 		<h1 class="text-2xl font-semibold tracking-tight">Account settings</h1>
 		<p class="text-sm text-muted-foreground">Manage your profile and the way you sign in.</p>

@@ -14,6 +14,7 @@
 	import { Button } from '#lib/components/ui/button/index.js';
 	import * as Card from '#lib/components/ui/card/index.js';
 	import type { PageProps } from './$types';
+	import { getInitials } from '#lib/initials.ts';
 
 	let { data, form }: PageProps = $props();
 
@@ -27,17 +28,10 @@
 	const providerError = $derived(form?.action === 'provider' && 'error' in form ? form.error : null);
 	const providerMessage = $derived(form?.action === 'provider' && 'message' in form ? form.message : null);
 
-	const displayNameValue = $derived(form?.action === 'profile' && 'displayName' in form ? form.displayName : null);
+	const displayNameValue = $derived(form?.action === 'profile' && 'displayName' in form ? form.displayName : data.user.displayName);
 	
 	const canUnlink = $derived(data.loginMethods.hasPassword || data.loginMethods.providers.length > 1);
-	const initials = $derived(
-		data.user.displayName
-		.split(/\s+/)
-		.map((word) => word[0])
-		.join('')
-		.slice(0, 2)
-		.toUpperCase()
-	);
+	const initials = $derived(getInitials(data.user.displayName));
 </script>
 
 <svelte:head><title>Profile · Account settings</title></svelte:head>
