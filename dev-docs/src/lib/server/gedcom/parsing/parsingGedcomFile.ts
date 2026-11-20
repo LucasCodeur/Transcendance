@@ -3,7 +3,11 @@ import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
 import { parsePerson } from "#lib/server/gedcom/parsing/parsingPerson.ts";
 
 import type { GedcomError } from "@domorium/validator";
-import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
+import type {
+  Person,
+  Relation,
+  Family,
+} from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
 
 export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
@@ -50,6 +54,7 @@ function validateGedcomFile(document: GedcomDocument): string[] {
 // 2 DATE 10 JAN 1980
 // 2 PLAC Paris, France
 // 1 FAMS @F1@
+//
 
 function addASTGedcomToDb(document: GedcomDocument) {
   // Build all differents array needed.
@@ -61,39 +66,48 @@ function addASTGedcomToDb(document: GedcomDocument) {
   // Add all relations array relations
   // ADD all person inside db
   // ADD all relations inside db
-  let persons: Person[] = [];
-
-  parseAST(document.getNodes(), persons);
-
-  console.log("PERSON: ", persons);
+  parseAST(document.getNodes());
 }
 
-function parseAST(nodes: ASTNode[], persons: Person[]) {
+function parseAST(nodes: ASTNode[]) {
   let i = 0;
   let max = nodes.length;
 
+  let persons: Person[] = [];
+
+  let relations: Relation[] = [];
   while (i < max) {
-    if (nodes[i].tokens.TAG?.value === "INDI") {
-      // let person: Person = {
-      //   gender: "M",
-      //   fullname: "",
-      //   givenname: "",
-      //   surname: "",
-      //   nickname: "",
-      //   marriedname: "",
-      // };
-      let person: Person = {} as Person;
-
-      // console.log("PARSE AST : nodes[i]", nodes[i]);
-      // console.log(nodes[i].tokens.POINTER.value);
-      person.gedcomId = nodes[i].tokens.POINTER.value;
-      parsePerson(nodes[i].children, person);
-
-      persons.push(person);
+    let tag = nodes[i].tokens.TAG?.value;
+    switch (tag) {
+      case "INDI":
+        parseIndividual(nodes[i], persons);
+      case "FAM":
+      // parseFamily(nodes[i], relations);
     }
     i++;
   }
 }
+
+// 0 @F1@ FAM
+// 1 HUSB @I1@
+// 1 WIFE @I2@
+// 1 MARR
+// 2 DATE 12 JAN 1676
+// 2 PLAC Montréal, Québec, Canada
+// 1 CHIL @I3@
+// familyGedcomId: z.string().min(1),
+// personGedcomId: z.string().min(1),
+//
+// role: z.enum(["HUSB", "WIFE", "CHIL"]),
+// function parseFamily(node: ASTNode, relations: Relation[]) {
+//   let relation: Relation = {};
+//   relation.familyGedcomId = node.tokens.POINTER?.value;
+//
+//   let nodes: ASTNode = node.children;
+//   // for (let node of nodes)
+//   // {
+//   // }
+// }
 
 // TODO: to conform with my prisma schema.
 // 0 @I1@ INDI
@@ -105,6 +119,24 @@ function parseAST(nodes: ASTNode[], persons: Person[]) {
 // 2 DATE 10 JAN 1980
 // 2 PLAC Paris, France
 // 1 FAMS @F1@
+//
+
+function parseIndividual(node: ASTNode, persons: Person[]) {
+  let person: Person = {
+    gedcomId: node.tokens.POINTER?.value,
+    birth: {},
+    death: {},
+    burial: {},
+    familyAsSpouseIds: [],
+    familyAsChildIds: [],
+    occupations: [],
+    education: [],
+    notes: [],
+    objectIds: [],
+  };
+  parsePerson(node.children, person);
+  persons.push(person);
+}
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 

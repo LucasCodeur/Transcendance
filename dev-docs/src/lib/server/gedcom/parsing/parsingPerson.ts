@@ -50,7 +50,7 @@ export function parsePerson(nodes: ASTNode[], person: Person) {
       case "FAMC":
         if (node.tokens?.XREF?.value) {
           if (person.familyAsSpouseIds == null) person.familyAsChildIds = [];
-          person.familyAsChildIds.push(node.tokens.XREF.value);
+          person.familyAsChildIds?.push(node.tokens.XREF.value);
         }
         break;
     }
@@ -88,7 +88,7 @@ function parseName(nodeName: ASTNode, person: Person) {
 }
 
 type Event = {
-  date?: Date;
+  date?: string;
   place?: string;
   address?: string;
 };
@@ -107,7 +107,7 @@ function parseEvent(
     if (!value) continue;
 
     if (tag === "DATE") {
-      event.date = new Date(utilsGedcom.formatDate(value));
+      event.date = utilsGedcom.formatDate(value);
     } else if (tag === "PLAC") {
       event.place = value;
     } else if (tag === "ADDR") {
