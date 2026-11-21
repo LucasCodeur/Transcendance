@@ -10,36 +10,35 @@ model Tree {
 
 // Individual in a family tree
 model Person {
-  id              String @id @default(cuid(2))
-  gedcomId        string
+  id            String @id @default(cuid(2))
+  gedcomId      String?
 
-  gender          String?
+  gender        String?
 
-  fullName        String?
-  givenName       String?
-  surName         String?
+  fullName      String?
+  givenName     String?
+  surName       String?
 
-  nickName        String?
-  maidenName      String?
-  marriedName     String?
+  nickName      String?
+  maidenName    String?
+  marriedName   String?
 
-  birthDate       TimestamptzString?
-  birthPlace      String?
-  birthAdress     String?
+  birthDate     TimestamptzString?
+  birthPlace    String?
+  birthAdress   String?
 
-  deceased        Boolean?
+  deceased      Boolean?
 
-  deathDate       TimestamptzString?
-  deathPlace      String?
+  deathDate     TimestamptzString?
+  deathPlace    String?
 
-  treeId          String
-  tree            Tree   @relation(fields: [treeId], references: [id])
+  treeId        String
+  tree          Tree @relation(fields: [treeId], references: [id])
 
-  medias          Media[]
+  medias        Media[]?
 
-  partnerLink     PartnerLink[]
-
-  childLink       ChildLink[]
+  partnerLink   PartnerLink[]?
+  childLink     ChildLink[]?
 }
 
 // Partnership between individuals, including type and start/end dates

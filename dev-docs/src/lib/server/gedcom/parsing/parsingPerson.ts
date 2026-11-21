@@ -1,7 +1,11 @@
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom";
+import { db } from "#prisma/db.ts";
+import { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 
 import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
+
+let genea = db.orm.genealogy;
 
 // TODO: to conform with my prisma schema.
 // 0 @I1@ INDI
@@ -14,13 +18,51 @@ import type { ASTNode } from "@domorium/validator";
 // 2 PLAC Paris, France
 // 1 FAMS @F1@
 
+export async function parseSubmitter(node: ASTNode) {
+  let surname: string = "";
+  for (let record of node.children) {
+    let value = record.tokens?.VALUE?.value;
+    let tag = record.tokens?.TAG?.value;
+    if (tag === "NAME") {
+      let parts: string[] = value.split(" ");
+      surname = parts[1];
+      break;
+    }
+  }
+  const name: string = surname + " Family";
+  const tree = await genea.Tree.create({
+    name: name,
+  });
+
+  return tree.id;
+}
+
+export function parseIndividual(node: ASTNode): Person {
+  let person: Person = {
+    gedcomId: node.tokens.POINTER?.value,
+    birth: {},
+    death: {},
+    burial: {},
+    familyAsSpouseIds: [],
+    familyAsChildIds: [],
+    occupations: [],
+    education: [],
+    notes: [],
+    objectIds: [],
+  };
+
+  parsePerson(node.children, person);
+
+  return person;
+}
+
 /**
  * @brief Parses information about a person. A person is an individual with information such as first name, last name, birthday, etc.
  * @param
  * @param
  * @return
  */
-export function parsePerson(nodes: ASTNode[], person: Person) {
+function parsePerson(nodes: ASTNode[], person: Person) {
   for (let node of nodes) {
     let value = node.tokens?.VALUE?.value;
     let tag = node.tokens?.TAG?.value;
@@ -115,11 +157,6 @@ function parseEvent(
     }
   }
 
-  console.log("EVENT");
-  console.log("date: ", event.date);
-  console.log("place: ", event.place);
-  console.log("adress: ", event.address);
-
   if (eventType === "birth") {
     person.birth.date = event.date;
     person.birth.place = event.place;
@@ -133,4 +170,12 @@ function parseEvent(
     person.burial.place = event.place;
     person.burial.address = event.address;
   }
+}
+
+export function validateIndividual(persons: Person[], person: Person) {
+  const validPerson = personSchema.safeParse(person);
+  if (!validPerson.success)
+    return validPerson.error.issues.map((issue) => issue.message);
+
+  persons.push(validPerson.data);
 }

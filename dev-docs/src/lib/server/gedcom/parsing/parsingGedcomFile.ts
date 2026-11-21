@@ -1,6 +1,12 @@
 import { GedcomDocument } from "@domorium/validator";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
-import { parsePerson } from "#lib/server/gedcom/parsing/parsingPerson.ts";
+import {
+  parseIndividual,
+  parseSubmitter,
+  validateIndividual,
+} from "#lib/server/gedcom/parsing/parsingPerson.ts";
+import { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
+import { geneaDB } from "#lib/server/db/gedcom.ts";
 
 import type { GedcomError } from "@domorium/validator";
 import type {
@@ -22,7 +28,7 @@ export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
     if (gedcomErrors.length > 0) {
       return gedcomErrors;
     } else {
-      utilsGedcom.printGedcomTree(document);
+      // utilsGedcom.printGedcomTree(document);
       addASTGedcomToDb(document);
     }
   }
@@ -69,24 +75,53 @@ function addASTGedcomToDb(document: GedcomDocument) {
   parseAST(document.getNodes());
 }
 
-function parseAST(nodes: ASTNode[]) {
+import { db } from "#prisma/db.ts";
+let genea = db.orm.genealogy;
+
+async function parseAST(nodes: ASTNode[]) {
   let i = 0;
   let max = nodes.length;
-
   let persons: Person[] = [];
+  let treeId: string = "";
 
-  let relations: Relation[] = [];
+  // let relations: Relation[] = [];
+  //
   while (i < max) {
     let tag = nodes[i].tokens.TAG?.value;
+    console.log("TAG: ", tag);
     switch (tag) {
+      case "SUBM":
+        treeId = await parseSubmitter(nodes[i]);
+        break;
       case "INDI":
-        parseIndividual(nodes[i], persons);
+        let parsedPerson: Person = parseIndividual(nodes[i]);
+        let errors = validateIndividual(persons, parsedPerson);
+        break;
       case "FAM":
-      // parseFamily(nodes[i], relations);
+        // parseFamily(nodes[i], relations);
+        break;
     }
     i++;
   }
+
+  console.log("Tree id before add all persons: ", treeId);
+  console.log("PERSONS: ", persons);
+  for (let person of persons) {
+    await geneaDB.addPerson(person, treeId);
+  }
+  const test = await genea.Person.where({
+    gedcomId: persons[0].gedcomId,
+  }).first();
+  console.log("TEST", test);
 }
+
+// 0 @U1@ SUBM
+// 1 NAME Test User
+// 1 ADDR 1 Test Street
+// 2 CITY Paris
+// 2 CTRY France
+// 1 PHON +33 6 00 00 00 00
+// 1 EMAIL test@example.com
 
 // 0 @F1@ FAM
 // 1 HUSB @I1@
@@ -120,23 +155,6 @@ function parseAST(nodes: ASTNode[]) {
 // 2 PLAC Paris, France
 // 1 FAMS @F1@
 //
-
-function parseIndividual(node: ASTNode, persons: Person[]) {
-  let person: Person = {
-    gedcomId: node.tokens.POINTER?.value,
-    birth: {},
-    death: {},
-    burial: {},
-    familyAsSpouseIds: [],
-    familyAsChildIds: [],
-    occupations: [],
-    education: [],
-    notes: [],
-    objectIds: [],
-  };
-  parsePerson(node.children, person);
-  persons.push(person);
-}
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 
