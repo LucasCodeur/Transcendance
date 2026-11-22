@@ -1,20 +1,19 @@
 import { GedcomDocument } from "@domorium/validator";
-import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
 import {
   parseIndividual,
   parseSubmitter,
   validateIndividual,
 } from "#lib/server/gedcom/parsing/parsingPerson.ts";
-import { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
+
 import { geneaDB } from "#lib/server/db/gedcom.ts";
+import { db } from "#prisma/db.ts";
+import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
 
 import type { GedcomError } from "@domorium/validator";
-import type {
-  Person,
-  Relation,
-  Family,
-} from "#lib/schemas/gedcom/gedcomSchemas.ts";
+import type { Person, Family } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
+
+let genea = db.orm.genealogy;
 
 export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
   const gedcomString: string | null = await gedcomFile.text();
@@ -28,8 +27,7 @@ export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
     if (gedcomErrors.length > 0) {
       return gedcomErrors;
     } else {
-      // utilsGedcom.printGedcomTree(document);
-      addASTGedcomToDb(document);
+      parseAST(document.getNodes());
     }
   }
 }
@@ -51,120 +49,115 @@ function validateGedcomFile(document: GedcomDocument): string[] {
   return filesErrors;
 }
 
-// 0 @I1@ INDI
-// 1 NAME Jean /Dupont/
-// 2 GIVN Jean
-// 2 SURN Dupont
-// 1 SEX M
-// 1 BIRT
-// 2 DATE 10 JAN 1980
-// 2 PLAC Paris, France
-// 1 FAMS @F1@
-//
-
-function addASTGedcomToDb(document: GedcomDocument) {
-  // Build all differents array needed.
-  // Parse all informations
-  // for (const record of document.getNodes()) {
-  //   utilsGedcom.printNode(record);
-  // }
-  // check all informations with zod schema if errors -> warn client
-  // Add all relations array relations
-  // ADD all person inside db
-  // ADD all relations inside db
-  parseAST(document.getNodes());
-}
-
-import { db } from "#prisma/db.ts";
-let genea = db.orm.genealogy;
-
 async function parseAST(nodes: ASTNode[]) {
   let i = 0;
   let max = nodes.length;
-  let persons: Person[] = [];
   let treeId: string = "";
 
-  // let relations: Relation[] = [];
-  //
+  let persons: Person[] = [];
+
+  const family: Family = {
+    gedcomId: "",
+    husdbandGedcomId: undefined,
+    wifeGedcomId: undefined,
+    childGedcomIds: [],
+    marriage: undefined,
+    divorce: undefined,
+    sourceIds: [],
+    notes: [],
+  };
+
   while (i < max) {
     let tag = nodes[i].tokens.TAG?.value;
-    console.log("TAG: ", tag);
+    let value = nodes[i].tokens.VALUE?.value;
     switch (tag) {
       case "SUBM":
         treeId = await parseSubmitter(nodes[i]);
         break;
       case "INDI":
-        let parsedPerson: Person = parseIndividual(nodes[i]);
+        let parsedPerson: Person = await parseIndividual(nodes[i]);
         let errors = validateIndividual(persons, parsedPerson);
         break;
       case "FAM":
-        // parseFamily(nodes[i], relations);
+        await parseFamily(nodes[i], family);
         break;
     }
     i++;
   }
 
-  console.log("Tree id before add all persons: ", treeId);
-  console.log("PERSONS: ", persons);
   for (let person of persons) {
     await geneaDB.addPerson(person, treeId);
   }
-  const test = await genea.Person.where({
-    gedcomId: persons[0].gedcomId,
+
+  let partnerShip = await genea.Partnership.where({
+    gedcomId: family.gedcomId,
+    treeId: treeId,
   }).first();
-  console.log("TEST", test);
+
+  if (partnerShip == null) {
+    partnerShip = await genea.Partnership.create({
+      gedcomId: family.gedcomId,
+      treeId: treeId,
+    });
+  }
+
+  await geneaDB.addRelations(family, treeId, partnerShip.id);
+
+  const trees = await genea.Tree.select("name")
+    .include("persons", (persons) =>
+      persons
+        .select(
+          "id",
+          "gedcomId",
+          "givenName",
+          "surName",
+          "fullName",
+          "gender",
+          "birthDate",
+          "birthPlace",
+          "birthAdress",
+          "deceased",
+          "deathDate",
+          "deathPlace",
+        )
+        .include("partnerLinks", (partnerLinks) =>
+          partnerLinks.select(
+            "id",
+            "personId",
+            "partnershipId",
+            "gedcomId",
+            "type",
+          ),
+        )
+        .include("childLinks", (childLinks) =>
+          childLinks.select("id", "personId", "partnershipId", "gedcomId"),
+        ),
+    )
+    .all();
+
+  for (const tree of trees) {
+    await utilsGedcom.printTree(tree);
+  }
 }
 
-// 0 @U1@ SUBM
-// 1 NAME Test User
-// 1 ADDR 1 Test Street
-// 2 CITY Paris
-// 2 CTRY France
-// 1 PHON +33 6 00 00 00 00
-// 1 EMAIL test@example.com
+async function parseFamily(node: ASTNode, family: Family) {
+  family.gedcomId = node.tokens.POINTER?.value;
 
-// 0 @F1@ FAM
-// 1 HUSB @I1@
-// 1 WIFE @I2@
-// 1 MARR
-// 2 DATE 12 JAN 1676
-// 2 PLAC Montréal, Québec, Canada
-// 1 CHIL @I3@
-// familyGedcomId: z.string().min(1),
-// personGedcomId: z.string().min(1),
-//
-// role: z.enum(["HUSB", "WIFE", "CHIL"]),
-// function parseFamily(node: ASTNode, relations: Relation[]) {
-//   let relation: Relation = {};
-//   relation.familyGedcomId = node.tokens.POINTER?.value;
-//
-//   let nodes: ASTNode = node.children;
-//   // for (let node of nodes)
-//   // {
-//   // }
-// }
+  let nodes: ASTNode[] = node.children;
+  console.log("nodes: ", nodes);
+  for (let node of nodes) {
+    let value = node.tokens.XREF?.value;
+    let tag = node.tokens?.TAG?.value;
+    console.log("TAG: ", tag);
+    console.log("VALUE: ", value);
 
-// TODO: to conform with my prisma schema.
-// 0 @I1@ INDI
-// 1 NAME Jean /Dupont/
-// 2 GIVN Jean
-// 2 SURN Dupont
-// 1 SEX M
-// 1 BIRT
-// 2 DATE 10 JAN 1980
-// 2 PLAC Paris, France
-// 1 FAMS @F1@
-//
-
-// ----------------------------------------------------------------------------------------------------------------------------------- //
-
-// function addPersons(node: ASTNode) {
-//   const tag: string | undefined = getTag(node);
-//   const value: string | undefined = getValue(node);
-//   const level: string | undefined = getLevel(node);
-//   const xref: string | undefined = getXref(node);
-//   const pointer: string | undefined = getPointer(node);
-// }
+    if (tag === "HUSB") family.husdbandGedcomId = value;
+    else if (tag === "WIFE") family.wifeGedcomId = value;
+    else if (tag === "CHIL") {
+      family.childGedcomIds.push(value);
+    }
+  }
+}
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //
 // WARN: Figure out whether I need this information if yes:
