@@ -16,7 +16,7 @@ import {
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_ATTEMPTS = 5;
-const TOO_MANY = 'Too many attempts. Try again in few minutes.';
+const TOO_MANY = 'Too many attempts. Try again in a few minutes.';
 const NOTICES: Record<string, string> =  {
 	recovery_code_used: 'You logged in with a recovery code. It cannot be used again.',
 };
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
 		const result = await setPassword(locals.user.id, locals.session.id, parsed.data)
 		if (!result.ok)
-			return fail(400, { action: 'setPassword', error: 'You already have a password. Reload the page to change it' });
+			return fail(400, { action: 'setPassword', error: 'You already have a password. Reload the page to change it.' });
 
 		return { action: 'setPassword', message: 'Password set. Your other devices have been logged out.' };
 	},

@@ -20,12 +20,12 @@ export const changePasswordSchema = z
 		password: passwordSchema,
 		passwordConfirm: z.string()
 	}).refine((data) => data.currentPassword !== data.password, {
-		message: 'Passwords do not match',
-		path: ['passwordConfirm']
-	})
-	.refine((data) => data.password === data.passwordConfirm, {
 		message: 'The new password must be different from the current one',
 		path: ['password']
+	})
+	.refine((data) => data.password === data.passwordConfirm, {
+		message: 'Passwords do not match',
+		path: ['passwordConfirm']
 	});
 
 export type ProfileInput = z.infer<typeof profileSchema>;

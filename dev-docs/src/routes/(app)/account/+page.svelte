@@ -95,7 +95,7 @@
 			<FormField
 				id="displayName"
 				name="displayName"
-				label="Display Name"
+				label="Display name"
 				autocomplete="nickname"
 				value={displayNameValue}
 				errors={profileErrors.displayName}

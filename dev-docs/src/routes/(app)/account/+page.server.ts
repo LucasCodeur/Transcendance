@@ -9,17 +9,17 @@ import type {Actions, PageServerLoad } from './$types';
 
 const ACCOUNT_MESSAGES: Record<string, string> = {
 	oauth_invalid: 'The link attempt expired or was invalid. Please try again.',
-	oauth_failed: 'The provider could not be reached. Please try again',
+	oauth_failed: 'The provider could not be reached. Please try again.',
 	oauth_cancelled: 'Linking cancelled.',
 	linked_to_another_user: 'This provider account is already linked to another user.',
-	provider_already_linked: 'you already have an account linked with this provider.',
+	provider_already_linked: 'You already have an account linked with this provider.',
 	not_linked: 'This provider is not linked to your account.',
 	last_login_method: 'You cannot unlink your only sign-in method. Set a password or link another provider first.'
 };
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 
-	if (!locals.user) redirect(303, '/login');
+	if (!locals.user) redirect(303, '/login?redirectTo=/account');
 
 	const loginMethods = await getLoginMethods(locals.user.id);
 	const code = url.searchParams.get('error');
@@ -44,7 +44,7 @@ export const actions: Actions = {
 		
 		await updateProfile(locals.user.id, parsed.data);
 		
-		return { action: 'profile', message: 'Profile updated'};
+		return { action: 'profile', message: 'Profile updated.'};
 	},
 	link : async ({ request, cookies, locals}) => {
 		if (!locals.user)
@@ -53,7 +53,7 @@ export const actions: Actions = {
 		const parsed = oauthProviderSchema.safeParse((await request.formData()).get('provider'));
 
 		if (!parsed.success)
-			return fail(400, { action: 'provider', message: 'Invalid provider' });
+			return fail(400, { action: 'provider', error: 'Invalid provider.' });
 
 		const authorizationURL = beginOAuthFlow( cookies, {
 			provider: parsed.data,
@@ -70,7 +70,7 @@ export const actions: Actions = {
 		const parsed = oauthProviderSchema.safeParse((await request.formData()).get('provider'));
 
 		if (!parsed.success)
-			return fail(400, { action: 'provider', message: 'Invalid provider' });
+			return fail(400, { action: 'provider', error: 'Invalid provider.' });
 
 		const result = await unlinkOAuthAccount(locals.user.id, parsed.data);
 

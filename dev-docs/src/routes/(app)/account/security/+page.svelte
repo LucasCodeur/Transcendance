@@ -130,7 +130,7 @@
 			<FormField
 				id="password"
 				name="password"
-				label="New Password"
+				label="New password"
 				type="password"
 				autocomplete="new-password"
 				hint="At least 12 characters."
@@ -166,7 +166,7 @@
 				<TriangleAlertIcon aria-hidden="true" />
 				<Alert.Title id="recovery-title">Your recovery codes</Alert.Title>
 				<Alert.Description>
-					<p>Save Them somewhere safe now: they will not be shown again. Each code works once.</p>
+					<p>Save them somewhere safe now: they will not be shown again. Each code works once.</p>
 					<ul class="mt-2 grid grid-cols-2 gap-1 font-mono text-foreground">
 						{#each recoveryCodes as code (code)}
 							<li>{code}</li>
@@ -201,7 +201,7 @@
 					<FormField
 						id="{item.action}-code"
 						name="code"
-						label="code"
+						label="Code"
 						autocomplete="one-time-code"
 						spellcheck="false"
 						class="font-mono"

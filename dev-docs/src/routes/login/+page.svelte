@@ -42,7 +42,7 @@
 		{#each oauthProviderSchema.options as provider (provider)}
 			<Button href="/oauth/{provider}{redirectSuffix}" variant="outline" class="w-full">
 				<OAuthProviderIcon {provider} class="size-4" />
-				{OAUTH_PROVIDER_LABELS[provider]}
+				Continue with {OAUTH_PROVIDER_LABELS[provider]}
 			</Button>
 		{/each}
 	</div>

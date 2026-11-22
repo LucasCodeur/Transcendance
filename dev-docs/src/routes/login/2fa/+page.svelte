@@ -66,10 +66,10 @@
 		<Button type="submit" class="w-full" disabled={submitting}>
 			{submitting ? 'Checking...' : 'Verify'}
 		</Button>
-		{#snippet footer()}
-			<form method="POST" action="/logout">
-				<Button type="submit" variant="link" size="sm">Cancel and log out</Button>
-			</form>
-		{/snippet}
 	</form>
+	{#snippet footer()}
+		<form method="POST" action="/logout">
+			<Button type="submit" variant="link" size="sm">Cancel and log out</Button>
+		</form>
+	{/snippet}
 </AuthCard>

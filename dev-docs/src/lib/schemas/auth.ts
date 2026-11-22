@@ -15,6 +15,7 @@ export const passwordSchema = z
 
 export const displayNameSchema = z
 	.string()
+	.trim()
 	.min(2, 'Username must be at least 2 characters')
 	.max(50, 'Username cannot exceed 50 characters');
 
