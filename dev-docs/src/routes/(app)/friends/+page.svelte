@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from "#lib/components/ui/button/index.ts";
-	import Friends from "./friend.svelte"
+	import Friends from "./friends.svelte"
 	import AddFriends from "./addFriends.svelte"
 	import Pending from "./pending.svelte"
 	import Sent from "./sent.svelte"
