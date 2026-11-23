@@ -3,6 +3,7 @@ model User {
   id            String            @id @default(uuid())
   email         String            @unique
   displayName   String
+  avatarId      String?           @unique
   passwordHash  String?
   emailVerified Boolean           @default(false)
   totpSecret    String?

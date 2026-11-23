@@ -251,6 +251,13 @@
           },
           "User": {
             "fields": {
+              "avatarId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -364,6 +371,9 @@
             },
             "storage": {
               "fields": {
+                "avatarId": {
+                  "column": "avatarId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -639,6 +649,11 @@
             },
             "User": {
               "columns": {
+                "avatarId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
@@ -705,6 +720,11 @@
                   "columns": [
                     "email"
                   ]
+                },
+                {
+                  "columns": [
+                    "avatarId"
+                  ]
                 }
               ]
             }
@@ -714,7 +734,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "13a3ea002146d9033b4634e858c9c762692644ff4ed2322f972188ecd79e6cdc"
+    "storageHash": "2a95bcffa7b384483fda7ea23163dd7510f7ca17446577336df23ec4f966688d"
   },
   "execution": {
     "executionHash": "a0bf9ed6c2d27bf98d3f79221697ce532fe7012634449e601411ec86afc71ab9",
