@@ -16,7 +16,7 @@
 	import type { PageProps } from './$types';
 	let { data, form }: PageProps = $props();
 
-	const	socket = io();
+	const	socket = $state(io());
 
 </script>
 

@@ -1,4 +1,4 @@
-import { friendRequestScheme, friendAcceptDenyScheme } from "#lib/schemas/friend.ts";
+import { friendRequestScheme, friendAcceptDenyScheme, removeFriendScheme } from "#lib/schemas/friend.ts";
 import { fail } from "@sveltejs/kit";
 import { z } from 'zod';
 import { db } from '#lib/server/db/client.ts'
@@ -20,8 +20,6 @@ export async function load ({url, locals}){
 		sent: [],
 		url: url.href,
 	}
-	console.log("url:");
-	console.log(url);
 
 	if (!locals.user)
 		return data;
@@ -132,8 +130,6 @@ export const actions = {
 			return fail(400, { errors: { friend: "user to accept not found" } });
 
 		// must check if user is currently asking for a friend request !
-		console.log("locals");
-		console.log(locals);
 		const matchingPendingRequest = await db.orm.public.Friend
 						.where({friendId: locals.user.id})
 						.where({userId: userToAccept.id})
@@ -165,8 +161,39 @@ export const actions = {
 						.where({userId: userToAccept.id})
 						.delete();
 		}
+	},
 
+	removeFriend: async({request, locals}) => {
+		if (!locals.user)
+			return fail(400, {errors:"not logged in!"});
 
+		const form = Object.fromEntries(await request.formData());
+		const parsed = removeFriendScheme.safeParse(form);
+		if (!parsed.success)
+			return fail(400, { errors: z.flattenError(parsed.error).fieldErrors });
 
+		// retrieving user to remove friendship
+		const userToRemove = await db.orm.public.User.where({displayName: parsed.data.friendName}).first();
+		if (userToRemove === null)
+			return fail(400, { errors: { friend: "user to accept not found" } });
+
+		// retreiving friendship status
+		const matchingPendingRequest = await db.orm.public.Friend
+						.where({friendId: locals.user.id})
+						.where({userId: userToRemove.id})
+						.first();
+		if (matchingPendingRequest === null)
+			return fail(400, {errors: { friend: `you are not friend with ${userToRemove.displayName}`}});
+		if (matchingPendingRequest.type !== "accepted")
+			return fail(400, {errors: { friend: `you can only remove people you are friend with`}});
+		
+		await db.orm.public.Friend
+			.where({userId: userToRemove.id})
+			.where({friendId: locals.user.id})
+			.delete();
+		await db.orm.public.Friend
+			.where({friendId: userToRemove.id})
+			.where({userId: locals.user.id})
+			.delete();
 	},
 }

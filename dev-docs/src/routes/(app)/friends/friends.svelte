@@ -41,7 +41,7 @@
 
 	let		messages_data: null | Messages[] = $state([]);
 	let		splitted_messages: null | Messages[][] = $state([]);
-	let		align:string = "";
+	let		align:string = $state("");
 
 	// function which split message per sender group
 	// for displaying purposes
@@ -107,10 +107,12 @@
 		socket.on(friendChat, (data) => {
 			console.log(`received a message from ${friendChat}`);
 		});
-		// connect to websocket 
+	}
+
+	async function removeFriend() {
+		console.log("should ask to remove the friend !");
 	}
 						
-
 </script>
 
 <div class="mb-5 rounded-sm p-2  border border-black">
@@ -120,16 +122,30 @@
 	{/if}
 	<ul>
 	{#each friends as friend}
-			<li class="m-2">
+			<li class="m-2 flex gap-2">
 				<Button 
-					class="w-80/100" 
-					variant="outline"
-					onclick={async () => {
-						handleMessages(friend);
-					}}
-				>
+				class="w-80/100" 
+				variant="outline"
+				onclick={async () => {
+					handleMessages(friend);
+				}}>
 					{friend}
 				</Button>
+				
+				<form
+				method="POST"
+				action="?/removeFriend">
+					<Button 
+					type="submit"
+					variant="outline" 
+					class="text-red-500"
+					onclick={async () => {
+						removeFriend(friend);
+					}}> 
+						remove
+					</Button>
+					<input class="hidden" name="friendName" value={friend} />
+				</form>
 			</li>
 	{/each}
 	</ul>
@@ -191,7 +207,5 @@
 				send
 			</Button>
 		</div>
-
 	</div>
-
 </div>

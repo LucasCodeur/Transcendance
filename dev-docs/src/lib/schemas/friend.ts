@@ -23,3 +23,8 @@ export const messagesRequestScheme = z
 			from: userScheme,
 			to: userScheme,
 		});
+
+export const removeFriendScheme = z
+	.object({
+		friendName: userScheme,
+	});
