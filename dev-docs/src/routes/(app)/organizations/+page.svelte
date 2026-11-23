@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from "#lib/components/ui/button/index.ts";
 	import z from 'zod';
 	import { enhance } from '$app/forms';
 	import { orgaCreationSchema } from "#lib/schemas/orga.ts"
@@ -22,7 +23,7 @@
 <div class="mb-5 rounded-sm p-2  border border-black">
 	<p class="font-bold text-4xl"> Your Organizations: </p>
 	{#each data.organizations as organization}
-		<p class="ml-5 underline p-3"><a href="/organizations/{organization}">{organization}</a></p>
+		<p class="ml-5 underline p-3"><a href="/organizations/{organization}"><Button>{organization}</Button></a></p>
 	{/each}
 </div>
 
