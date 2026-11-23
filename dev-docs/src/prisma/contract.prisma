@@ -4,13 +4,15 @@ model User {
   email         String            @unique
   displayName   String
   avatarId      String?           @unique
+  avatar        Media?            @relation("UserAvatar", fields: [avatarId], references: [id], onDelete: SetNull)
   passwordHash  String?
   emailVerified Boolean           @default(false)
   totpSecret    String?
   totpLastStep  Int?
   sessions      Session[]
   oauthAccounts OAuthAccount[]
-  recoveryCodes     RecoveryCode[]
+  recoveryCodes RecoveryCode[]
+  media         Media[]           @relation("MediaOwner")
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
 }
@@ -43,4 +45,17 @@ model RecoveryCode {
   codeHash  String
   createdAt TimestamptzString @default(now())
   @@unique([userId, codeHash])
+}
+
+model Media {
+  id              String                     @id @default(uuid())
+  ownerId         String
+  owner           User                       @relation("MediaOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  kind            String
+  mimeType        String
+  size            Int
+  storageKey      String                     @unique
+  createdAt       TimestamptzString          @default(now())
+  avatarOf        User?                      @relation("UserAvatar")
+  @@index([ownerId])
 }
