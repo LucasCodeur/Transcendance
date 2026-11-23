@@ -28,4 +28,4 @@
 <Sent sent={data.sent} />
 
 
-<AddFriends form={form}/>
+<AddFriends form={form} socket={socket}/>

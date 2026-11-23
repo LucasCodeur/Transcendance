@@ -3,13 +3,21 @@
 	import { z } from 'zod';
 	import { friendRequestScheme } from '#lib/schemas/friend.ts' 
 
+	let webSocketErrors = $state({});
 	let clientErrors = $state<Record<string, string[] | undefined>>({});
 	let errors = $derived<Record<string, string[] | undefined>>({
 		...(form?.errors ?? {}),
 		...clientErrors,
+		...webSocketErrors,
 	});
 
-	let { form } = $props();
+	let { form, socket } = $props();
+	socket.on("send_friend_request_error", async(data) => {
+		console.log("received error from websocket Server");
+		console.log("data:");
+		console.log(data);
+		webSocketErrors = data;
+	})
 </script>
 
 <!-- all about adding new friend -->
@@ -24,6 +32,8 @@
 				clientErrors = z.flattenError(parsed.error).fieldErrors;
 				cancel();
 			}
+			socket.emit("send_friend_request", parsed.data);
+			cancel();
 			return ;
 		}}
 	>

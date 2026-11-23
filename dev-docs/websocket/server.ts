@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { db } from "#lib/server/db/client.ts";
 import { websocketServerAuth } from './websocketServerAuth.ts';
+import { handleFriendRequest } from './friends.ts';
 
 export const websocketServer = {
         name: "ahah",
@@ -14,7 +15,11 @@ export const websocketServer = {
 				displayConnectedClients(io);
 
 				client.on("send_message", async (data) => {
-					handleIncomingConnection(data, client, io);
+					handleIncomingMessage(data, client, io);
+				});
+
+				client.on("send_friend_request", async (data) => {
+					handleFriendRequest(data, client, io);
 				});
 			});
 		},
@@ -29,7 +34,7 @@ function displayConnectedClients(io) {
 	console.log("~~~~~~~~~~~~~~~~~~~~~~");
 }
 
-async function handleIncomingConnection(data, client, io) {
+async function handleIncomingMessage(data, client, io) {
 
 	if (!data.to) {
 		return ;

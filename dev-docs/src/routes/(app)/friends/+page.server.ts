@@ -2,7 +2,6 @@ import { friendRequestScheme, friendAcceptDenyScheme, removeFriendScheme } from 
 import { fail } from "@sveltejs/kit";
 import { z } from 'zod';
 import { db } from '#lib/server/db/client.ts'
-import { Interface } from "node:readline";
 
 interface FriendData {
 	me: undefined | string,
@@ -53,7 +52,6 @@ export async function load ({url, locals}){
 
 export const actions = {
 	create: async ({request, locals}) => {
-		// WARN UNCOMMENT BEFORE SHIP OR FF 
 		if (!locals.user)
 			return fail(400, {errors:"not logged in!"});
 		const form = Object.fromEntries(await request.formData());
@@ -65,9 +63,8 @@ export const actions = {
 		try {
 			const users = await db.orm.public.User.where({displayName: parsed.data.friendName}).all();
 			if (users.length === 0) {
-				console.log("should send back user not found!");
 				return fail(400, {errors:
-					{friendName: 'user does not exists!'}
+					{friendName: `user ${parsed.data.friendName} does not exists!`}
 				});
 			}
 			else if (users.length > 1)
@@ -87,8 +84,8 @@ export const actions = {
 				return fail(400, {errors: 
 					{friendName: 'You can not add yourself as a friend'}
 				});
-			// WARN; should check if a connection already exists in the other direction
-			// if that is the case, then directly make user friend
+
+			// create a pending request from locals.user.id to users[0].id
 			await db.orm.public.User.where({id: locals.user.id}).update({
 				friends: (u) => u.connect([{id: users[0].id}])
 			});
@@ -97,6 +94,8 @@ export const actions = {
 					.where({friendId: locals.user.id})
 					.where({userId: users[0].id})
 					.first();
+			// if a connection already exists in the other direction
+			// make both user friend directly !
 			if (oppositeDirection !== null) {
 				await db.orm.public.Friend
 					.where({friendId: locals.user.id})
@@ -175,7 +174,7 @@ export const actions = {
 		// retrieving user to remove friendship
 		const userToRemove = await db.orm.public.User.where({displayName: parsed.data.friendName}).first();
 		if (userToRemove === null)
-			return fail(400, { errors: { friend: "user to accept not found" } });
+			return fail(400, { errors: { friend: "user to remove not found" } });
 
 		// retreiving friendship status
 		const matchingPendingRequest = await db.orm.public.Friend
