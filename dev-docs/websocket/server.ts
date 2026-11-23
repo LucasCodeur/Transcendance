@@ -38,7 +38,7 @@ async function handleIncomingConnection(data, client, io) {
 	// here, add a zod scheme to check if the message is of valid format !
 
 	// check users as permissions to add the user !
-	const userToSendMessage = await db.orm.public.User.select("id").where({displayName: data.to}).first();
+	const userToSendMessage = await db.orm.public.User.select("id", "displayName").where({displayName: data.to}).first();
 	if (userToSendMessage === null)
 		return;
 	const friendship = await db.orm.public.Friend.where({userId: client.user.id}).where({friendId: userToSendMessage.id}).first();
@@ -57,17 +57,19 @@ async function handleIncomingConnection(data, client, io) {
 	});
 
 	// send message to both ends !
+	// send message back to client
+	client.emit("new_message", {
+		timestamp: time,
+		receiver: userToSendMessage.displayName, 
+		sender: client.user.displayName, 
+		content: data.content
+	});
+	// send message to corresponding friend !
 	for (let [id, socket] of io.of("/").sockets) {
 		if (socket.user.id === userToSendMessage.id) {
 			socket.emit("new_message", {
 				timestamp: time,
 				reciever: socket.user.displayName, 
-				sender: client.user.displayName, 
-				content: data.content
-			});
-			client.emit("new_message", {
-				timestamp: time,
-				receiver: socket.user.displayName, 
 				sender: client.user.displayName, 
 				content: data.content
 			});

@@ -89,9 +89,10 @@
 	}
 
 	socket.on("new_message", (data) => {
-		console.log("received a new message, data:");
-		console.log(data);
 		if (data.sender === friendChat || data.receiver === friendChat) {
+			if (chat) {
+				chat.scrollTo(0, chat.scrollHeight);
+			}
 			messages_data.push(data);
 			console.log("messages_date:");
 			split_messages(messages_data);
@@ -974,7 +975,9 @@
 		<div class="flex justify-between">
 			<input bind:value={chat_content} class="rounded-xl w-80/100 bg-taupe-50" type="text">
 			<Button  
-				onclick={() => {socket.emit("send_message", {to:friendChat, content:chat_content});}
+				onclick={() => {
+						socket.emit("send_message", {to:friendChat, content:chat_content});
+					}
 				}
 				variant="outline" 
 				type="submit">
