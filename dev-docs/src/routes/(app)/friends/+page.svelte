@@ -25,11 +25,6 @@
 	const	socket = io();
 
 
-	interface Messages {
-		sender: string;
-		receiver: string;
-		date: string;
-	}
 
 </script>
 

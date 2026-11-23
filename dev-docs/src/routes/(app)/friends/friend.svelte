@@ -4,6 +4,12 @@
  	import * as Message from "#lib/components/ui/message/index.ts";
 	import { Button } from "#lib/components/ui/button/index.ts";
 
+	interface Messages {
+		sender: string;
+		receiver: string;
+		date: string;
+	}
+
 	let { me, friends, socket, url } = $props();
 
 	function toggle_chat_hidden() {
@@ -23,20 +29,22 @@
 		hidden="";
 	}
 
-	let hidden=$state("hidden");
-	let friendChat=$state("");
-	let chat: HTMLElement | null;
-	let chat_content: null | string = $state();
-
 	$effect( () => {
 		if (chat !== null)
 			chat.scrollTo(0, chat.scrollHeight);
 	});
 
+	let hidden=$state("hidden");
+	let friendChat=$state("");
+	let chat: HTMLElement | null;
+	let chat_content: null | string = $state();
+
 	let		messages_data: null | Messages[] = $state([]);
 	let		splitted_messages: null | Messages[][] = $state([]);
 	let		align:string = "";
 
+	// function which split message per sender group
+	// for displaying purposes
 	function split_messages(messages_data) {
 
 		if (messages_data.length === 0)
@@ -46,7 +54,6 @@
 		tmp_messages_block.push(messages_data[0]);
 		let last_sender = messages_data[0].sender;
 		for (let i = 1; i < messages_data.length; i++) {
-			console.log(`messages_data[${i}]`);
 			if (messages_data[i].sender === last_sender) {
 				tmp_messages_block.push(messages_data[i]);
 			}
@@ -58,8 +65,6 @@
 		}
 		if (tmp_messages_block.length > 0)
 			splitted_messages.push(tmp_messages_block);
-		console.log("splitted_messages:");
-		console.log(splitted_messages);
 	}
 
 	socket.on("new_message", (data) => {
@@ -68,7 +73,6 @@
 				chat.scrollTo(0, chat.scrollHeight);
 			}
 			messages_data.push(data);
-			console.log("messages_date:");
 			split_messages(messages_data);
 		}
 	});
@@ -79,6 +83,33 @@
 	function align_to_end(){
 		align = "end";
 	}
+
+	async function handleMessages(friend) {
+		const options  = {
+					method:"POST",
+					credentials: "same-origin",
+					headers: {
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify({from:me, to:friend}),
+				};
+		const messages_response = await fetch(url + "/getMessages", options);
+		messages_data = await messages_response.json();
+
+		console.log("messages_data:");
+		console.log(messages_data);
+		split_messages(messages_data);
+
+		show_chat(friend);
+		if (chat !== null) {
+			chat.scrollTo(0, chat.scrollHeight);
+		}
+		socket.on(friendChat, (data) => {
+			console.log(`received a message from ${friendChat}`);
+		});
+		// connect to websocket 
+	}
+						
 
 </script>
 
@@ -94,35 +125,7 @@
 					class="w-80/100" 
 					variant="outline"
 					onclick={async () => {
-						// here we should set some variables
-						// which would open a chatbox and a chat with the users !
-
-						// retrieve messages
-						// use fetch to call friends/getMessages api
-						const options  = {
-									method:"POST",
-									credentials: "same-origin",
-									headers: {
-										"Content-type": "application/json",
-									},
-									body: JSON.stringify({from:me, to:friend}),
-								};
-						const messages_response = await fetch(url + "/getMessages", options);
-						messages_data = await messages_response.json();
-
-						console.log("messages_data:");
-						console.log(messages_data);
-						split_messages(messages_data);
-
-						show_chat(friend);
-						if (chat !== null) {
-							chat.scrollTo(0, chat.scrollHeight);
-						}
-						socket.on(friendChat, (data) => {
-							console.log(`received a message from ${friendChat}`);
-						});
-						// connect to websocket 
-						
+						handleMessages(friend);
 					}}
 				>
 					{friend}
