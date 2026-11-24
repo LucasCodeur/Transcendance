@@ -38,7 +38,8 @@ export async function importGedcomFile(
         ],
       };
     } else {
-      const res = parseAST(document.getNodes());
+      const res: ImportResult = parseAST(document.getNodes());
+      if (!res.success) return res;
     }
   }
 }
@@ -72,16 +73,16 @@ async function parseAST(nodes: ASTNode[]) {
         res = await parseSubmitter(nodes[i]);
         break;
       case "INDI":
-        res = await parseIndividual(nodes[i], persons);
+        res = parseIndividual(nodes[i], persons);
         break;
       case "FAM":
-        await parseFamily(nodes[i], family);
+        res = await parseFamily(nodes[i], family);
         break;
     }
     if (res && !res.success) return res;
     i++;
   }
-  await geneaDB.addToDB(persons, family, treeId);
+  res = await geneaDB.addToDB(persons, family, treeId);
   utilsGedcom.printTrees();
 }
 
@@ -100,6 +101,25 @@ async function parseFamily(node: ASTNode, family: Family) {
       family.childGedcomIds.push(value);
     }
   }
+  let errors: String = validateFamily(family);
+  if (errors != undefined && errors.length > 0) {
+    return {
+      success: false,
+      kind: "Problem in relation",
+      errors: [
+        {
+          code: "ERRORS_RELATIONS",
+          message: errors,
+        },
+      ],
+    };
+  }
+}
+
+function validateFamily(family: Family) {
+  const validFamily = familySchema.safeParse(family);
+  if (!validFamily.success)
+    return validFamily.error.issues.map((issue) => issue.message);
 }
 
 function validateGedcomFile(document: GedcomDocument): string[] {

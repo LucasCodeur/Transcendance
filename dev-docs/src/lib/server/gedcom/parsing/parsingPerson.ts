@@ -189,4 +189,9 @@ export async function parseSubmitter(node: ASTNode) {
   const tree = await genea.Tree.create({
     name: name,
   });
+
+  return {
+    success: true,
+    data: undefined,
+  };
 }

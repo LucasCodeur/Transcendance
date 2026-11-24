@@ -30,11 +30,11 @@ export const actions: Actions = {
     //   return fail(400, { error: "Please select a gedcomFile." });
     // }
 
-    let gedcomErrors: string[] | undefined = await importGedcomFile(gedcomFile);
+    let gedcomErrors: ImportError = await importGedcomFile(gedcomFile);
     if (gedcomErrors) {
       return fail(400, {
         errors: {
-          file: gedcomErrors,
+          file: gedcomErrors.message,
         },
       });
     }

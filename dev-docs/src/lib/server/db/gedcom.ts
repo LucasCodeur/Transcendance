@@ -27,6 +27,11 @@ export namespace geneaDB {
     }
 
     await addRelations(family, treeId, partnerShip.id);
+
+    return {
+      success: true,
+      data: undefined,
+    };
   }
 
   export async function addPerson(person: Person, treeId: string) {
