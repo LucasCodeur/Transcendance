@@ -20,28 +20,23 @@
 
 	let friendData = $derived(data);
 
-	socket.on("send_friend_request_success", async(successData) => {
-		console.log("received error from websocket Server");
-		console.log("successData:");
-		console.log(successData);
-		friendData.sent.push(successData.newFriend);
-	})
-
-	socket.on("pending_friend_request_success", async(successData) => {
-		console.log("received error from websocket Server");
-		console.log("successData:");
-		console.log(successData);
-		friendData.pending.push(successData.newFriend);
-		console.log(friendData);
-	})
+	// socket.on("send_friend_request_success", async(successData) => {
+	// 	console.log("socket event handled in page.svelte");
+	// 	// console.log("received error from websocket Server");
+	// 	// console.log("successData:");
+	// 	// console.log(successData);
+	// 	friendData.sent.push(successData.newFriend);
+	// })
+	//
 </script>
 
-<Pending pending={friendData.pending}/>
+
+<Pending socket={socket} pending={friendData.pending}/>
 
 <Friends me={data.me} url={data.url} socket={socket} friends={friendData.friends} />
 
 
-<Sent sent={friendData.sent} />
+<Sent socket={socket} sent={friendData.sent} />
 
 
 <AddFriends form={form} socket={socket}/>

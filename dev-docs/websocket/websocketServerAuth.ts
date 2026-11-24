@@ -22,6 +22,5 @@ export async function websocketServerAuth(socket, next)  {
 			}
 		}
 	}
-
 	next();
 }

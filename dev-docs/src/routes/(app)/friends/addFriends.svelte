@@ -20,18 +20,14 @@
 
 
 	let { form, socket } = $props();
-	socket.on("send_friend_request_error", async(data) => {
-		console.log("received error from websocket Server");
-		console.log("data:");
-		console.log(data);
-		webSocketErrors = data;
+	socket.on("send_friend_request_error", async(errorData) => {
+		webSocketSuccess = {};
+		webSocketErrors = errorData;
 	})
 
-	socket.on("send_friend_request_success", async(data) => {
-		console.log("received error from websocket Server");
-		console.log("data:");
-		console.log(data);
-		webSocketSuccess = data;
+	socket.on("send_friend_request_success", async(successData) => {
+		webSocketErrors = {};
+		webSocketSuccess = successData;
 	})
 </script>
 
