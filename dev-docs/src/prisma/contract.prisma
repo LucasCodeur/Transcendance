@@ -1,4 +1,101 @@
 // use prisma-8
+namespace genealogy {
+
+// Family tree belonging to an organization
+model Tree {
+  id      String   @id @default(cuid(2))
+  name    String
+  persons Person[]
+}
+
+// Individual in a family tree
+model Person {
+  id            String @id @default(cuid(2))
+  gedcomId      String?
+
+  gender        String?
+
+  fullName      String?
+  givenName     String?
+  surName       String?
+
+  nickName      String?
+  maidenName    String?
+  marriedName   String?
+
+  birthDate     TimestamptzString?
+  birthPlace    String?
+  birthAdress   String?
+
+  deceased      Boolean?
+
+  deathDate     TimestamptzString?
+  deathPlace    String?
+
+  treeId        String
+  tree          Tree @relation(fields: [treeId], references: [id])
+
+  medias        Media[]?
+
+  partnerLinks  PartnerLink[]?
+  childLinks    ChildLink[]?
+}
+
+// Partnership between individuals, including type and start/end dates
+model Partnership {
+  id              String        @id @default(cuid(2))
+  treeId          String
+  gedcomId        String?
+
+  partnerLinks    PartnerLink[]
+  childLinks      ChildLink[]
+}
+
+// Links a person to a partnership
+model PartnerLink {
+  id              String @id @default(cuid(2))
+  personId        String
+  gedcomId        String?
+
+  person          Person @relation(fields: [personId], references: [id])
+
+  partnershipId   String
+  partnerShip     Partnership @relation(fields: [partnershipId], references: [id])
+
+  type            String?
+}
+
+// Links a child to a partnership with a parentage type
+model ChildLink {
+  id              String @id @default(cuid(2))
+  personId        String
+  gedcomId        String?
+
+  person          Person @relation(fields: [personId], references: [id])
+
+  partnershipId   String
+  partnerShip     Partnership @relation(fields: [partnershipId], references: [id])
+}
+
+// Media file attached to a person
+model Media {
+  id              String @id @default(cuid(2))
+  personId        String
+  person          Person @relation(fields: [personId], references: [id])
+}
+
+}
+
+// Family group chat or direct conversation
+model Conversation {
+  id String @id @default(cuid(2))
+}
+
+// Notification intended for a user
+model Notification {
+  id String @id @default(cuid(2))
+}
+
 model User {
   id            String            @id @default(uuid())
   email         String            @unique

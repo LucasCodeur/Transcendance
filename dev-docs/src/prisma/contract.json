@@ -4,16 +4,24 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "ChildLink": {
+      "model": "ChildLink",
+      "namespace": "genealogy"
+    },
+    "Conversation": {
+      "model": "Conversation",
+      "namespace": "public"
+    },
     "Friend": {
       "model": "Friend",
       "namespace": "public"
     },
-    "Media": {
-      "model": "Media",
-      "namespace": "public"
-    },
     "Message": {
       "model": "Message",
+      "namespace": "public"
+    },
+    "Notification": {
+      "model": "Notification",
       "namespace": "public"
     },
     "OAuthAccount": {
@@ -24,6 +32,18 @@
       "model": "Organization",
       "namespace": "public"
     },
+    "PartnerLink": {
+      "model": "PartnerLink",
+      "namespace": "genealogy"
+    },
+    "Partnership": {
+      "model": "Partnership",
+      "namespace": "genealogy"
+    },
+    "Person": {
+      "model": "Person",
+      "namespace": "genealogy"
+    },
     "RecoveryCode": {
       "model": "RecoveryCode",
       "namespace": "public"
@@ -32,6 +52,10 @@
       "model": "Session",
       "namespace": "public"
     },
+    "Tree": {
+      "model": "Tree",
+      "namespace": "genealogy"
+    },
     "User": {
       "model": "User",
       "namespace": "public"
@@ -39,10 +63,600 @@
     "UserOrganizations": {
       "model": "UserOrganizations",
       "namespace": "public"
+    },
+    "genealogy.Media": {
+      "model": "Media",
+      "namespace": "genealogy"
+    },
+    "public.Media": {
+      "model": "Media",
+      "namespace": "public"
     }
   },
   "domain": {
     "namespaces": {
+      "genealogy": {
+        "models": {
+          "ChildLink": {
+            "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "partnershipId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "personId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "partnerShip": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "partnershipId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Partnership",
+                  "namespace": "genealogy"
+                }
+              },
+              "person": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "personId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Person",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "partnershipId": {
+                  "column": "partnershipId"
+                },
+                "personId": {
+                  "column": "personId"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "ChildLink"
+            }
+          },
+          "Media": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "personId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "person": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "personId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Person",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "personId": {
+                  "column": "personId"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "Media"
+            }
+          },
+          "PartnerLink": {
+            "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "partnershipId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "personId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "partnerShip": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "partnershipId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Partnership",
+                  "namespace": "genealogy"
+                }
+              },
+              "person": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "personId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Person",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "partnershipId": {
+                  "column": "partnershipId"
+                },
+                "personId": {
+                  "column": "personId"
+                },
+                "type": {
+                  "column": "type"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "PartnerLink"
+            }
+          },
+          "Partnership": {
+            "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "treeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "childLinks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "partnershipId"
+                  ]
+                },
+                "to": {
+                  "model": "ChildLink",
+                  "namespace": "genealogy"
+                }
+              },
+              "partnerLinks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "partnershipId"
+                  ]
+                },
+                "to": {
+                  "model": "PartnerLink",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "treeId": {
+                  "column": "treeId"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "Partnership"
+            }
+          },
+          "Person": {
+            "fields": {
+              "birthAdress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "birthDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "birthPlace": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deathDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "deathPlace": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deceased": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "fullName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "gender": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "givenName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "maidenName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "marriedName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nickName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "surName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "treeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "childLinks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "personId"
+                  ]
+                },
+                "to": {
+                  "model": "ChildLink",
+                  "namespace": "genealogy"
+                }
+              },
+              "medias": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "personId"
+                  ]
+                },
+                "to": {
+                  "model": "Media",
+                  "namespace": "genealogy"
+                }
+              },
+              "partnerLinks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "personId"
+                  ]
+                },
+                "to": {
+                  "model": "PartnerLink",
+                  "namespace": "genealogy"
+                }
+              },
+              "tree": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "treeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tree",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "birthAdress": {
+                  "column": "birthAdress"
+                },
+                "birthDate": {
+                  "column": "birthDate"
+                },
+                "birthPlace": {
+                  "column": "birthPlace"
+                },
+                "deathDate": {
+                  "column": "deathDate"
+                },
+                "deathPlace": {
+                  "column": "deathPlace"
+                },
+                "deceased": {
+                  "column": "deceased"
+                },
+                "fullName": {
+                  "column": "fullName"
+                },
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
+                "gender": {
+                  "column": "gender"
+                },
+                "givenName": {
+                  "column": "givenName"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "maidenName": {
+                  "column": "maidenName"
+                },
+                "marriedName": {
+                  "column": "marriedName"
+                },
+                "nickName": {
+                  "column": "nickName"
+                },
+                "surName": {
+                  "column": "surName"
+                },
+                "treeId": {
+                  "column": "treeId"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "Person"
+            }
+          },
+          "Tree": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "persons": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "treeId"
+                  ]
+                },
+                "to": {
+                  "model": "Person",
+                  "namespace": "genealogy"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "genealogy",
+              "table": "Tree"
+            }
+          }
+        }
+      },
       "public": {
         "enum": {
           "FriendStatus": {
@@ -81,6 +695,27 @@
           }
         },
         "models": {
+          "Conversation": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Conversation"
+            }
+          },
           "Friend": {
             "fields": {
               "friendId": {
@@ -351,6 +986,27 @@
               },
               "namespaceId": "public",
               "table": "Message"
+            }
+          },
+          "Notification": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Notification"
             }
           },
           "OAuthAccount": {
@@ -982,9 +1638,436 @@
   },
   "storage": {
     "namespaces": {
+      "genealogy": {
+        "entries": {
+          "table": {
+            "ChildLink": {
+              "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "partnershipId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "personId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "ChildLink_personId_idx_e5e06b80"
+                  },
+                  "source": {
+                    "columns": [
+                      "personId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "ChildLink"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Person"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "ChildLink_partnershipId_idx_23b13417"
+                  },
+                  "source": {
+                    "columns": [
+                      "partnershipId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "ChildLink"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Partnership"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "partnershipId"
+                  ],
+                  "name": "ChildLink_partnershipId_idx_23b13417",
+                  "prefix": "ChildLink_partnershipId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "personId"
+                  ],
+                  "name": "ChildLink_personId_idx_e5e06b80",
+                  "prefix": "ChildLink_personId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Media": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "personId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Media_personId_idx_e5e06b80"
+                  },
+                  "source": {
+                    "columns": [
+                      "personId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Media"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Person"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "personId"
+                  ],
+                  "name": "Media_personId_idx_e5e06b80",
+                  "prefix": "Media_personId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "PartnerLink": {
+              "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "partnershipId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "personId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "PartnerLink_personId_idx_e5e06b80"
+                  },
+                  "source": {
+                    "columns": [
+                      "personId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "PartnerLink"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Person"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "PartnerLink_partnershipId_idx_23b13417"
+                  },
+                  "source": {
+                    "columns": [
+                      "partnershipId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "PartnerLink"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Partnership"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "partnershipId"
+                  ],
+                  "name": "PartnerLink_partnershipId_idx_23b13417",
+                  "prefix": "PartnerLink_partnershipId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "personId"
+                  ],
+                  "name": "PartnerLink_personId_idx_e5e06b80",
+                  "prefix": "PartnerLink_personId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Partnership": {
+              "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "treeId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Person": {
+              "columns": {
+                "birthAdress": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "birthDate": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": true
+                },
+                "birthPlace": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "deathDate": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": true
+                },
+                "deathPlace": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "deceased": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "nullable": true
+                },
+                "fullName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "gender": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "givenName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "maidenName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "marriedName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "nickName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "surName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "treeId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Person_treeId_idx_b6ba669b"
+                  },
+                  "source": {
+                    "columns": [
+                      "treeId"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Person"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "genealogy",
+                    "tableName": "Tree"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "treeId"
+                  ],
+                  "name": "Person_treeId_idx_b6ba669b",
+                  "prefix": "Person_treeId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Tree": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            }
+          }
+        },
+        "id": "genealogy",
+        "kind": "postgres-schema"
+      },
       "public": {
         "entries": {
           "table": {
+            "Conversation": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Friend": {
               "checks": [
                 {
@@ -1239,6 +2322,23 @@
               "primaryKey": {
                 "columns": [
                   "messageId"
+                ]
+              },
+              "uniques": []
+            },
+            "Notification": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
                 ]
               },
               "uniques": []
@@ -1732,12 +2832,89 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3ab876b570367ba534b5da46b29b6ee8396c2f3baff9bf13c4542522f52408ef"
+    "storageHash": "bb6ff15ad234f0a9634ca2ef14359e6ee28e916460ea0bc2cb6704046668f76b"
   },
   "execution": {
-    "executionHash": "1023baa37ef03e436c83d510c4c3a7a9a4873868693d5f35ab1a83228aa7138b",
+    "executionHash": "1eabe3c3d4b6d43a80371e9e5f0ba712e0661a84080f93f7eada6f01dacb571d",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ChildLink",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Media",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PartnerLink",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Partnership",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Person",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Tree",
+            "field": "id",
+            "namespace": "genealogy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Conversation",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",
@@ -1757,6 +2934,17 @@
           "ref": {
             "entry": "Message",
             "field": "messageId",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "cuid2",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Notification",
+            "field": "id",
             "namespace": "public"
           }
         },

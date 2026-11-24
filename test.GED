@@ -1,0 +1,156 @@
+0 HEAD
+1 SOUR TEST-APP
+2 NAME GEDCOM Individual Test
+2 VERS 1.0
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 SUBM @U1@
+
+0 @U1@ SUBM
+1 NAME Test User
+1 ADDR 1 Test Street
+2 CITY Paris
+2 CTRY France
+1 PHON +33 6 00 00 00 00
+1 EMAIL test@example.com
+
+0 @I1@ INDI
+1 RESN confidential
+
+1 NAME Jean /Dupont/
+2 GIVN Jean
+2 SURN Dupont
+2 NICK Jeannot
+2 NPFX Dr
+2 NSFX Jr
+
+1 SEX M
+
+1 BIRT
+2 DATE 10 JAN 1980
+2 PLAC Paris, France
+2 ADDR 10 Rue de la Paix
+2 NOTE Acte de naissance consulté.
+2 SOUR @S1@
+
+1 CHR
+2 DATE 20 JAN 1980
+2 PLAC Paris, France
+
+1 DEAT
+2 DATE 5 MAY 2050
+2 PLAC Lyon, France
+2 CAUS Natural causes
+2 SOUR @S2@
+
+1 BURI
+2 DATE 10 MAY 2050
+2 PLAC Paris, France
+
+1 RESI
+2 DATE FROM 2000 TO 2010
+2 PLAC Paris, France
+2 ADDR 10 Rue de la Paix
+
+1 RESI
+2 DATE FROM 2010 TO 2020
+2 PLAC Lyon, France
+2 ADDR 20 Rue Victor Hugo
+
+1 OCCU Software Engineer
+2 DATE FROM 2005 TO 2025
+2 PLAC Paris, France
+
+1 EDUC University degree
+2 DATE 2004
+2 PLAC Paris, France
+
+1 RELI Catholic
+1 NATI French
+
+1 NOTE Personne passionnée de généalogie.
+1 NOTE
+2 CONT Cette note continue sur une deuxième ligne.
+
+1 OBJE @M1@
+
+1 FAMS @F1@
+1 FAMC @F2@
+
+1 ALIA @I3@
+
+1 ASSO @I2@
+2 RELA Friend
+
+1 CHAN
+2 DATE 1 JAN 2026
+2 TIME 12:00:00
+
+0 @I2@ INDI
+1 NAME Marie /Martin/
+2 GIVN Marie
+2 SURN Martin
+1 SEX F
+1 BIRT
+2 DATE 15 MAR 1982
+2 PLAC Lyon, France
+1 FAMS @F1@
+
+0 @I3@ INDI
+1 NAME Jean /Martin/
+2 GIVN Jean
+2 SURN Martin
+1 SEX M
+1 BIRT
+2 DATE 1 APR 2000
+2 PLAC Paris, France
+1 FAMC @F1@
+
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 CHIL @I3@
+1 MARR
+2 DATE 12 JUL 2005
+2 PLAC Paris, France
+2 SOUR @S1@
+
+0 @F2@ FAM
+1 HUSB @I4@
+1 CHIL @I1@
+
+0 @I4@ INDI
+1 NAME Pierre /Dupont/
+2 GIVN Pierre
+2 SURN Dupont
+1 SEX M
+
+0 @S1@ SOUR
+1 TITL Example Birth Register
+1 ABBR Birth Register
+1 AUTH Example Authority
+1 REPO @R1@
+
+0 @S2@ SOUR
+1 TITL Example Death Register
+1 ABBR Death Register
+1 AUTH Example Authority
+1 REPO @R1@
+
+0 @R1@ REPO
+1 NAME Example Archives
+1 ADDR 10 Archive Street
+2 CITY Paris
+2 POST 75000
+2 CTRY France
+1 WWW https://example.com
+
+0 @M1@ OBJE
+1 FILE jean-dupont.jpg
+2 FORM jpeg
+2 TYPE photo
+1 TITL Portrait de Jean Dupont
+
+0 TRLR
