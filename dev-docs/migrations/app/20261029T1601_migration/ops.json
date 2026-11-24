@@ -1,0 +1,284 @@
+[
+  {
+    "id": "table.Organization",
+    "label": "Create table \"Organization\"",
+    "summary": "Creates table \"Organization\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Organization"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Organization\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Organization\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Organization\"",
+        "sql": "CREATE TABLE \"public\".\"Organization\" (\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Organization\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Organization\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.UserOrganizations",
+    "label": "Create table \"UserOrganizations\"",
+    "summary": "Creates table \"UserOrganizations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "UserOrganizations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"UserOrganizations\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"UserOrganizations\"",
+        "sql": "CREATE TABLE \"public\".\"UserOrganizations\" (\n  \"organizationId\" text NOT NULL,\n  \"role\" text DEFAULT 'viewer' NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"userId\", \"organizationId\"),\n  CONSTRAINT \"UserOrganizations_role_check_8ddc8756\" CHECK (\"role\" IN ('owner', 'editor', 'contributor', 'viewer'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"UserOrganizations\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Organization.Organization_name_key",
+    "label": "Add unique constraint on \"Organization\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Organization_name_key",
+        "table": "Organization"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Organization_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Organization_name_key",
+          "public",
+          "\"public\".\"Organization\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Organization_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Organization\" ADD CONSTRAINT \"Organization_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Organization_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Organization_name_key",
+          "public",
+          "\"public\".\"Organization\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserOrganizations.UserOrganizations_organizationId_idx_2e17ef41",
+    "label": "Create index \"UserOrganizations_organizationId_idx_2e17ef41\" on \"UserOrganizations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserOrganizations_organizationId_idx_2e17ef41",
+        "table": "UserOrganizations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserOrganizations_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserOrganizations_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"UserOrganizations_organizationId_idx_2e17ef41\" ON \"public\".\"UserOrganizations\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserOrganizations_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserOrganizations.UserOrganizations_userId_idx_a489d58a",
+    "label": "Create index \"UserOrganizations_userId_idx_a489d58a\" on \"UserOrganizations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserOrganizations_userId_idx_a489d58a",
+        "table": "UserOrganizations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserOrganizations_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserOrganizations_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"UserOrganizations_userId_idx_a489d58a\" ON \"public\".\"UserOrganizations\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserOrganizations_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserOrganizations_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserOrganizations.UserOrganizations_userId_fkey",
+    "label": "Add foreign key \"UserOrganizations_userId_fkey\" on \"UserOrganizations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserOrganizations_userId_fkey",
+        "table": "UserOrganizations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserOrganizations_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserOrganizations_userId_fkey",
+          "public",
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserOrganizations_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserOrganizations\"\nADD CONSTRAINT \"UserOrganizations_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserOrganizations_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserOrganizations_userId_fkey",
+          "public",
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserOrganizations.UserOrganizations_organizationId_fkey",
+    "label": "Add foreign key \"UserOrganizations_organizationId_fkey\" on \"UserOrganizations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserOrganizations_organizationId_fkey",
+        "table": "UserOrganizations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserOrganizations_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserOrganizations_organizationId_fkey",
+          "public",
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserOrganizations_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserOrganizations\"\nADD CONSTRAINT \"UserOrganizations_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"Organization\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserOrganizations_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserOrganizations_organizationId_fkey",
+          "public",
+          "\"public\".\"UserOrganizations\""
+        ]
+      }
+    ]
+  }
+]

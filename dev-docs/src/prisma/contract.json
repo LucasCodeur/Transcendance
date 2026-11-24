@@ -4,12 +4,24 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "Friend": {
+      "model": "Friend",
+      "namespace": "public"
+    },
     "Media": {
       "model": "Media",
       "namespace": "public"
     },
+    "Message": {
+      "model": "Message",
+      "namespace": "public"
+    },
     "OAuthAccount": {
       "model": "OAuthAccount",
+      "namespace": "public"
+    },
+    "Organization": {
+      "model": "Organization",
       "namespace": "public"
     },
     "RecoveryCode": {
@@ -23,12 +35,132 @@
     "User": {
       "model": "User",
       "namespace": "public"
+    },
+    "UserOrganizations": {
+      "model": "UserOrganizations",
+      "namespace": "public"
     }
   },
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "FriendStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "Pending",
+                "value": "pending"
+              },
+              {
+                "name": "Accepted",
+                "value": "accepted"
+              }
+            ]
+          },
+          "Role": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "Owner",
+                "value": "owner"
+              },
+              {
+                "name": "Editor",
+                "value": "editor"
+              },
+              {
+                "name": "Contributor",
+                "value": "contributor"
+              },
+              {
+                "name": "Viewer",
+                "value": "viewer"
+              }
+            ]
+          }
+        },
         "models": {
+          "Friend": {
+            "fields": {
+              "friendId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "FriendStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "friend": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "friendId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "friendId": {
+                  "column": "friendId"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Friend"
+            }
+          },
           "Media": {
             "fields": {
               "createdAt": {
@@ -143,6 +275,84 @@
               "table": "Media"
             }
           },
+          "Message": {
+            "fields": {
+              "content": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "messageId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "receiverId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "senderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "timestamp": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "senderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "content": {
+                  "column": "content"
+                },
+                "messageId": {
+                  "column": "messageId"
+                },
+                "receiverId": {
+                  "column": "receiverId"
+                },
+                "senderId": {
+                  "column": "senderId"
+                },
+                "timestamp": {
+                  "column": "timestamp"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Message"
+            }
+          },
           "OAuthAccount": {
             "fields": {
               "createdAt": {
@@ -219,6 +429,66 @@
               },
               "namespaceId": "public",
               "table": "OAuthAccount"
+            }
+          },
+          "Organization": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "users": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "userId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "organizationId"
+                  ],
+                  "table": "UserOrganizations",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Organization"
             }
           },
           "RecoveryCode": {
@@ -457,6 +727,34 @@
                   "namespace": "public"
                 }
               },
+              "friends": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "friendId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "userId"
+                  ],
+                  "table": "Friend",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
               "media": {
                 "cardinality": "1:N",
                 "on": {
@@ -472,6 +770,21 @@
                   "namespace": "public"
                 }
               },
+              "messages": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "senderId"
+                  ]
+                },
+                "to": {
+                  "model": "Message",
+                  "namespace": "public"
+                }
+              },
               "oauthAccounts": {
                 "cardinality": "1:N",
                 "on": {
@@ -484,6 +797,34 @@
                 },
                 "to": {
                   "model": "OAuthAccount",
+                  "namespace": "public"
+                }
+              },
+              "organizations": {
+                "cardinality": "N:M",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "through": {
+                  "childColumns": [
+                    "organizationId"
+                  ],
+                  "namespaceId": "public",
+                  "parentColumns": [
+                    "userId"
+                  ],
+                  "table": "UserOrganizations",
+                  "targetColumns": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
                   "namespace": "public"
                 }
               },
@@ -554,6 +895,86 @@
               "namespaceId": "public",
               "table": "User"
             }
+          },
+          "UserOrganizations": {
+            "fields": {
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Role",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "role": {
+                  "column": "role"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UserOrganizations"
+            }
           }
         }
       }
@@ -564,6 +985,107 @@
       "public": {
         "entries": {
           "table": {
+            "Friend": {
+              "checks": [
+                {
+                  "expression": "\"type\" IN ('pending', 'accepted')",
+                  "name": "Friend_type_check_89e02a8c",
+                  "prefix": "Friend_type_check"
+                }
+              ],
+              "columns": {
+                "friendId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "pending"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "FriendStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Friend_userId_idx_a489d58a"
+                  },
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Friend"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "Friend_friendId_idx_7ad40ec8"
+                  },
+                  "source": {
+                    "columns": [
+                      "friendId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Friend"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "friendId"
+                  ],
+                  "name": "Friend_friendId_idx_7ad40ec8",
+                  "prefix": "Friend_friendId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "Friend_userId_idx_a489d58a",
+                  "prefix": "Friend_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "userId",
+                  "friendId"
+                ]
+              },
+              "uniques": []
+            },
             "Media": {
               "columns": {
                 "createdAt": {
@@ -651,6 +1173,76 @@
                 }
               ]
             },
+            "Message": {
+              "columns": {
+                "content": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "messageId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "receiverId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "senderId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "timestamp": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Message_senderId_idx_4689c490"
+                  },
+                  "source": {
+                    "columns": [
+                      "senderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Message"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "senderId"
+                  ],
+                  "name": "Message_senderId_idx_4689c490",
+                  "prefix": "Message_senderId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "messageId"
+                ]
+              },
+              "uniques": []
+            },
             "OAuthAccount": {
               "columns": {
                 "createdAt": {
@@ -731,6 +1323,34 @@
                   "columns": [
                     "userId",
                     "provider"
+                  ]
+                }
+              ]
+            },
+            "Organization": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
                   ]
                 }
               ]
@@ -986,6 +1606,125 @@
                   ]
                 }
               ]
+            },
+            "UserOrganizations": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('owner', 'editor', 'contributor', 'viewer')",
+                  "name": "UserOrganizations_role_check_8ddc8756",
+                  "prefix": "UserOrganizations_role_check"
+                }
+              ],
+              "columns": {
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "viewer"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "UserOrganizations_userId_idx_a489d58a"
+                  },
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserOrganizations"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "UserOrganizations_organizationId_idx_2e17ef41"
+                  },
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserOrganizations"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Organization"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "UserOrganizations_organizationId_idx_2e17ef41",
+                  "prefix": "UserOrganizations_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "UserOrganizations_userId_idx_a489d58a",
+                  "prefix": "UserOrganizations_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "userId",
+                  "organizationId"
+                ]
+              },
+              "uniques": []
+            }
+          },
+          "valueSet": {
+            "FriendStatus": {
+              "kind": "valueSet",
+              "values": [
+                "pending",
+                "accepted"
+              ]
+            },
+            "Role": {
+              "kind": "valueSet",
+              "values": [
+                "owner",
+                "editor",
+                "contributor",
+                "viewer"
+              ]
             }
           }
         },
@@ -993,10 +1732,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e66e96a607a6090eb03721c3a4d555a7d5c81765165306c209537af3ab85d90e"
+    "storageHash": "3ab876b570367ba534b5da46b29b6ee8396c2f3baff9bf13c4542522f52408ef"
   },
   "execution": {
-    "executionHash": "5929312017b02e41be4df2078cf8d8f6ca20b1740dc1e4dc78dcf39f88a444e7",
+    "executionHash": "1023baa37ef03e436c83d510c4c3a7a9a4873868693d5f35ab1a83228aa7138b",
     "mutations": {
       "defaults": [
         {
@@ -1016,7 +1755,29 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "Message",
+            "field": "messageId",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "OAuthAccount",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Organization",
             "field": "id",
             "namespace": "public"
           }

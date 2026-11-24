@@ -18,9 +18,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'e66e96a607a6090eb03721c3a4d555a7d5c81765165306c209537af3ab85d90e'>;
+  StorageHashBase<'3ab876b570367ba534b5da46b29b6ee8396c2f3baff9bf13c4542522f52408ef'>;
 export type ExecutionHash =
-  ExecutionHashBase<'5929312017b02e41be4df2078cf8d8f6ca20b1740dc1e4dc78dcf39f88a444e7'>;
+  ExecutionHashBase<'1023baa37ef03e436c83d510c4c3a7a9a4873868693d5f35ab1a83228aa7138b'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -234,6 +234,11 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly Friend: {
+      readonly friendId: CodecTypes['pg/text@1']['output'];
+      readonly type: 'pending' | 'accepted';
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
     readonly Media: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -243,12 +248,23 @@ export type FieldOutputTypes = {
       readonly size: CodecTypes['pg/int4@1']['output'];
       readonly storageKey: CodecTypes['pg/text@1']['output'];
     };
+    readonly Message: {
+      readonly content: CodecTypes['pg/text@1']['output'];
+      readonly messageId: CodecTypes['pg/text@1']['output'];
+      readonly receiverId: CodecTypes['pg/text@1']['output'];
+      readonly senderId: CodecTypes['pg/text@1']['output'];
+      readonly timestamp: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
     readonly OAuthAccount: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
     };
     readonly RecoveryCode: {
       readonly codeHash: CodecTypes['pg/text@1']['output'];
@@ -274,11 +290,21 @@ export type FieldOutputTypes = {
       readonly totpLastStep: CodecTypes['pg/int4@1']['output'] | null;
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['output'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['output'];
     };
   };
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly Friend: {
+      readonly friendId: CodecTypes['pg/text@1']['input'];
+      readonly type: 'pending' | 'accepted';
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
     readonly Media: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -288,12 +314,23 @@ export type FieldInputTypes = {
       readonly size: CodecTypes['pg/int4@1']['input'];
       readonly storageKey: CodecTypes['pg/text@1']['input'];
     };
+    readonly Message: {
+      readonly content: CodecTypes['pg/text@1']['input'];
+      readonly messageId: CodecTypes['pg/text@1']['input'];
+      readonly receiverId: CodecTypes['pg/text@1']['input'];
+      readonly senderId: CodecTypes['pg/text@1']['input'];
+      readonly timestamp: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
     readonly OAuthAccount: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
     };
     readonly RecoveryCode: {
       readonly codeHash: CodecTypes['pg/text@1']['input'];
@@ -320,10 +357,20 @@ export type FieldInputTypes = {
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['input'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
   };
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly Friend: {
+      readonly friendId: CodecTypes['pg/text@1']['output'];
+      readonly type: 'pending' | 'accepted';
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
     readonly Media: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -333,12 +380,23 @@ export type StorageColumnTypes = {
       readonly size: CodecTypes['pg/int4@1']['output'];
       readonly storageKey: CodecTypes['pg/text@1']['output'];
     };
+    readonly Message: {
+      readonly content: CodecTypes['pg/text@1']['output'];
+      readonly messageId: CodecTypes['pg/text@1']['output'];
+      readonly receiverId: CodecTypes['pg/text@1']['output'];
+      readonly senderId: CodecTypes['pg/text@1']['output'];
+      readonly timestamp: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
     readonly OAuthAccount: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerUserId: CodecTypes['pg/text@1']['output'];
       readonly userId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
     };
     readonly RecoveryCode: {
       readonly codeHash: CodecTypes['pg/text@1']['output'];
@@ -365,10 +423,20 @@ export type StorageColumnTypes = {
       readonly totpSecret: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['output'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['output'];
+    };
   };
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly Friend: {
+      readonly friendId: CodecTypes['pg/text@1']['input'];
+      readonly type: 'pending' | 'accepted';
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
     readonly Media: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -378,12 +446,23 @@ export type StorageColumnInputTypes = {
       readonly size: CodecTypes['pg/int4@1']['input'];
       readonly storageKey: CodecTypes['pg/text@1']['input'];
     };
+    readonly Message: {
+      readonly content: CodecTypes['pg/text@1']['input'];
+      readonly messageId: CodecTypes['pg/text@1']['input'];
+      readonly receiverId: CodecTypes['pg/text@1']['input'];
+      readonly senderId: CodecTypes['pg/text@1']['input'];
+      readonly timestamp: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
     readonly OAuthAccount: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerUserId: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly Organization: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
     };
     readonly RecoveryCode: {
       readonly codeHash: CodecTypes['pg/text@1']['input'];
@@ -410,10 +489,23 @@ export type StorageColumnInputTypes = {
       readonly totpSecret: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
+    readonly UserOrganizations: {
+      readonly organizationId: CodecTypes['pg/text@1']['input'];
+      readonly role: 'owner' | 'editor' | 'contributor' | 'viewer';
+      readonly userId: CodecTypes['pg/text@1']['input'];
+    };
   };
 };
 
 export namespace Models {
+  export type public_Friend = {
+    friendId: CodecTypes['pg/text@1']['output'];
+    type: 'pending' | 'accepted';
+    userId: CodecTypes['pg/text@1']['output'];
+    friend: public_User;
+    user: public_User;
+    readonly [RelationKeys]?: 'friend' | 'user';
+  };
   export type public_Media = {
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
@@ -426,6 +518,15 @@ export namespace Models {
     owner: public_User;
     readonly [RelationKeys]?: 'avatarOf' | 'owner';
   };
+  export type public_Message = {
+    content: CodecTypes['pg/text@1']['output'];
+    messageId: CodecTypes['pg/text@1']['output'];
+    receiverId: CodecTypes['pg/text@1']['output'];
+    senderId: CodecTypes['pg/text@1']['output'];
+    timestamp: CodecTypes['pg/timestamptz-string@1']['output'];
+    user: public_User;
+    readonly [RelationKeys]?: 'user';
+  };
   export type public_OAuthAccount = {
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
@@ -434,6 +535,12 @@ export namespace Models {
     userId: CodecTypes['pg/text@1']['output'];
     user: public_User;
     readonly [RelationKeys]?: 'user';
+  };
+  export type public_Organization = {
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    users: public_User[];
+    readonly [RelationKeys]?: 'users';
   };
   export type public_RecoveryCode = {
     codeHash: CodecTypes['pg/text@1']['output'];
@@ -464,21 +571,44 @@ export namespace Models {
     totpSecret: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     avatar: public_Media | null;
+    friends: public_User[];
     media: public_Media[];
+    messages: public_Message[];
     oauthAccounts: public_OAuthAccount[];
+    organizations: public_Organization[];
     recoveryCodes: public_RecoveryCode[];
     sessions: public_Session[];
-    readonly [RelationKeys]?: 'avatar' | 'media' | 'oauthAccounts' | 'recoveryCodes' | 'sessions';
+    readonly [RelationKeys]?:
+      | 'avatar'
+      | 'friends'
+      | 'media'
+      | 'messages'
+      | 'oauthAccounts'
+      | 'organizations'
+      | 'recoveryCodes'
+      | 'sessions';
+  };
+  export type public_UserOrganizations = {
+    organizationId: CodecTypes['pg/text@1']['output'];
+    role: 'owner' | 'editor' | 'contributor' | 'viewer';
+    userId: CodecTypes['pg/text@1']['output'];
+    organization: public_Organization;
+    user: public_User;
+    readonly [RelationKeys]?: 'organization' | 'user';
   };
 }
 
 export declare const models: {
   public: {
+    Friend: Models.public_Friend;
     Media: Models.public_Media;
+    Message: Models.public_Message;
     OAuthAccount: Models.public_OAuthAccount;
+    Organization: Models.public_Organization;
     RecoveryCode: Models.public_RecoveryCode;
     Session: Models.public_Session;
     User: Models.public_User;
+    UserOrganizations: Models.public_UserOrganizations;
   };
 };
 
@@ -500,6 +630,74 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
+            readonly Friend: {
+              columns: {
+                readonly friendId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly type: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'pending'>;
+                  };
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['userId', 'friendId'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Friend_friendId_idx_7ad40ec8';
+                  readonly prefix: 'Friend_friendId_idx';
+                  readonly columns: readonly ['friendId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Friend_userId_idx_a489d58a';
+                  readonly prefix: 'Friend_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Friend';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Friend';
+                    readonly columns: readonly ['friendId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Media: {
               columns: {
                 readonly createdAt: {
@@ -571,6 +769,65 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly Message: {
+              columns: {
+                readonly content: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly messageId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly receiverId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly senderId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly timestamp: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['messageId'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Message_senderId_idx_4689c490';
+                  readonly prefix: 'Message_senderId_idx';
+                  readonly columns: readonly ['senderId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Message';
+                    readonly columns: readonly ['senderId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly OAuthAccount: {
               columns: {
                 readonly createdAt: {
@@ -632,6 +889,26 @@ type ContractBase = Omit<
                   };
                 },
               ];
+            };
+            readonly Organization: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['name'] }];
+              indexes: readonly [];
+              foreignKeys: readonly [];
             };
             readonly RecoveryCode: {
               columns: {
@@ -838,6 +1115,84 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly UserOrganizations: {
+              columns: {
+                readonly organizationId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly role: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'viewer'>;
+                  };
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['userId', 'organizationId'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'UserOrganizations_organizationId_idx_2e17ef41';
+                  readonly prefix: 'UserOrganizations_organizationId_idx';
+                  readonly columns: readonly ['organizationId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'UserOrganizations_userId_idx_a489d58a';
+                  readonly prefix: 'UserOrganizations_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserOrganizations';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserOrganizations';
+                    readonly columns: readonly ['organizationId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Organization';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+          };
+          readonly valueSet: {
+            readonly FriendStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['pending', 'accepted'];
+            };
+            readonly Role: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['owner', 'editor', 'contributor', 'viewer'];
+            };
           };
         };
       };
@@ -849,10 +1204,16 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
+    readonly Friend: { readonly namespace: 'public' & NamespaceId; readonly model: 'Friend' };
     readonly Media: { readonly namespace: 'public' & NamespaceId; readonly model: 'Media' };
+    readonly Message: { readonly namespace: 'public' & NamespaceId; readonly model: 'Message' };
     readonly OAuthAccount: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OAuthAccount';
+    };
+    readonly Organization: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Organization';
     };
     readonly RecoveryCode: {
       readonly namespace: 'public' & NamespaceId;
@@ -860,11 +1221,60 @@ type ContractBase = Omit<
     };
     readonly Session: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly UserOrganizations: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'UserOrganizations';
+    };
   };
   readonly domain: {
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly Friend: {
+            readonly fields: {
+              readonly friendId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly type: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly friend: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['friendId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Friend';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly friendId: { readonly column: 'friendId' };
+                readonly type: { readonly column: 'type' };
+                readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
           readonly Media: {
             readonly fields: {
               readonly createdAt: {
@@ -933,6 +1343,55 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Message: {
+            readonly fields: {
+              readonly content: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly messageId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly receiverId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly senderId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly timestamp: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['senderId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Message';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly content: { readonly column: 'content' };
+                readonly messageId: { readonly column: 'messageId' };
+                readonly receiverId: { readonly column: 'receiverId' };
+                readonly senderId: { readonly column: 'senderId' };
+                readonly timestamp: { readonly column: 'timestamp' };
+              };
+            };
+          };
           readonly OAuthAccount: {
             readonly fields: {
               readonly createdAt: {
@@ -979,6 +1438,43 @@ type ContractBase = Omit<
                 readonly provider: { readonly column: 'provider' };
                 readonly providerUserId: { readonly column: 'providerUserId' };
                 readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly Organization: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly users: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:M';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['organizationId'];
+                };
+                readonly through: {
+                  readonly table: 'UserOrganizations';
+                  readonly namespaceId: 'public';
+                  readonly parentColumns: readonly ['organizationId'];
+                  readonly childColumns: readonly ['userId'];
+                  readonly targetColumns: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Organization';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
               };
             };
           };
@@ -1140,6 +1636,21 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly friends: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:M';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+                readonly through: {
+                  readonly table: 'Friend';
+                  readonly namespaceId: 'public';
+                  readonly parentColumns: readonly ['userId'];
+                  readonly childColumns: readonly ['friendId'];
+                  readonly targetColumns: readonly ['id'];
+                };
+              };
               readonly media: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1151,6 +1662,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['ownerId'];
                 };
               };
+              readonly messages: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Message';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['senderId'];
+                };
+              };
               readonly oauthAccounts: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1160,6 +1682,24 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['userId'];
+                };
+              };
+              readonly organizations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Organization';
+                };
+                readonly cardinality: 'N:M';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+                readonly through: {
+                  readonly table: 'UserOrganizations';
+                  readonly namespaceId: 'public';
+                  readonly parentColumns: readonly ['userId'];
+                  readonly childColumns: readonly ['organizationId'];
+                  readonly targetColumns: readonly ['id'];
                 };
               };
               readonly recoveryCodes: {
@@ -1202,6 +1742,84 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly UserOrganizations: {
+            readonly fields: {
+              readonly organizationId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly organization: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Organization';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['organizationId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'UserOrganizations';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly organizationId: { readonly column: 'organizationId' };
+                readonly role: { readonly column: 'role' };
+                readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+        };
+        readonly enum: {
+          readonly FriendStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'Pending'; readonly value: 'pending' },
+              { readonly name: 'Accepted'; readonly value: 'accepted' },
+            ];
+          };
+          readonly Role: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'Owner'; readonly value: 'owner' },
+              { readonly name: 'Editor'; readonly value: 'editor' },
+              { readonly name: 'Contributor'; readonly value: 'contributor' },
+              { readonly name: 'Viewer'; readonly value: 'viewer' },
+            ];
+          };
+        };
+        readonly enumMemberTypes?: {
+          readonly FriendStatus: readonly [
+            { readonly name: 'Pending'; readonly value: 'pending' },
+            { readonly name: 'Accepted'; readonly value: 'accepted' },
+          ];
+          readonly Role: readonly [
+            { readonly name: 'Owner'; readonly value: 'owner' },
+            { readonly name: 'Editor'; readonly value: 'editor' },
+            { readonly name: 'Contributor'; readonly value: 'contributor' },
+            { readonly name: 'Viewer'; readonly value: 'viewer' },
+          ];
         };
       };
     };
@@ -1249,7 +1867,23 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'Message';
+            readonly field: 'messageId';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'OAuthAccount';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Organization';
             readonly field: 'id';
             readonly namespace: 'public';
           };

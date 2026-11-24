@@ -8,13 +8,64 @@ model User {
   passwordHash  String?
   emailVerified Boolean           @default(false)
   totpSecret    String?
+  friends		User[] @relation("friend")
+  messages		Message[]
   totpLastStep  Int?
   sessions      Session[]
+  organizations Organization[]
   oauthAccounts OAuthAccount[]
   recoveryCodes RecoveryCode[]
   media         Media[]           @relation("MediaOwner")
   createdAt     TimestamptzString @default(now())
   updatedAt     temporal.updatedAtString()
+}
+
+enum FriendStatus {
+	@@type("pg/text@1")
+	Pending = "pending"
+	Accepted = "accepted"
+}
+
+model Friend {
+	userId		String
+	friendId	String
+	user		User	@relation("friend", fields: [userId], references:[id]) // ok my first idea was to put "friend" on the other one, but in the way i thought this model, it seems that friend must be here ...
+	friend		User	@relation(fields: [friendId], references:[id])
+	type		FriendStatus @default(Pending)
+	@@id([userId, friendId])
+}
+// what is type ? pending, friend, accept ?
+
+model Message {
+	messageId	String	@id @default(uuid())
+	user		User	@relation(fields: [senderId], references:[id])
+	senderId	String
+	receiverId	String
+	content		String
+	timestamp	TimestamptzString @default(now())
+}
+
+model Organization {
+	id		String	@id @default(uuid())
+	name	String	@unique
+	users	User[]
+}
+
+enum Role {
+	@@type("pg/text@1")
+	Owner = "owner"
+	Editor = "editor"
+	Contributor = "contributor"
+	Viewer = "viewer"
+}
+
+model UserOrganizations {
+	userId			String
+	organizationId	String
+	user			User @relation(fields: [userId], references:[id])
+	organization	Organization @relation(fields: [organizationId], references:[id])
+	role			Role @default(Viewer)
+	@@id([userId, organizationId])
 }
 
 model Session {

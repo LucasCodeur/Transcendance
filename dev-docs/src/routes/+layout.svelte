@@ -24,7 +24,6 @@
 >
 	Skip to main content
 </a>
-
 <div class="flex min-h-svh flex-col">
 	<header class="sticky top-0 z-40 border-b bg-background">
 		<div class="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
@@ -43,6 +42,8 @@
 					<nav aria-label="Authentication" class="flex items-center gap-2">
 						<Button href="/login" variant="ghost" size="sm">Log in</Button>
 						<Button href="/register" size="sm">Sign up</Button>
+						<Button href="/organizations" size="sm">Organizations</Button>
+						<Button href="/friends" size="sm">Friends</Button>
 					</nav>
 				{/if}
 			</div>

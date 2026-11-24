@@ -1,9 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { loginSchema } from '#lib/schemas/auth.js';
-import { setSessionCookie } from '#lib/server/auth/cookie.js';
+import { loginSchema } from '#lib/schemas/auth.js'; // WARNING: reason for auth.js and not auth.ts knowing that there is no auth.js but only auth.ts
+import { setSessionCookie } from '#lib/server/auth/cookie.js'; // WARNING: same thing here 
 import { clearFailures, recordFailure, tooManyAttempts } from '#lib/server/auth/rate-limit.js';
-import { safeRedirect } from '#lib/server/auth/redirect.js';
+import { safeRedirect } from '#lib/server/auth/redirect.js'; // WARNING: same here
 import { loginUser } from '#lib/server/auth/service.js';
 import type { Actions, PageServerLoad } from './$types';
 
