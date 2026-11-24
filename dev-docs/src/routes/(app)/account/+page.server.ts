@@ -1,8 +1,9 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { profileSchema } from '#lib/schemas/account.ts';
+import { AVATAR_MAX_BYTES, avatarSchema } from '#lib/schemas/avatar.ts';
 import { OAUTH_PROVIDER_LABELS, oauthProviderSchema } from '#lib/schemas/oauth.ts'; 
-import { updateProfile } from '#lib/server/account/service.ts';
+import { removeAvatar, updateAvatar, updateProfile } from '#lib/server/account/service.ts';
 import { beginOAuthFlow } from '#lib/server/auth/oauth-flow.ts';
 import { getLoginMethods, unlinkOAuthAccount } from '#lib/server/auth/oauth.ts';
 import type {Actions, PageServerLoad } from './$types';
@@ -16,6 +17,15 @@ const ACCOUNT_MESSAGES: Record<string, string> = {
 	not_linked: 'This provider is not linked to your account.',
 	last_login_method: 'You cannot unlink your only sign-in method. Set a password or link another provider first.'
 };
+
+const AVATAR_MESSAGES = {
+	INVALID_IMAGE: 'This file is not a valid PNG, JPEG or WebP image.',
+	CONFLICT: 'Your profile picture changed in the meantime. Please try again.',
+	NO_AVATAR: 'You have no profile picture to remove.',
+	TOO_LARGE: 'The image must be 2 MB or smaller.'
+} as const;
+
+const MAX_AVATAR_REQUEST_BYTES = AVATAR_MAX_BYTES + 64 * 1024;
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 
@@ -45,6 +55,32 @@ export const actions: Actions = {
 		await updateProfile(locals.user.id, parsed.data);
 		
 		return { action: 'profile', message: 'Profile updated.'};
+	},
+	avatar: async ({ request, locals }) => {
+		if (!locals.user) error(401);
+
+		if (Number(request.headers.get('content-length') ?? 0) > MAX_AVATAR_REQUEST_BYTES) 
+			return fail(413, { action: 'avatar', errors: { avatar: [AVATAR_MESSAGES.TOO_LARGE]}});
+
+		const parsed = avatarSchema.safeParse({ avatar: (await request.formData()).get('avatar') });
+		if (!parsed.success) return fail(400, { action: 'avatar', errors: z.flattenError(parsed.error).fieldErrors });
+
+		const result = await updateAvatar(locals.user.id, parsed.data);
+
+		if (!result.ok)
+			return result.code === 'INVALID_IMAGE' ? fail(400, { action: 'avatar', errors: { avatar: [AVATAR_MESSAGES.INVALID_IMAGE] } })  : fail(409, { action: 'avatar', error: AVATAR_MESSAGES[result.code] });
+
+		return { action: 'avatar', message: 'Profile picture updated.'}
+	},
+	removeAvatar: async ({ locals }) => {
+		if (!locals.user) error(401);
+
+		const result = await removeAvatar(locals.user.id);
+
+		if (!result.ok)
+			return fail(result.code === 'CONFLICT' ? 409 : 400, { action: 'avatar', error: AVATAR_MESSAGES[result.code] });
+		
+		return { action: 'avatar', message: 'Profile picture removed' };
 	},
 	link : async ({ request, cookies, locals}) => {
 		if (!locals.user)

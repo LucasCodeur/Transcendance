@@ -3,6 +3,7 @@
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import ShieldIcon from '@lucide/svelte/icons/shield';
 	import UserRoundIcon from '@lucide/svelte/icons/user-round';
+	import { mediaUrl } from '#lib/media.ts';
 	import { getInitials } from '#lib/initials.ts';
 	import * as Avatar from '#lib/components/ui/avatar/index.ts';
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
@@ -11,6 +12,7 @@
 		user: {
 			displayName: string;
 			email: string;
+			avatarId: string | null;
 		};
 	};
 
@@ -24,6 +26,9 @@
 		class="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
 	>
 		<Avatar.Root aria-hidden="true">
+			{#if user.avatarId}
+				<Avatar.Image src={mediaUrl(user.avatarId)} alt="" />
+			{/if}
 			<Avatar.Fallback>{initials}</Avatar.Fallback>
 		</Avatar.Root>
 		<span class="sr-only">Open user menu</span>
