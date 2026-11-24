@@ -64,3 +64,7 @@ export async function deleteSession(id: string): Promise<void> {
 export async function deleteUserSessions(userId: string): Promise<void> {
 	await db.orm.public.Session.where({ userId }).deleteAll();
 }
+
+export async function deleteOtherUserSessions(userId: string, keepId: string): Promise<number> {
+	return db.orm.public.Session.where({ userId }).where((s) => s.id.neq(keepId) ).deleteAndCount();
+}

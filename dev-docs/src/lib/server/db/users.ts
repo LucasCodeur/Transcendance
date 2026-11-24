@@ -4,6 +4,7 @@ export type User = {
 	id: string;
 	email: string;
 	displayName: string;
+	avatarId: string | null;
 	passwordHash: string | null;
 	emailVerified: boolean;
 	totpSecret: string | null;
@@ -25,6 +26,7 @@ export function toUser(row: UserRow): User {
 		id: row.id,
 		email: row.email,
 		displayName: row.displayName,
+		avatarId: row.avatarId,
 		passwordHash: row.passwordHash,
 		emailVerified: row.emailVerified,
 		totpSecret: row.totpSecret,
@@ -63,4 +65,18 @@ export function isUniqueViolation(error: unknown): boolean {
 		'sqlState' in error &&
 		error.sqlState === '23505'
 	);
+}
+
+export async function updateUserDisplayName(id: string, displayName: string): Promise<void> {
+	await db.orm.public.User.where({ id }).update({ displayName });
+}
+
+export async function setUserPasswordHashIfEmpty(id: string, passwordHash: string): Promise<boolean> {
+	const count = await db.orm.public.User.where({ id}).where((u) => u.passwordHash.isNull()).updateAndCount({ passwordHash });
+
+	return count === 1;
+}
+
+export async function updateUserPasswordHash(id: string, passwordHash: string): Promise<void> {
+	await db.orm.public.User.where({ id }).update({ passwordHash });
 }

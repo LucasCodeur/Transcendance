@@ -14,5 +14,9 @@ export const variables = defineEnvVars({
 			.base64()
 			.refine((key) => Buffer.from(key, 'base64').length === 32, 'Must be 32 bytes, base64 encoded (openssl rand -base64 32)'),
 		description: 'AES-256 key that encrypts TOTP secrets in the database'
+	},
+	UPLOAD_DIR: {
+		schema: z.string().min(1),
+		description: 'Directory where uploaded files are stored.'
 	}
 });

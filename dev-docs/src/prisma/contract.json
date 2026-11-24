@@ -8,6 +8,10 @@
       "model": "Friend",
       "namespace": "public"
     },
+    "Media": {
+      "model": "Media",
+      "namespace": "public"
+    },
     "Message": {
       "model": "Message",
       "namespace": "public"
@@ -155,6 +159,120 @@
               },
               "namespaceId": "public",
               "table": "Friend"
+            }
+          },
+          "Media": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "mimeType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ownerId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "size": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "storageKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "avatarOf": {
+                "cardinality": "1:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "avatarId"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "owner": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "ownerId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "mimeType": {
+                  "column": "mimeType"
+                },
+                "ownerId": {
+                  "column": "ownerId"
+                },
+                "size": {
+                  "column": "size"
+                },
+                "storageKey": {
+                  "column": "storageKey"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Media"
             }
           },
           "Message": {
@@ -521,6 +639,13 @@
           },
           "User": {
             "fields": {
+              "avatarId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -586,6 +711,22 @@
               }
             },
             "relations": {
+              "avatar": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "avatarId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Media",
+                  "namespace": "public"
+                }
+              },
               "friends": {
                 "cardinality": "N:M",
                 "on": {
@@ -611,6 +752,21 @@
                 },
                 "to": {
                   "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "media": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "ownerId"
+                  ]
+                },
+                "to": {
+                  "model": "Media",
                   "namespace": "public"
                 }
               },
@@ -705,6 +861,9 @@
             },
             "storage": {
               "fields": {
+                "avatarId": {
+                  "column": "avatarId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -926,6 +1085,93 @@
                 ]
               },
               "uniques": []
+            },
+            "Media": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "mimeType": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "ownerId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "size": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "storageKey": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Media_ownerId_idx_e2d0c1ef"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "ownerId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Media"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "ownerId"
+                  ],
+                  "name": "Media_ownerId_idx_e2d0c1ef",
+                  "prefix": "Media_ownerId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "storageKey"
+                  ]
+                }
+              ]
             },
             "Message": {
               "columns": {
@@ -1259,6 +1505,11 @@
             },
             "User": {
               "columns": {
+                "avatarId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
@@ -1313,7 +1564,30 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "index": {
+                    "unique": [
+                      "avatarId"
+                    ]
+                  },
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "avatarId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Media"
+                  }
+                }
+              ],
               "indexes": [],
               "primaryKey": {
                 "columns": [
@@ -1324,6 +1598,11 @@
                 {
                   "columns": [
                     "email"
+                  ]
+                },
+                {
+                  "columns": [
+                    "avatarId"
                   ]
                 }
               ]
@@ -1453,12 +1732,23 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3a4af187cfbc2f5c9921cb5133bd6d6a565d6271c6dce1107af0451caf967cf0"
+    "storageHash": "3ab876b570367ba534b5da46b29b6ee8396c2f3baff9bf13c4542522f52408ef"
   },
   "execution": {
-    "executionHash": "99f5b84790ce288e9ca6b8618bfc8e2c6b259ddfb96e91b4a13ccf79377a25ef",
+    "executionHash": "1023baa37ef03e436c83d510c4c3a7a9a4873868693d5f35ab1a83228aa7138b",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Media",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",

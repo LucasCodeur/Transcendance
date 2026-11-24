@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { z } from 'zod';
+	import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
 	import { loginSchema } from '#lib/schemas/auth.js';
 	import { OAUTH_PROVIDER_LABELS, oauthProviderSchema } from '#lib/schemas/oauth.js';
-	import { page } from '$app/state';
+	import AuthCard from '#lib/components/AuthCard.svelte';
+	import FormField from '#lib/components/FormField.svelte';
 	import OAuthProviderIcon from '#lib/components/OAuthProviderIcon.svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
@@ -22,97 +27,82 @@
 </script>
 
 <svelte:head>
-	<title>Se connecter</title>
+	<title>Log in</title>
 </svelte:head>
 
-<h1 class="text-2xl font-bold">Se connecter</h1>
-
-{#if data.oauthError}
-	<p role="alert" class="mt-4 rounded bg-red-50 px-3 py-2 text-sm text-red-800">{data.oauthError}</p>
-{/if}
-
-<div class="mt-6 flex flex-col gap-3">
-	{#each oauthProviderSchema.options as provider (provider)}
-		<a
-			href="/oauth/{provider}{redirectSuffix}"
-			class="group flex items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-900 shadow-sm transition hover:border-gray-400 hover:bg-gray-50 hover:shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 active:scale-[0.98]"
-		>
-			<OAuthProviderIcon {provider} class="size-5 shrink-0 transition-transform group-hover:scale-110" />
-			<span>Continue with {OAUTH_PROVIDER_LABELS[provider]}</span>
-		</a>
-	{/each}
-</div>
-
-<div class="mt-6 flex items-center gap-3 text-sm text-gray-500" aria-hidden="true">
-	<span class="h-px flex-1 bg-gray-200"></span>
-	or
-	<span class="h-px flex-1 bg-gray-200"></span>
-</div>
-
-<form
-	method="POST"
-	novalidate
-	class="mt-6 flex flex-col gap-4"
-	use:enhance={({ formData, cancel }) => {
-		const parsed = loginSchema.safeParse(Object.fromEntries(formData));
-		if (!parsed.success) {
-			clientErrors = z.flattenError(parsed.error).fieldErrors;
-			cancel();
-			return;
-		}
-		clientErrors = {};
-		submitting = true;
-		return async ({ update }) => {
-			await update();
-			submitting = false;
-		};
-	}}
->
-	{#if form?.message}
-		<!-- One message for "unknown email" and "wrong password": never say which. -->
-		<p role="alert" class="rounded bg-red-50 px-3 py-2 text-sm text-red-800">{form.message}</p>
+<AuthCard title="Log in" description="Welcome back. Choose how you want to sign in.">
+	{#if data.oauthError}
+		<Alert.Root variant="destructive">
+			<CircleAlertIcon aria-hidden="true" />
+			<Alert.Description>{data.oauthError}</Alert.Description>
+		</Alert.Root>
 	{/if}
 
-	<div class="flex flex-col gap-1">
-		<label for="email" class="font-semibold">Adresse email</label>
-		<input
+	<div class="flex flex-col gap-2">
+		{#each oauthProviderSchema.options as provider (provider)}
+			<Button href="/oauth/{provider}{redirectSuffix}" variant="outline" class="w-full">
+				<OAuthProviderIcon {provider} class="size-4" />
+				Continue with {OAUTH_PROVIDER_LABELS[provider]}
+			</Button>
+		{/each}
+	</div>
+
+	<div class="flex items-center gap-3 text-xs text-muted-foreground uppercase" aria-hidden="true">
+		<span class="h-px flex-1 bg-border"></span>
+		or
+		<span class="h-px flex-1 bg-border"></span>
+	</div>
+
+	<form
+		method="POST"
+		novalidate
+		class="flex flex-col gap-4"
+		use:enhance={({ formData, cancel }) => {
+			const parsed = loginSchema.safeParse(Object.fromEntries(formData));
+			if (!parsed.success) {
+				clientErrors = z.flattenError(parsed.error).fieldErrors;
+				cancel();
+				return;
+			}
+			clientErrors = {}
+			submitting = true;
+			return async ({ update }) => {
+				await update();
+				submitting = false;
+			};
+		}}
+	>
+		{#if form?.error}
+			<Alert.Root variant="destructive">
+				<CircleAlertIcon aria-hiddent="true" />
+				<Alert.Description>{form.error}</Alert.Description>
+			</Alert.Root>
+		{/if}
+		
+		<FormField
 			id="email"
 			name="email"
 			type="email"
+			label="email"
 			autocomplete="email"
 			value={form?.email ?? ''}
-			required
-			aria-invalid={errors.email ? 'true' : undefined}
-			aria-describedby={errors.email ? 'email-error' : undefined}
-			class="rounded border-gray-300 aria-[invalid=true]:border-red-600"
+			errors={errors.email}
 		/>
-		{#if errors.email}<p id="email-error" class="text-sm text-red-700">{errors.email[0]}</p>{/if}
-	</div>
 
-	<div class="flex flex-col gap-1">
-		<label for="password" class="font-semibold">Mot de passe</label>
-		<input
+		<FormField
 			id="password"
 			name="password"
 			type="password"
+			label="password"
 			autocomplete="current-password"
-			required
-			aria-invalid={errors.password ? 'true' : undefined}
-			aria-describedby={errors.password ? 'password-error' : undefined}
-			class="rounded border-gray-300 aria-[invalid=true]:border-red-600"
+			errors={errors.password}
 		/>
-		{#if errors.password}<p id="password-error" class="text-sm text-red-700">{errors.password[0]}</p>{/if}
-	</div>
 
-	<button
-		type="submit"
-		disabled={submitting}
-		class="mt-2 rounded bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
-	>
-		{submitting ? 'Connexion…' : 'Se connecter'}
-	</button>
-</form>
-
-<p class="mt-6 text-sm">
-	Pas encore de compte ? <a href="/register" class="text-emerald-800 underline">Créer un compte</a>
-</p>
+		<Button type="submit" class="w-full" disabled={submitting}>
+			{submitting ? 'Logging in...' : 'Log in'}
+		</Button>
+	</form>
+	{#snippet footer()}
+		<p>Don't have an account? <a href="/register" class="font-medium text-foreground underline underline-offset-4">Sign up</a></p>
+	{/snippet}
+</AuthCard>

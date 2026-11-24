@@ -36,14 +36,14 @@ export const actions: Actions = {
 		const emailKey = `email:${parsed.data.email}`;
 
 		if (tooManyAttempts(ipKey, 20) || tooManyAttempts(emailKey, 5))
-			return fail(429, { email, message: 'Too much try, retry in few minutes' });
+			return fail(429, { email, error: 'Too many attempts. Try again in a few minutes.' });
 
 		const result = await loginUser(parsed.data);
 
 		if (!result.ok) {
 			recordFailure(ipKey);
 			recordFailure(emailKey);
-			return fail (400, { email, message: 'incorrect email or password' });
+			return fail (400, { email, error: 'Incorrect email or password.' });
 		}
 
 		clearFailures(ipKey);

@@ -22,7 +22,7 @@ export const actions: Actions = {
 		}
 		
 		const result = await registerUser(parsed.data);
-		if (!result.ok) return fail(409, { ...values, errors: { email: ['Email already exist'] } });
+		if (!result.ok) return fail(409, { ...values, errors: { email: ['An account already uses this email address.'] } });
 		
 		setSessionCookie(cookies, result.token, result.expiresAt);
 		

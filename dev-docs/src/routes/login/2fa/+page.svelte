@@ -1,7 +1,12 @@
 <script lang='ts'>
 	import { enhance } from "$app/forms";
 	import { z } from "zod";
+	import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
 	import { secondFactorSchema } from "#lib/schemas/two-factor.ts";
+	import AuthCard from '#lib/components/AuthCard.svelte';
+	import FormField from '#lib/components/FormField.svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import type { PageProps } from "./$types";
 
 	let { form }: PageProps = $props();
@@ -15,55 +20,56 @@
 	});
 </script>
 
-<svelte:head><title>Two-factor authentification</title></svelte:head>
-<h1>Two-factor authentification</h1>
-<p>Open your authenticator app and enter the 6-digit code. Lost your phone ? Enter one of your recovery codes.</p>
-<form method="POST"
-	novalidate 
-	use:enhance={({ formData, cancel }) => {
-		const parsed = secondFactorSchema.safeParse(Object.fromEntries(formData));
-		if (!parsed.success) {
-			clientErrors = z.flattenError(parsed.error).fieldErrors;
-			cancel();
-			return;
-		}
-		clientErrors = {};
-		submitting = true;
-		return async ({ update }) => {
-			await update();
-			submitting = false;
-		};
-	}}
->
-	{#if form?.message}
-		<p role="alert" class="rounded bg-red-50 px-3 py-2 text-sm text-red-800">{form.message}</p>
-	{/if}
+<svelte:head>
+	<title>Two-factor authentication</title>
+</svelte:head>
 
-	<div class="flex flex-col gap-1">
-		<label for="code" class="font-semibold">Code</label>
-		<input
+<AuthCard
+	title="Two-factor authentication"
+	description="Open your authenticator app and enter the 6-digit code. Lost your phone? Enter one of your recovery codes."
+>
+	<form
+		method="POST"
+		novalidate
+		class="flex flex-col gap-4"
+		use:enhance={({ formData, cancel }) => {
+			const parsed = secondFactorSchema.safeParse(Object.fromEntries(formData));
+			if (!parsed.success) {
+				clientErrors = z.flattenError(parsed.error).fieldErrors;
+				cancel();
+				return;
+			}
+			clientErrors = {};
+			submitting = true;
+			return async ({ update }) => {
+				await update();
+				submitting = false;
+			};
+		}}
+	>
+		{#if form?.error}
+			<Alert.Root variant="destructive">
+				<CircleAlertIcon aria-hidden="true" />
+				<Alert.Description>{form.error}</Alert.Description>
+			</Alert.Root>
+		{/if}
+
+		<FormField
 			id="code"
 			name="code"
-			type="text"
+			label="code"
 			autocomplete="one-time-code"
 			spellcheck="false"
-			required
-			aria-invalid={errors.code ? 'true' : undefined}
-			aria-describedby={errors.code ? 'code-error' : undefined}
-			class="rounded border-gray-300 font-mono tracking-widest aria-[invalid=true]:border-red-600"
+			errors={errors.code}
 		/>
-		{#if errors.code}<p id="code-error" class="text-sm text-red-700">{errors.code[0]}</p>{/if}
-	</div>
 
-	<button
-		type="submit"
-		disabled={submitting}
-		class="rounded bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
-	>
-		{submitting ? 'Checking…' : 'Verify'}
-	</button>
-</form>
-
-<form method="POST" action="/logout" class="mt-4">
-	<button type="submit" class="text-sm text-gray-700 underline">Cancel and log out</button>
-</form>
+		<Button type="submit" class="w-full" disabled={submitting}>
+			{submitting ? 'Checking...' : 'Verify'}
+		</Button>
+	</form>
+	{#snippet footer()}
+		<form method="POST" action="/logout">
+			<Button type="submit" variant="link" size="sm">Cancel and log out</Button>
+		</form>
+	{/snippet}
+</AuthCard>
