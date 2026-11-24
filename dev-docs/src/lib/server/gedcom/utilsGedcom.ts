@@ -85,6 +85,44 @@ export namespace utilsGedcom {
     return node.tokens.XREF?.value;
   }
 
+  export async function printTrees() {
+    const trees = await genea.Tree.select("name")
+      .include("persons", (persons) =>
+        persons
+          .select(
+            "id",
+            "gedcomId",
+            "givenName",
+            "surName",
+            "fullName",
+            "gender",
+            "birthDate",
+            "birthPlace",
+            "birthAdress",
+            "deceased",
+            "deathDate",
+            "deathPlace",
+          )
+          .include("partnerLinks", (partnerLinks) =>
+            partnerLinks.select(
+              "id",
+              "personId",
+              "partnershipId",
+              "gedcomId",
+              "type",
+            ),
+          )
+          .include("childLinks", (childLinks) =>
+            childLinks.select("id", "personId", "partnershipId", "gedcomId"),
+          ),
+      )
+      .all();
+
+    for (const tree of trees) {
+      await utilsGedcom.printTree(tree);
+    }
+  }
+
   export async function printTree(tree: Tree) {
     console.log("================================");
     console.log("Family tree: ", tree.name);

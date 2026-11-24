@@ -9,13 +9,17 @@ import { geneaDB } from "#lib/server/db/gedcom.ts";
 import { db } from "#prisma/db.ts";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
 
-import type { GedcomError } from "@domorium/validator";
 import type { Person, Family } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
 
+import type { GedcomError } from "@domorium/validator";
+import type { ImportResult } from "#lib/../routes/import/+page.server.ts";
+
 let genea = db.orm.genealogy;
 
-export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
+export async function importGedcomFile(
+  gedcomFile: FormDataEntryValue | null,
+): ImportResult {
   const gedcomString: string | null = await gedcomFile.text();
 
   if (gedcomString && gedcomString?.length > 0) {
@@ -25,31 +29,24 @@ export async function importGedcomFile(gedcomFile: FormDataEntryValue | null) {
 
     const gedcomErrors: string[] | undefined = validateGedcomFile(document);
     if (gedcomErrors.length > 0) {
-      return gedcomErrors;
+      return {
+        success: false,
+        kind: "input",
+        errors: [
+          {
+            code: "ERRORS GEDCOM FILE",
+            message: gedcomErrors,
+          },
+        ],
+      };
     } else {
-      parseAST(document.getNodes());
+      const res = parseAST(document.getNodes());
     }
   }
 }
 
-function validateGedcomFile(document: GedcomDocument): string[] {
-  const errors: GedcomError[] = document.getErrors();
-
-  const filesErrors = errors
-    .filter((error) => error.level === "error")
-    .map(
-      (error) =>
-        `Problem inside fill: ${error.message}` +
-        ` begin line: ` +
-        `${JSON.stringify(error.range.start)}` +
-        ` finish line: ` +
-        `${JSON.stringify(error.range.end)}`,
-    );
-
-  return filesErrors;
-}
-
 async function parseAST(nodes: ASTNode[]) {
+  let res;
   let i = 0;
   let max = nodes.length;
   let treeId: string = "";
@@ -69,87 +66,35 @@ async function parseAST(nodes: ASTNode[]) {
 
   while (i < max) {
     let tag = nodes[i].tokens.TAG?.value;
-    let value = nodes[i].tokens.VALUE?.value;
+    // let value = nodes[i].tokens.VALUE?.value;
     switch (tag) {
+      default:
+        if (res != undefined && !res.success) return res;
       case "SUBM":
-        treeId = await parseSubmitter(nodes[i]);
+        res = await parseSubmitter(nodes[i]);
         break;
       case "INDI":
-        let parsedPerson: Person = await parseIndividual(nodes[i]);
-        let errors = validateIndividual(persons, parsedPerson);
+        res = await parseIndividual(nodes[i], persons);
         break;
       case "FAM":
         await parseFamily(nodes[i], family);
         break;
     }
+    if (res && !res.success) return res;
     i++;
   }
-
-  for (let person of persons) {
-    await geneaDB.addPerson(person, treeId);
-  }
-
-  let partnerShip = await genea.Partnership.where({
-    gedcomId: family.gedcomId,
-    treeId: treeId,
-  }).first();
-
-  if (partnerShip == null) {
-    partnerShip = await genea.Partnership.create({
-      gedcomId: family.gedcomId,
-      treeId: treeId,
-    });
-  }
-
-  await geneaDB.addRelations(family, treeId, partnerShip.id);
-
-  const trees = await genea.Tree.select("name")
-    .include("persons", (persons) =>
-      persons
-        .select(
-          "id",
-          "gedcomId",
-          "givenName",
-          "surName",
-          "fullName",
-          "gender",
-          "birthDate",
-          "birthPlace",
-          "birthAdress",
-          "deceased",
-          "deathDate",
-          "deathPlace",
-        )
-        .include("partnerLinks", (partnerLinks) =>
-          partnerLinks.select(
-            "id",
-            "personId",
-            "partnershipId",
-            "gedcomId",
-            "type",
-          ),
-        )
-        .include("childLinks", (childLinks) =>
-          childLinks.select("id", "personId", "partnershipId", "gedcomId"),
-        ),
-    )
-    .all();
-
-  for (const tree of trees) {
-    await utilsGedcom.printTree(tree);
-  }
+  await geneaDB.addToDB(persons, family, treeId);
+  utilsGedcom.printTrees();
 }
 
 async function parseFamily(node: ASTNode, family: Family) {
+  let nodes: ASTNode[] = node.children;
+
   family.gedcomId = node.tokens.POINTER?.value;
 
-  let nodes: ASTNode[] = node.children;
-  console.log("nodes: ", nodes);
   for (let node of nodes) {
     let value = node.tokens.XREF?.value;
     let tag = node.tokens?.TAG?.value;
-    console.log("TAG: ", tag);
-    console.log("VALUE: ", value);
 
     if (tag === "HUSB") family.husdbandGedcomId = value;
     else if (tag === "WIFE") family.wifeGedcomId = value;
@@ -157,6 +102,23 @@ async function parseFamily(node: ASTNode, family: Family) {
       family.childGedcomIds.push(value);
     }
   }
+}
+
+function validateGedcomFile(document: GedcomDocument): string[] {
+  const errors: GedcomError[] = document.getErrors();
+
+  const filesErrors = errors
+    .filter((error) => error.level === "error")
+    .map(
+      (error) =>
+        `Problem inside fill: ${error.message}` +
+        ` begin line: ` +
+        `${JSON.stringify(error.range.start)}` +
+        ` finish line: ` +
+        `${JSON.stringify(error.range.end)}`,
+    );
+
+  return filesErrors;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------------- //

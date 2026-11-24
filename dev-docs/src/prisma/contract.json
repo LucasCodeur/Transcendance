@@ -63,6 +63,13 @@
         "models": {
           "ChildLink": {
             "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -78,13 +85,6 @@
                 }
               },
               "personId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "type": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -128,6 +128,9 @@
             },
             "storage": {
               "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
                 "id": {
                   "column": "id"
                 },
@@ -136,9 +139,6 @@
                 },
                 "personId": {
                   "column": "personId"
-                },
-                "type": {
-                  "column": "type"
                 }
               },
               "namespaceId": "genealogy",
@@ -195,6 +195,13 @@
           },
           "PartnerLink": {
             "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -211,6 +218,13 @@
               },
               "personId": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -253,6 +267,9 @@
             },
             "storage": {
               "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
                 "id": {
                   "column": "id"
                 },
@@ -261,6 +278,9 @@
                 },
                 "personId": {
                   "column": "personId"
+                },
+                "type": {
+                  "column": "type"
                 }
               },
               "namespaceId": "genealogy",
@@ -269,6 +289,13 @@
           },
           "Partnership": {
             "fields": {
+              "gedcomId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -276,7 +303,7 @@
                   "kind": "scalar"
                 }
               },
-              "type": {
+              "treeId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -285,7 +312,7 @@
               }
             },
             "relations": {
-              "childLink": {
+              "childLinks": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -300,7 +327,7 @@
                   "namespace": "genealogy"
                 }
               },
-              "partnerLink": {
+              "partnerLinks": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -318,11 +345,14 @@
             },
             "storage": {
               "fields": {
+                "gedcomId": {
+                  "column": "gedcomId"
+                },
                 "id": {
                   "column": "id"
                 },
-                "type": {
-                  "column": "type"
+                "treeId": {
+                  "column": "treeId"
                 }
               },
               "namespaceId": "genealogy",
@@ -331,15 +361,22 @@
           },
           "Person": {
             "fields": {
+              "birthAdress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "birthDate": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/timestamptz-string@1",
                   "kind": "scalar"
                 }
               },
               "birthPlace": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -360,21 +397,35 @@
                 }
               },
               "deceased": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
-              "firstName": {
-                "nullable": false,
+              "fullName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "gedcomId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
               "gender": {
-                "nullable": false,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "givenName": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -382,13 +433,6 @@
               },
               "id": {
                 "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "lastName": {
-                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -408,7 +452,14 @@
                   "kind": "scalar"
                 }
               },
-              "middleName": {
+              "nickName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "surName": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -424,7 +475,7 @@
               }
             },
             "relations": {
-              "childLink": {
+              "childLinks": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -454,7 +505,7 @@
                   "namespace": "genealogy"
                 }
               },
-              "partnerLink": {
+              "partnerLinks": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -488,6 +539,9 @@
             },
             "storage": {
               "fields": {
+                "birthAdress": {
+                  "column": "birthAdress"
+                },
                 "birthDate": {
                   "column": "birthDate"
                 },
@@ -503,17 +557,20 @@
                 "deceased": {
                   "column": "deceased"
                 },
-                "firstName": {
-                  "column": "firstName"
+                "fullName": {
+                  "column": "fullName"
+                },
+                "gedcomId": {
+                  "column": "gedcomId"
                 },
                 "gender": {
                   "column": "gender"
                 },
+                "givenName": {
+                  "column": "givenName"
+                },
                 "id": {
                   "column": "id"
-                },
-                "lastName": {
-                  "column": "lastName"
                 },
                 "maidenName": {
                   "column": "maidenName"
@@ -521,8 +578,11 @@
                 "marriedName": {
                   "column": "marriedName"
                 },
-                "middleName": {
-                  "column": "middleName"
+                "nickName": {
+                  "column": "nickName"
+                },
+                "surName": {
+                  "column": "surName"
                 },
                 "treeId": {
                   "column": "treeId"
@@ -1028,6 +1088,11 @@
           "table": {
             "ChildLink": {
               "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -1039,11 +1104,6 @@
                   "nullable": false
                 },
                 "personId": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "type": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
@@ -1167,6 +1227,11 @@
             },
             "PartnerLink": {
               "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -1181,6 +1246,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -1250,12 +1320,17 @@
             },
             "Partnership": {
               "columns": {
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "type": {
+                "treeId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
@@ -1272,15 +1347,20 @@
             },
             "Person": {
               "columns": {
+                "birthAdress": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "birthDate": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
-                  "nullable": false
+                  "nullable": true
                 },
                 "birthPlace": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "deathDate": {
                   "codecId": "pg/timestamptz-string@1",
@@ -1295,27 +1375,32 @@
                 "deceased": {
                   "codecId": "pg/bool@1",
                   "dataType": "pg/bool",
-                  "nullable": false
+                  "nullable": true
                 },
-                "firstName": {
+                "fullName": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": false
+                  "nullable": true
+                },
+                "gedcomId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "gender": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": false
+                  "nullable": true
+                },
+                "givenName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
-                },
-                "lastName": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
                 },
                 "maidenName": {
                   "codecId": "pg/text@1",
@@ -1327,7 +1412,12 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "middleName": {
+                "nickName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "surName": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
@@ -1766,7 +1856,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f2b0219ad7dea22a44feb33bb1ce0f71f4e5e5aeb4162bf0858875921ec2c739"
+    "storageHash": "5d24ab47343ed8e8bf65a083091ef02b1276ea2a90bad9a902da7afcf6af5186"
   },
   "execution": {
     "executionHash": "0055b684767142ae059dd91733d5caf1183353cc3e40b28e32cdeb091e4cb835",

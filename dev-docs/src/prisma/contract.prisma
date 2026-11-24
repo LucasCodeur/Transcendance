@@ -37,37 +37,40 @@ model Person {
 
   medias        Media[]?
 
-  partnerLink   PartnerLink[]?
-  childLink     ChildLink[]?
+  partnerLinks  PartnerLink[]?
+  childLinks    ChildLink[]?
 }
 
 // Partnership between individuals, including type and start/end dates
 model Partnership {
   id              String        @id @default(cuid(2))
-  type            String
-  partnerLink     PartnerLink[]
-  childLink       ChildLink[]
+  treeId          String
+  gedcomId        String?
+
+  partnerLinks    PartnerLink[]
+  childLinks      ChildLink[]
 }
 
 // Links a person to a partnership
 model PartnerLink {
   id              String @id @default(cuid(2))
-
   personId        String
+  gedcomId        String?
+
   person          Person @relation(fields: [personId], references: [id])
 
   partnershipId   String
-  partnerGedcomId String
   partnerShip     Partnership @relation(fields: [partnershipId], references: [id])
+
+  type            String?
 }
 
 // Links a child to a partnership with a parentage type
 model ChildLink {
   id              String @id @default(cuid(2))
-  type            String
-
   personId        String
-  childGedcomId   String
+  gedcomId        String?
+
   person          Person @relation(fields: [personId], references: [id])
 
   partnershipId   String

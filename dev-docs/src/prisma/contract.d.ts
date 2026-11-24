@@ -18,7 +18,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'f2b0219ad7dea22a44feb33bb1ce0f71f4e5e5aeb4162bf0858875921ec2c739'>;
+  StorageHashBase<'5d24ab47343ed8e8bf65a083091ef02b1276ea2a90bad9a902da7afcf6af5186'>;
 export type ExecutionHash =
   ExecutionHashBase<'0055b684767142ae059dd91733d5caf1183353cc3e40b28e32cdeb091e4cb835'>;
 export type ProfileHash =
@@ -235,37 +235,43 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 export type FieldOutputTypes = {
   readonly genealogy: {
     readonly ChildLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly partnershipId: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
-      readonly type: CodecTypes['pg/text@1']['output'];
     };
     readonly Media: {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
     };
     readonly PartnerLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly partnershipId: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
+      readonly type: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly Partnership: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly type: CodecTypes['pg/text@1']['output'];
+      readonly treeId: CodecTypes['pg/text@1']['output'];
     };
     readonly Person: {
-      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly birthPlace: CodecTypes['pg/text@1']['output'];
+      readonly birthAdress: CodecTypes['pg/text@1']['output'] | null;
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly birthPlace: CodecTypes['pg/text@1']['output'] | null;
       readonly deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
       readonly deathPlace: CodecTypes['pg/text@1']['output'] | null;
-      readonly deceased: CodecTypes['pg/bool@1']['output'];
-      readonly firstName: CodecTypes['pg/text@1']['output'];
-      readonly gender: CodecTypes['pg/text@1']['output'];
+      readonly deceased: CodecTypes['pg/bool@1']['output'] | null;
+      readonly fullName: CodecTypes['pg/text@1']['output'] | null;
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
+      readonly gender: CodecTypes['pg/text@1']['output'] | null;
+      readonly givenName: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly lastName: CodecTypes['pg/text@1']['output'] | null;
       readonly maidenName: CodecTypes['pg/text@1']['output'] | null;
       readonly marriedName: CodecTypes['pg/text@1']['output'] | null;
-      readonly middleName: CodecTypes['pg/text@1']['output'] | null;
+      readonly nickName: CodecTypes['pg/text@1']['output'] | null;
+      readonly surName: CodecTypes['pg/text@1']['output'] | null;
       readonly treeId: CodecTypes['pg/text@1']['output'];
     };
     readonly Tree: {
@@ -313,37 +319,43 @@ export type FieldOutputTypes = {
 export type FieldInputTypes = {
   readonly genealogy: {
     readonly ChildLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly partnershipId: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
-      readonly type: CodecTypes['pg/text@1']['input'];
     };
     readonly Media: {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
     };
     readonly PartnerLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly partnershipId: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
+      readonly type: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly Partnership: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly type: CodecTypes['pg/text@1']['input'];
+      readonly treeId: CodecTypes['pg/text@1']['input'];
     };
     readonly Person: {
-      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly birthPlace: CodecTypes['pg/text@1']['input'];
+      readonly birthAdress: CodecTypes['pg/text@1']['input'] | null;
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly birthPlace: CodecTypes['pg/text@1']['input'] | null;
       readonly deathDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
       readonly deathPlace: CodecTypes['pg/text@1']['input'] | null;
-      readonly deceased: CodecTypes['pg/bool@1']['input'];
-      readonly firstName: CodecTypes['pg/text@1']['input'];
-      readonly gender: CodecTypes['pg/text@1']['input'];
+      readonly deceased: CodecTypes['pg/bool@1']['input'] | null;
+      readonly fullName: CodecTypes['pg/text@1']['input'] | null;
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
+      readonly gender: CodecTypes['pg/text@1']['input'] | null;
+      readonly givenName: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly lastName: CodecTypes['pg/text@1']['input'] | null;
       readonly maidenName: CodecTypes['pg/text@1']['input'] | null;
       readonly marriedName: CodecTypes['pg/text@1']['input'] | null;
-      readonly middleName: CodecTypes['pg/text@1']['input'] | null;
+      readonly nickName: CodecTypes['pg/text@1']['input'] | null;
+      readonly surName: CodecTypes['pg/text@1']['input'] | null;
       readonly treeId: CodecTypes['pg/text@1']['input'];
     };
     readonly Tree: {
@@ -391,37 +403,43 @@ export type FieldInputTypes = {
 export type StorageColumnTypes = {
   readonly genealogy: {
     readonly ChildLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly partnershipId: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
-      readonly type: CodecTypes['pg/text@1']['output'];
     };
     readonly Media: {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
     };
     readonly PartnerLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly partnershipId: CodecTypes['pg/text@1']['output'];
       readonly personId: CodecTypes['pg/text@1']['output'];
+      readonly type: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly Partnership: {
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly type: CodecTypes['pg/text@1']['output'];
+      readonly treeId: CodecTypes['pg/text@1']['output'];
     };
     readonly Person: {
-      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly birthPlace: CodecTypes['pg/text@1']['output'];
+      readonly birthAdress: CodecTypes['pg/text@1']['output'] | null;
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly birthPlace: CodecTypes['pg/text@1']['output'] | null;
       readonly deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
       readonly deathPlace: CodecTypes['pg/text@1']['output'] | null;
-      readonly deceased: CodecTypes['pg/bool@1']['output'];
-      readonly firstName: CodecTypes['pg/text@1']['output'];
-      readonly gender: CodecTypes['pg/text@1']['output'];
+      readonly deceased: CodecTypes['pg/bool@1']['output'] | null;
+      readonly fullName: CodecTypes['pg/text@1']['output'] | null;
+      readonly gedcomId: CodecTypes['pg/text@1']['output'] | null;
+      readonly gender: CodecTypes['pg/text@1']['output'] | null;
+      readonly givenName: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly lastName: CodecTypes['pg/text@1']['output'] | null;
       readonly maidenName: CodecTypes['pg/text@1']['output'] | null;
       readonly marriedName: CodecTypes['pg/text@1']['output'] | null;
-      readonly middleName: CodecTypes['pg/text@1']['output'] | null;
+      readonly nickName: CodecTypes['pg/text@1']['output'] | null;
+      readonly surName: CodecTypes['pg/text@1']['output'] | null;
       readonly treeId: CodecTypes['pg/text@1']['output'];
     };
     readonly Tree: {
@@ -469,37 +487,43 @@ export type StorageColumnTypes = {
 export type StorageColumnInputTypes = {
   readonly genealogy: {
     readonly ChildLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly partnershipId: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
-      readonly type: CodecTypes['pg/text@1']['input'];
     };
     readonly Media: {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
     };
     readonly PartnerLink: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly partnershipId: CodecTypes['pg/text@1']['input'];
       readonly personId: CodecTypes['pg/text@1']['input'];
+      readonly type: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly Partnership: {
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly type: CodecTypes['pg/text@1']['input'];
+      readonly treeId: CodecTypes['pg/text@1']['input'];
     };
     readonly Person: {
-      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly birthPlace: CodecTypes['pg/text@1']['input'];
+      readonly birthAdress: CodecTypes['pg/text@1']['input'] | null;
+      readonly birthDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly birthPlace: CodecTypes['pg/text@1']['input'] | null;
       readonly deathDate: CodecTypes['pg/timestamptz-string@1']['input'] | null;
       readonly deathPlace: CodecTypes['pg/text@1']['input'] | null;
-      readonly deceased: CodecTypes['pg/bool@1']['input'];
-      readonly firstName: CodecTypes['pg/text@1']['input'];
-      readonly gender: CodecTypes['pg/text@1']['input'];
+      readonly deceased: CodecTypes['pg/bool@1']['input'] | null;
+      readonly fullName: CodecTypes['pg/text@1']['input'] | null;
+      readonly gedcomId: CodecTypes['pg/text@1']['input'] | null;
+      readonly gender: CodecTypes['pg/text@1']['input'] | null;
+      readonly givenName: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly lastName: CodecTypes['pg/text@1']['input'] | null;
       readonly maidenName: CodecTypes['pg/text@1']['input'] | null;
       readonly marriedName: CodecTypes['pg/text@1']['input'] | null;
-      readonly middleName: CodecTypes['pg/text@1']['input'] | null;
+      readonly nickName: CodecTypes['pg/text@1']['input'] | null;
+      readonly surName: CodecTypes['pg/text@1']['input'] | null;
       readonly treeId: CodecTypes['pg/text@1']['input'];
     };
     readonly Tree: {
@@ -547,10 +571,10 @@ export type StorageColumnInputTypes = {
 
 export namespace Models {
   export type genealogy_ChildLink = {
+    gedcomId: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     partnershipId: CodecTypes['pg/text@1']['output'];
     personId: CodecTypes['pg/text@1']['output'];
-    type: CodecTypes['pg/text@1']['output'];
     partnerShip: genealogy_Partnership;
     person: genealogy_Person;
     readonly [RelationKeys]?: 'partnerShip' | 'person';
@@ -562,39 +586,45 @@ export namespace Models {
     readonly [RelationKeys]?: 'person';
   };
   export type genealogy_PartnerLink = {
+    gedcomId: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     partnershipId: CodecTypes['pg/text@1']['output'];
     personId: CodecTypes['pg/text@1']['output'];
+    type: CodecTypes['pg/text@1']['output'] | null;
     partnerShip: genealogy_Partnership;
     person: genealogy_Person;
     readonly [RelationKeys]?: 'partnerShip' | 'person';
   };
   export type genealogy_Partnership = {
+    gedcomId: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
-    type: CodecTypes['pg/text@1']['output'];
-    childLink: genealogy_ChildLink[];
-    partnerLink: genealogy_PartnerLink[];
-    readonly [RelationKeys]?: 'childLink' | 'partnerLink';
+    treeId: CodecTypes['pg/text@1']['output'];
+    childLinks: genealogy_ChildLink[];
+    partnerLinks: genealogy_PartnerLink[];
+    readonly [RelationKeys]?: 'childLinks' | 'partnerLinks';
   };
   export type genealogy_Person = {
-    birthDate: CodecTypes['pg/timestamptz-string@1']['output'];
-    birthPlace: CodecTypes['pg/text@1']['output'];
+    birthAdress: CodecTypes['pg/text@1']['output'] | null;
+    birthDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+    birthPlace: CodecTypes['pg/text@1']['output'] | null;
     deathDate: CodecTypes['pg/timestamptz-string@1']['output'] | null;
     deathPlace: CodecTypes['pg/text@1']['output'] | null;
-    deceased: CodecTypes['pg/bool@1']['output'];
-    firstName: CodecTypes['pg/text@1']['output'];
-    gender: CodecTypes['pg/text@1']['output'];
+    deceased: CodecTypes['pg/bool@1']['output'] | null;
+    fullName: CodecTypes['pg/text@1']['output'] | null;
+    gedcomId: CodecTypes['pg/text@1']['output'] | null;
+    gender: CodecTypes['pg/text@1']['output'] | null;
+    givenName: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
-    lastName: CodecTypes['pg/text@1']['output'] | null;
     maidenName: CodecTypes['pg/text@1']['output'] | null;
     marriedName: CodecTypes['pg/text@1']['output'] | null;
-    middleName: CodecTypes['pg/text@1']['output'] | null;
+    nickName: CodecTypes['pg/text@1']['output'] | null;
+    surName: CodecTypes['pg/text@1']['output'] | null;
     treeId: CodecTypes['pg/text@1']['output'];
-    childLink: genealogy_ChildLink[];
+    childLinks: genealogy_ChildLink[];
     medias: genealogy_Media[];
-    partnerLink: genealogy_PartnerLink[];
+    partnerLinks: genealogy_PartnerLink[];
     tree: genealogy_Tree;
-    readonly [RelationKeys]?: 'childLink' | 'medias' | 'partnerLink' | 'tree';
+    readonly [RelationKeys]?: 'childLinks' | 'medias' | 'partnerLinks' | 'tree';
   };
   export type genealogy_Tree = {
     id: CodecTypes['pg/text@1']['output'];
@@ -697,6 +727,12 @@ type ContractBase = Omit<
           readonly table: {
             readonly ChildLink: {
               columns: {
+                readonly gedcomId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -710,12 +746,6 @@ type ContractBase = Omit<
                   readonly many: false;
                 };
                 readonly personId: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly type: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -807,6 +837,12 @@ type ContractBase = Omit<
             };
             readonly PartnerLink: {
               columns: {
+                readonly gedcomId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -823,6 +859,12 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly type: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
               };
@@ -871,13 +913,19 @@ type ContractBase = Omit<
             };
             readonly Partnership: {
               columns: {
+                readonly gedcomId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
-                readonly type: {
+                readonly treeId: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -891,16 +939,22 @@ type ContractBase = Omit<
             };
             readonly Person: {
               columns: {
+                readonly birthAdress: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly birthDate: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly birthPlace: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly deathDate: {
@@ -918,31 +972,37 @@ type ContractBase = Omit<
                 readonly deceased: {
                   readonly dataType: 'pg/bool';
                   readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                   readonly many: false;
                 };
-                readonly firstName: {
+                readonly fullName: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly gedcomId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly gender: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly givenName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly lastName: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly maidenName: {
@@ -957,7 +1017,13 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly many: false;
                 };
-                readonly middleName: {
+                readonly nickName: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly surName: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -1362,6 +1428,10 @@ type ContractBase = Omit<
         readonly models: {
           readonly ChildLink: {
             readonly fields: {
+              readonly gedcomId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1371,10 +1441,6 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly personId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly type: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -1409,10 +1475,10 @@ type ContractBase = Omit<
               readonly table: 'ChildLink';
               readonly namespaceId: 'genealogy';
               readonly fields: {
+                readonly gedcomId: { readonly column: 'gedcomId' };
                 readonly id: { readonly column: 'id' };
                 readonly partnershipId: { readonly column: 'partnershipId' };
                 readonly personId: { readonly column: 'personId' };
-                readonly type: { readonly column: 'type' };
               };
             };
           };
@@ -1452,6 +1518,10 @@ type ContractBase = Omit<
           };
           readonly PartnerLink: {
             readonly fields: {
+              readonly gedcomId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1462,6 +1532,10 @@ type ContractBase = Omit<
               };
               readonly personId: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly type: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
@@ -1495,25 +1569,31 @@ type ContractBase = Omit<
               readonly table: 'PartnerLink';
               readonly namespaceId: 'genealogy';
               readonly fields: {
+                readonly gedcomId: { readonly column: 'gedcomId' };
                 readonly id: { readonly column: 'id' };
                 readonly partnershipId: { readonly column: 'partnershipId' };
                 readonly personId: { readonly column: 'personId' };
+                readonly type: { readonly column: 'type' };
               };
             };
           };
           readonly Partnership: {
             readonly fields: {
+              readonly gedcomId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly type: {
+              readonly treeId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
             readonly relations: {
-              readonly childLink: {
+              readonly childLinks: {
                 readonly to: {
                   readonly namespace: 'genealogy' & NamespaceId;
                   readonly model: 'ChildLink';
@@ -1524,7 +1604,7 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['partnershipId'];
                 };
               };
-              readonly partnerLink: {
+              readonly partnerLinks: {
                 readonly to: {
                   readonly namespace: 'genealogy' & NamespaceId;
                   readonly model: 'PartnerLink';
@@ -1540,22 +1620,27 @@ type ContractBase = Omit<
               readonly table: 'Partnership';
               readonly namespaceId: 'genealogy';
               readonly fields: {
+                readonly gedcomId: { readonly column: 'gedcomId' };
                 readonly id: { readonly column: 'id' };
-                readonly type: { readonly column: 'type' };
+                readonly treeId: { readonly column: 'treeId' };
               };
             };
           };
           readonly Person: {
             readonly fields: {
+              readonly birthAdress: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly birthDate: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: {
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-string@1';
                 };
               };
               readonly birthPlace: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly deathDate: {
@@ -1570,23 +1655,27 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly deceased: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
-              readonly firstName: {
-                readonly nullable: false;
+              readonly fullName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly gedcomId: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly gender: {
-                readonly nullable: false;
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly givenName: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly id: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly lastName: {
-                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly maidenName: {
@@ -1597,7 +1686,11 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly middleName: {
+              readonly nickName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly surName: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -1607,7 +1700,7 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly childLink: {
+              readonly childLinks: {
                 readonly to: {
                   readonly namespace: 'genealogy' & NamespaceId;
                   readonly model: 'ChildLink';
@@ -1629,7 +1722,7 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['personId'];
                 };
               };
-              readonly partnerLink: {
+              readonly partnerLinks: {
                 readonly to: {
                   readonly namespace: 'genealogy' & NamespaceId;
                   readonly model: 'PartnerLink';
@@ -1657,18 +1750,21 @@ type ContractBase = Omit<
               readonly table: 'Person';
               readonly namespaceId: 'genealogy';
               readonly fields: {
+                readonly birthAdress: { readonly column: 'birthAdress' };
                 readonly birthDate: { readonly column: 'birthDate' };
                 readonly birthPlace: { readonly column: 'birthPlace' };
                 readonly deathDate: { readonly column: 'deathDate' };
                 readonly deathPlace: { readonly column: 'deathPlace' };
                 readonly deceased: { readonly column: 'deceased' };
-                readonly firstName: { readonly column: 'firstName' };
+                readonly fullName: { readonly column: 'fullName' };
+                readonly gedcomId: { readonly column: 'gedcomId' };
                 readonly gender: { readonly column: 'gender' };
+                readonly givenName: { readonly column: 'givenName' };
                 readonly id: { readonly column: 'id' };
-                readonly lastName: { readonly column: 'lastName' };
                 readonly maidenName: { readonly column: 'maidenName' };
                 readonly marriedName: { readonly column: 'marriedName' };
-                readonly middleName: { readonly column: 'middleName' };
+                readonly nickName: { readonly column: 'nickName' };
+                readonly surName: { readonly column: 'surName' };
                 readonly treeId: { readonly column: 'treeId' };
               };
             };

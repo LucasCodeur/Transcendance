@@ -56,15 +56,6 @@ export const personSchema = z.object({
 
 export type Person = z.infer<typeof personSchema>;
 
-const familyEventSchema = z.object({
-  date: z.string().optional(),
-  place: z.string().optional(),
-  address: z.string().optional(),
-
-  sourceIds: z.array(z.string()).default([]),
-  notes: z.array(z.string()).default([]),
-});
-
 export const familySchema = z.object({
   gedcomId: z.string().min(1),
 
@@ -73,8 +64,8 @@ export const familySchema = z.object({
 
   childGedcomIds: z.array(z.string()).default([]),
 
-  marriage: familyEventSchema.optional(),
-  divorce: familyEventSchema.optional(),
+  marriage: eventSchema.optional(),
+  divorce: eventSchema.optional(),
 
   sourceIds: z.array(z.string()).default([]),
   notes: z.array(z.string()).default([]),
@@ -86,7 +77,7 @@ export const relationSchema = z.object({
   familyGedcomId: z.string().min(1),
   personGedcomId: z.string().min(1),
 
-  role: z.enum(["HUSB", "WIFE", "CHIL"]),
+  role: z.enum(["HUSB", "WIFE", "CHIL"]).optional(),
 });
 
 export type Relation = z.infer<typeof relationSchema>;

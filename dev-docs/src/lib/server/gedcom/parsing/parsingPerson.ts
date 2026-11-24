@@ -4,40 +4,14 @@ import { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 
 import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode } from "@domorium/validator";
+import type { ImportResult } from "../../../../routes/import/proxy+page.server";
 
 let genea = db.orm.genealogy;
 
-// TODO: to conform with my prisma schema.
-// 0 @I1@ INDI
-// 1 NAME Jean /Dupont/
-// 2 GIVN Jean
-// 2 SURN Dupont
-// 1 SEX M
-// 1 BIRT
-// 2 DATE 10 JAN 1980
-// 2 PLAC Paris, France
-// 1 FAMS @F1@
-
-export async function parseSubmitter(node: ASTNode) {
-  let surname: string = "";
-  for (let record of node.children) {
-    let value = record.tokens?.VALUE?.value;
-    let tag = record.tokens?.TAG?.value;
-    if (tag === "NAME") {
-      let parts: string[] = value.split(" ");
-      surname = parts[1];
-      break;
-    }
-  }
-  const name: string = surname + " Family";
-  const tree = await genea.Tree.create({
-    name: name,
-  });
-
-  return tree.id;
-}
-
-export function parseIndividual(node: ASTNode): Person {
+export function parseIndividual(
+  node: ASTNode,
+  persons: Person[],
+): String | undefined {
   let person: Person = {
     gedcomId: node.tokens.POINTER?.value,
     birth: {},
@@ -53,7 +27,22 @@ export function parseIndividual(node: ASTNode): Person {
 
   parsePerson(node.children, person);
 
-  return person;
+  let errors: String = validateIndividual(persons, person);
+  if (errors != undefined && errors.length > 0)
+    return {
+      success: false,
+      kind: "Person was wrong",
+      errors: [
+        {
+          code: "ERRORS_PERSON",
+          message: errors,
+        },
+      ],
+    };
+  return {
+    success: true,
+    data: undefined,
+  };
 }
 
 /**
@@ -97,6 +86,7 @@ function parsePerson(nodes: ASTNode[], person: Person) {
         break;
     }
   }
+  return;
 }
 
 function parseName(nodeName: ASTNode, person: Person) {
@@ -178,4 +168,25 @@ export function validateIndividual(persons: Person[], person: Person) {
     return validPerson.error.issues.map((issue) => issue.message);
 
   persons.push(validPerson.data);
+}
+
+export async function parseSubmitter(node: ASTNode) {
+  let surname: string = "";
+
+  for (let record of node.children) {
+    let value = record.tokens?.VALUE?.value;
+    let tag = record.tokens?.TAG?.value;
+
+    if (tag === "NAME") {
+      let parts: string[] = value.split(" ");
+      surname = parts[1];
+      break;
+    }
+  }
+
+  const name: string = surname + " Family";
+
+  const tree = await genea.Tree.create({
+    name: name,
+  });
 }

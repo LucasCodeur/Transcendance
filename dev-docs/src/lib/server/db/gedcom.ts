@@ -5,6 +5,30 @@ import type { Person, Family } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 export namespace geneaDB {
   export const genea = db.orm.genealogy;
 
+  export async function addToDB(
+    persons: Person,
+    family: Family,
+    treeId: String,
+  ) {
+    for (let person of persons) {
+      await addPerson(person, treeId);
+    }
+
+    let partnerShip = await genea.Partnership.where({
+      gedcomId: family.gedcomId,
+      treeId: treeId,
+    }).first();
+
+    if (partnerShip == null) {
+      partnerShip = await genea.Partnership.create({
+        gedcomId: family.gedcomId,
+        treeId: treeId,
+      });
+    }
+
+    await addRelations(family, treeId, partnerShip.id);
+  }
+
   export async function addPerson(person: Person, treeId: string) {
     const newPerson = await genea.Person.create({
       gedcomId: person.gedcomId,
@@ -39,7 +63,6 @@ export namespace geneaDB {
         gedcomId: family.husdbandGedcomId,
       }).first();
       if (person != null) {
-        console.log("HUSBAND PARTNERLINK IS CREATING");
         const partnerLink = await genea.PartnerLink.create({
           personId: person?.id,
           gedcomId: family.husdbandGedcomId,
@@ -49,13 +72,11 @@ export namespace geneaDB {
       }
     }
     if (family.wifeGedcomId != undefined) {
-      console.log("INSIDE FAMILY WIFW DIFFERENT UNDEFINED");
       const person = await genea.Person.where({
         treeId: treeId,
         gedcomId: family.wifeGedcomId,
       }).first();
       if (person != null) {
-        console.log("WIFE PARTNERLINK IS CREATING");
         const partnerLink = await genea.PartnerLink.create({
           personId: person?.id,
           gedcomId: family.wifeGedcomId,
@@ -64,6 +85,7 @@ export namespace geneaDB {
         });
       }
     }
+
     for (let i = 0; i < family.childGedcomIds.length; i++) {
       if (family.childGedcomIds[i] != undefined) {
         const person = await genea.Person.where({
@@ -72,7 +94,6 @@ export namespace geneaDB {
         }).first();
 
         if (person != null) {
-          console.log("CHILD CHILDLINK IS CREATING");
           const childLink = await genea.ChildLink.create({
             personId: person?.id,
             gedcomId: family.childGedcomIds[i],
