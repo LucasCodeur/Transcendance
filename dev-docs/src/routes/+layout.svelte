@@ -35,9 +35,10 @@
 				Genealogy
 			</a>
 			<div class="flex items-center gap-2">
-				<ThemeToggle />
 				{#if data.user}
 					<UserMenu user={data.user} />
+					<Button href="/organizations" size="sm">Organizations</Button>
+					<Button href="/friends" size="sm">Friends</Button>
 				{:else}
 					<nav aria-label="Authentication" class="flex items-center gap-2">
 						<Button href="/login" variant="ghost" size="sm">Log in</Button>
@@ -46,6 +47,7 @@
 						<Button href="/friends" size="sm">Friends</Button>
 					</nav>
 				{/if}
+				<ThemeToggle />
 			</div>
 		</div>
 	</header>
