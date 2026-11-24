@@ -4,6 +4,7 @@ export type User = {
 	id: string;
 	email: string;
 	displayName: string;
+	avatarId: string | null;
 	passwordHash: string | null;
 	emailVerified: boolean;
 	totpSecret: string | null;
@@ -25,6 +26,7 @@ export function toUser(row: UserRow): User {
 		id: row.id,
 		email: row.email,
 		displayName: row.displayName,
+		avatarId: row.avatarId,
 		passwordHash: row.passwordHash,
 		emailVerified: row.emailVerified,
 		totpSecret: row.totpSecret,
