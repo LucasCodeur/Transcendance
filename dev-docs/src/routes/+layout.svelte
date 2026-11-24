@@ -13,6 +13,8 @@
 
 <header class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
 	<a href="/" class="text-lg font-bold">Généalogie</a>
+	<a href="/organizations" class="text-lg font-bold">Organizations</a>
+	<a href="/friends" class="text-lg font-bold">Friends</a>
 
 	<nav class="flex items-center gap-4">
 		{#if data.user}
@@ -32,6 +34,6 @@
 	</nav>
 </header>
 
-<main class="mx-auto max-w-md px-4 py-10">
+<main class="w-70/100 border border-black ml-auto mr-auto  px-4 py-10">
 	{@render children()}
 </main>
