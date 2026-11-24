@@ -6,13 +6,11 @@ import {
 } from "#lib/server/gedcom/parsing/parsingPerson.ts";
 
 import { geneaDB } from "#lib/server/db/gedcom.ts";
-import { db } from "#prisma/db.ts";
+import { db } from "#prisma";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
 
 import type { Person, Family } from "#lib/schemas/gedcom/gedcomSchemas.ts";
-import type { ASTNode } from "@domorium/validator";
-
-import type { GedcomError } from "@domorium/validator";
+import type { ASTNode, GedcomError } from "@domorium/validator";
 import type { ImportResult } from "#lib/../routes/import/+page.server.ts";
 
 let genea = db.orm.genealogy;

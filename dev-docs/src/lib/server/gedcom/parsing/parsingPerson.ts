@@ -1,5 +1,5 @@
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom";
-import { db } from "#prisma/db.ts";
+import { db } from "#prisma";
 import { personSchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 
 import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";

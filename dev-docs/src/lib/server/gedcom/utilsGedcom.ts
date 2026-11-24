@@ -1,5 +1,5 @@
 import { GedcomDocument } from "@domorium/validator";
-import { db } from "#prisma/db.ts";
+import { db } from "#prisma";
 
 import type { ASTNode } from "@domorium/validator";
 import type { Person } from "#lib/schemas/gedcom/gedcomSchemas.ts";
