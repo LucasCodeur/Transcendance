@@ -107,7 +107,9 @@ export const actions = {
 					.update({type: "accepted"});
 			}
 			return {
-				successMessage: "friend request sent !",
+				success: {
+					friendName: "friend request sent !",
+				}
 			}
 		} catch (e) {
 			return fail(500, {errors: "server error, could not process request, try again later"});

@@ -8,6 +8,7 @@ import { success, z } from "zod";
 // from the the websocket server
 export async function handleFriendRequest(data, client, io, media) {
 	console.log("from websocket, should handle sending a friend request");
+	console.log(`media = ${media}`);
 	const parsed = friendRequestScheme.safeParse(data);
 	if (!parsed.success) {
 		const errObj = {errors:z.flattenError(parsed.error).fieldErrors};
@@ -18,6 +19,7 @@ export async function handleFriendRequest(data, client, io, media) {
 	try {
 		const users = await db.orm.public.User.where({displayName: parsed.data.friendName}).all();
 		if (users.length === 0) {
+			console.log("user does not exists");
 			const errObj = {errors:
 					{friendName: `user ${parsed.data.friendName} does not exists!`}
 			};
@@ -68,13 +70,29 @@ export async function handleFriendRequest(data, client, io, media) {
 				.update({type: "accepted"});
 		}
 		console.log("from websocket, friend request should be sent now");
-		const successObj = { successMessage: "friend request sent !" };
+		const successObj = { 
+			friendName: "friend request sent !",
+			newFriend: users[0].displayName,
+		};
 		if (media === "websocket") {
+			console.log("will send success back to client");
 			client.emit("send_friend_request_success", successObj);
 			// should loop over client, to see if concerned
 			// asked friend is connected,
 			// if so, should sent him a data,
 			// to notify that the new friend request 
+			// socket.on("pending_friend_request_success", async(successData) => {
+			// 	data.pending += successData.newFriend;
+			// })
+
+			for (let [id, socket] of io.of("/").sockets) {
+				if (socket.user.displayName === users[0].displayName) {
+					console.log("also send back to other end");
+					socket.emit("pending_friend_request_success", {
+						newFriend: client.user.displayName,
+					})
+				}
+			}
 			return ;
 		}
 		else {
@@ -88,6 +106,7 @@ export async function handleFriendRequest(data, client, io, media) {
 
 function choseReturnMethodError(media, errObj, errCode, client) {
 	if (media === "websocket") {
+		console.log("will send an 'send_friend_request_error' event back to client");
 		client.emit("send_friend_request_error", errObj.errors);
 		return ;
 	}

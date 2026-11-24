@@ -19,7 +19,7 @@ export const websocketServer = {
 				});
 
 				client.on("send_friend_request", async (data) => {
-					handleFriendRequest(data, client, io);
+					handleFriendRequest(data, client, io, "websocket");
 				});
 			});
 		},

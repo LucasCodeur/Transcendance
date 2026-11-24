@@ -11,12 +11,27 @@
 		...webSocketErrors,
 	});
 
+	let webSocketSuccess = $state({});
+
+	let success = $derived({
+		...(form?.success ?? {}),
+		...webSocketSuccess
+	});
+
+
 	let { form, socket } = $props();
 	socket.on("send_friend_request_error", async(data) => {
 		console.log("received error from websocket Server");
 		console.log("data:");
 		console.log(data);
 		webSocketErrors = data;
+	})
+
+	socket.on("send_friend_request_success", async(data) => {
+		console.log("received error from websocket Server");
+		console.log("data:");
+		console.log(data);
+		webSocketSuccess = data;
 	})
 </script>
 
@@ -43,8 +58,8 @@
 		{#if errors.friendName}
 			<p class="text-red-600 m-3">Error: {errors.friendName}</p>
 		{/if}
-		{#if form?.successMessage}
-			<p class="text-green-600 m-3">Success: {form.successMessage}</p>
+		{#if success.friendName}
+			<p class="text-green-600 m-3">Success: {success.friendName}</p>
 		{/if}
 		</div>	
 	</form>
