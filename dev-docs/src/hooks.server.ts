@@ -30,6 +30,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		id: result.user.id,
 		email: result.user.email,
 		displayName: result.user.displayName,
+		avatarId: result.user.avatarId,
 		emailVerified: result.user.emailVerified
 	};
 
