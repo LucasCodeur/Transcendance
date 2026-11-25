@@ -192,6 +192,6 @@ export async function parseSubmitter(node: ASTNode) {
 
   return {
     success: true,
-    data: undefined,
+    data: tree.id,
   };
 }

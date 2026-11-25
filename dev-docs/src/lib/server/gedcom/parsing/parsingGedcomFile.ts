@@ -8,6 +8,7 @@ import {
 import { geneaDB } from "#lib/server/db/gedcom.ts";
 import { db } from "#prisma";
 import { utilsGedcom } from "#lib/server/gedcom/utilsGedcom.ts";
+import { familySchema } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 
 import type { Person, Family } from "#lib/schemas/gedcom/gedcomSchemas.ts";
 import type { ASTNode, GedcomError } from "@domorium/validator";
@@ -82,8 +83,29 @@ async function parseAST(nodes: ASTNode[]) {
     if (res && !res.success) return res;
     i++;
   }
-  res = await geneaDB.addToDB(persons, family, treeId);
+  res = await geneaDB.addToDB(persons, family, res.data);
+  await testDbToZod(persons);
   utilsGedcom.printTrees();
+  // await geneaDB.getTreeFromDb();
+}
+
+// type Tree
+// {
+//   Person[]: PersonSchema
+//   Family[] : Family
+// }
+// export getTree(treeId: string)
+// {
+//
+// }
+
+async function testDbToZod(persons: Person[]) {
+  const person = await genea.Person.where({
+    fullName: persons[0].fullname,
+  }).first();
+
+  let zodPerson = await geneaDB.getPersonFromDb(person);
+  console.log("ZOD PERSON: ", zodPerson);
 }
 
 async function parseFamily(node: ASTNode, family: Family) {

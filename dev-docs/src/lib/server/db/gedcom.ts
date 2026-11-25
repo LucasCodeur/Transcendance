@@ -117,4 +117,66 @@ export namespace geneaDB {
     if (Number.isNaN(date.getTime())) return null;
     return date;
   }
+
+  export async function getTreeFromDb(treeId: String) {
+    const tree = await genea.Tree.select("name")
+      .include("persons", (persons) =>
+        persons
+          .select(
+            "id",
+            "gedcomId",
+            "givenName",
+            "surName",
+            "fullName",
+            "gender",
+            "birthDate",
+            "birthPlace",
+            "birthAdress",
+            "deceased",
+            "deathDate",
+            "deathPlace",
+          )
+          .include("partnerLinks", (partnerLinks) =>
+            partnerLinks.select(
+              "id",
+              "personId",
+              "partnershipId",
+              "gedcomId",
+              "type",
+            ),
+          )
+          .include("childLinks", (childLinks) =>
+            childLinks.select("id", "personId", "partnershipId", "gedcomId"),
+          ),
+      )
+      .first();
+    return tree;
+  }
+
+  export async function getPersonFromDb(person) {
+    let res: Person = {
+      gedcomId: "",
+      birth: {},
+      death: {},
+      burial: {},
+      familyAsSpouseIds: [],
+      familyAsChildIds: [],
+      occupations: [],
+      education: [],
+      notes: [],
+      objectIds: [],
+    };
+    res.gedcomId = person.gedcomId;
+    res.fullname = person.fullName;
+    res.surname = person.surName;
+    res.givenname = person.givenName;
+
+    res.birth.date = person.birthDate;
+    res.birth.place = person.birthPlace;
+    res.birth.address = person.birthAdress;
+
+    res.death.address = person.deathDate;
+    res.death.place = person.deathDate;
+    return res;
+  }
 }
